@@ -1,41 +1,38 @@
-import React from 'react'
+import React, { useState, useRef } from 'react'
 import Head from 'next/head'
-import Image from 'next/image'
 import { Button, Link as ChakraLink } from '@chakra-ui/react'
+import { useReactToPrint } from 'react-to-print'
 
 import { Container } from '../components/Container'
-import { DarkModeSwitch } from '../components/DarkModeSwitch'
-import { Footer } from '../components/Footer'
-import { Hero } from '../components/Hero'
+import { Footer } 	 from '../components/Footer'
+import { Hero } 	 from '../components/Hero'
+
+import querytest from './test'
 
 export default function HomePage() {
-  return (
-    <React.Fragment>
-      <Head>
-        <title>Home - Nextron (with-chakra-ui)</title>
-      </Head>
-      <Container minHeight="100vh">
-        <DarkModeSwitch />
-        <Image
-          src="/images/logo.png"
-          alt="Logo image"
-          width="200px"
-          height="200px"
-        />
-        <Hero title={`⚡Electron⚡ + Next.js + Chakra UI = 🔥`} />
-        <Footer>
-          <Button
-            as={ChakraLink}
-            href="/next"
-            variant="solid"
-            colorScheme="teal"
-            rounded="button"
-            width="full"
-          >
-            Go to next page
-          </Button>
-        </Footer>
-      </Container>
-    </React.Fragment>
-  )
+	const [isOpen, setIsOpen]  = useState(false)
+	const componentRef = useRef()
+	const handlePrint = useReactToPrint({ content: () => componentRef.current })
+
+	const toggle = () => {
+		setIsOpen(!isOpen)
+		console.log(open)
+	}
+
+	return (
+		<React.Fragment>
+			<Head>
+				<title>Home - Nextron (with-chakra-ui)</title>
+			</Head>
+			<Container minHeight="100vh">
+				<Hero title={`⚡Electron⚡ + Next.js + Chakra UI = 🔥`} />
+				<Footer>
+					<Button onClick={toggle} variant="solid" colorScheme="teal" rounded="button" width="full" >
+						Get Graph
+					</Button>
+					{isOpen ? querytest(componentRef, handlePrint) : null}
+				</Footer>
+			</Container>
+		</React.Fragment>
+	)
 }
