@@ -1,13 +1,17 @@
-import { ChakraProvider } from '@chakra-ui/react'
+import React from 'react'
+import Head from 'next/head'
+import type { AppProps } from 'next/app'
 
-import theme from '../lib/theme'
-import { AppProps } from 'next/app'
+import 'antd/dist/antd.css'
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <ChakraProvider theme={theme}>
+    <React.Fragment>
+      <Head>
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
       <Component {...pageProps} />
-    </ChakraProvider>
+    </React.Fragment>
   )
 }
 
