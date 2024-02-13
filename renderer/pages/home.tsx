@@ -1,15 +1,9 @@
-import React, { useState } from 'react'
-<<<<<<< HEAD
-import { Layout, Table, Space, Button } from 'antd'
-import type { TableColumnsType } from 'antd'
+import React, { useState } from 'react';
+import { FolderOpenOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Layout, Table, Space, Button } from 'antd';
+import type { TableColumnsType } from 'antd';
 
-import TestModal from './testmodal'
-=======
-import { Layout, Table, Modal, Space, Button, Row } from 'antd'
-import type { TableColumnsType } from 'antd'
-
-import { specimen } from '../controllers/specimen'
->>>>>>> 1ddf3d59cb00f8613d7b5f88de5e5c1bb45216f4
+import { openNewWindow } from '../services/multiwindow';
 
 const { Content } = Layout;
 
@@ -30,28 +24,12 @@ interface ExpandedDataType {
 }
 
 const HomePage: React.FC = () => {
-<<<<<<< HEAD
-	const [openModal, setOpenModal] = React.useState(false);
-  const btnclicked = (e: any, bla: any) => {
-    setOpenModal(true);
-=======
-	const { confirm } = Modal;
-	
-	const btnclicked = async (e: any, bla: any) => {
-		confirm({
-			title: 'Muestra [] - Especimen []',
-			content: specimen.render(),
-			width: window.innerWidth,
-			okText: 'Imprimir',
-			cancelText: 'Cerrar',
-			onOk() {
-			  console.log('Imprimiendo');
-			},
-			onCancel() {
-			  console.log('Cerrado');
-			},
-		  });
->>>>>>> 1ddf3d59cb00f8613d7b5f88de5e5c1bb45216f4
+	const viewSampleTest = async (e: any, bla: any) => {
+		// console.log(bla);
+		openNewWindow('/testSample', 'idSpecimen='+bla['idspecimen']);
+	}
+	const deleteSampoTest = async (e: any, bla: any) => {
+		console.log(bla);
 	}
 	const expandedRowRender = () => {
 		const columns: TableColumnsType<ExpandedDataType> = [
@@ -65,12 +43,8 @@ const HomePage: React.FC = () => {
 				key: 'actions',
 				render: (text, record, index) => (
 					<Space size="middle">
-						<Button onClick={(event) => btnclicked(event, record)} type="primary">Ver</Button>
-						<Button onClick={(event) => btnclicked(event, record)} type="primary">Eliminar</Button>
-<<<<<<< HEAD
-            { openModal ? TestModal( "", window.innerWidth) : null }
-=======
->>>>>>> 1ddf3d59cb00f8613d7b5f88de5e5c1bb45216f4
+						<Button onClick={(event) => viewSampleTest( event, record)} icon={<FolderOpenOutlined />} type="primary">Ver</Button>
+						<Button onClick={(event) => deleteSampoTest(event, record)} icon={<DeleteOutlined />} danger></Button>
 					</Space>
 				)
 			}
