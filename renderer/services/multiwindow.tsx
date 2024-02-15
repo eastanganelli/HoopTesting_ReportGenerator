@@ -1,9 +1,14 @@
 let activeWindows: Window[] = [];
 
-const openNewWindow = (url: string, data: any = "") => {
+export interface windowSize {
+    width:  number;
+    height: number;
+}
+
+const openNewWindow = (url: string, size: windowSize = { width: 1600, height: 900}, data: any) => {
     let urlString = url;
     if(data != "") { urlString += "?" + data; }
-    let newWindow = window.open(urlString, "_blank", "width=1600,height=900,position=center,contextIsolation=no,nodeIntegration=yes");
+    let newWindow = window.open(urlString, "popup_window", "width="+size.width+",height="+size.height+",position=center,contextIsolation=no,nodeIntegration=yes,resizable=yes");
     activeWindows.push(newWindow);
 };
 

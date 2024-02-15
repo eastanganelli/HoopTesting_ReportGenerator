@@ -1,8 +1,7 @@
-import React from 'react'
-import Head from 'next/head'
-import type { AppProps } from 'next/app'
-
-import 'antd/dist/antd.css'
+import React from 'react';
+import './styles.module.css';
+import Head from 'next/head';
+import type { AppProps } from 'next/app';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (

@@ -26,7 +26,7 @@ interface ExpandedDataType {
 const HomePage: React.FC = () => {
 	const viewSampleTest = async (e: any, bla: any) => {
 		// console.log(bla);
-		openNewWindow('/testSample', 'idSpecimen='+bla['idspecimen']);
+		openNewWindow('/testSample', { width: screen.availWidth, height: screen.availHeight },'idSpecimen='+bla['idspecimen']);
 	}
 	const deleteSampoTest = async (e: any, bla: any) => {
 		console.log(bla);
