@@ -1,0 +1,52 @@
+{
+  "name": "report-generator",
+  "version": "1.0.0",
+  "author": {
+    "name": "Ezequiel Augusto Stanganelli",
+    "email": "ezequielstanganelli@gmail.com"
+  },
+  "description": "A minimal Electron application written with Typescript",
+  "main": "main/index.js",
+  "scripts": {
+    "clean": "rimraf dist main renderer/out renderer/.next",
+    "start": "npm run build && electron .",
+    "build-renderer": "next build renderer",
+    "build-electron": "tsc -p electron-src",
+    "build": "npm run clean && npm run build-renderer && npm run build-electron",
+    "pack-app": "npm run build && electron-builder --dir",
+    "dist": "npm run build && electron-builder",
+    "dist:debug": "lldb ./dist/mac/electron-quick-start-typescript.app",
+    "dist:unpack": "npx asar extract ./dist/mac/electron-quick-start-typescript.app/Contents/Resources/app.asar ./dist/unpack",
+    "type-check": "tsc"
+  },
+  "dependencies": {
+    "@ant-design/charts": "^2.0.3",
+    "@ant-design/cssinjs": "^1.18.4",
+    "@ant-design/icons": "^5.3.0",
+    "antd": "^5.14.2",
+    "electron-is-dev": "^1.1.0",
+    "electron-next": "^3.1.5",
+    "electron-store": "^8.1.0",
+    "mysql2": "^3.9.1",
+    "next": "^12.0.7",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-to-print": "^2.15.1"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.6",
+    "@types/react": "^16.9.9",
+    "@types/react-dom": "^16.9.9",
+    "electron": "^13",
+    "electron-builder": "^22.9.1",
+    "rimraf": "^3.0.0",
+    "typescript": "^4.0.5"
+  },
+  "build": {
+    "asar": true,
+    "files": [
+      "main",
+      "renderer"
+    ]
+  }
+}

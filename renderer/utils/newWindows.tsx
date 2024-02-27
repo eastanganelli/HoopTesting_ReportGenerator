@@ -1,0 +1,20 @@
+import { winParams } from '../../electron-src/service/multiwindow';
+
+const openNewWindow = (windowID: string, windowTitle: string, windowPath: string) => {
+    const windowParams: winParams = {
+        windowID: windowID,
+		windowTitle: windowTitle,
+		windowPath: windowPath,
+		windowParams: { width: 1600, height: 900, autoHideMenuBar: true, webPreferences: { nodeIntegration: false, contextIsolation: false, preload: "" } }
+	
+	}
+    try {
+        if (global && global.ipcRenderer) {
+            global.ipcRenderer.send('new-window', windowParams);
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+export { openNewWindow };
