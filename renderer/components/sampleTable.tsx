@@ -1,21 +1,16 @@
-import React, { useState, useEffect, FunctionComponent } from 'react';
-import { FolderOpenOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Table, Button } from 'antd';
+import { useState, useEffect, FunctionComponent } from 'react';
+import dynamic from 'next/dynamic';
+// import { FolderOpenOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Table } from 'antd';
 import type { TableColumnsType } from 'antd';
 
-import { ServiceSampleWithSpecimens } from '../utils/database/dbquery';
+import QueryService from '../utils/database/dbquery';
+const SpecimenRow = dynamic(() => import('./specimenRow'));
 
-import SpecimenRow from './specimenRow';
+import { DataType } from '../interfaces/tableData';
+import type { TestSample } from '../interfaces/query';
 
-interface DataType {
-    key: React.Key;
-    idsample: number;
-    standard: string;
-    material: string;
-    description: any;
-}
-
-const sampleTable: FunctionComponent = () => {
+const SampleTable: FunctionComponent = () => {
     const [sampleList, setSampleList] = useState<DataType[]>([]);
     const columns: TableColumnsType<DataType> = [
         { title: 'ID Sample', dataIndex: 'idsample', key: 'idsample' },
@@ -24,20 +19,23 @@ const sampleTable: FunctionComponent = () => {
     ];
 
     useEffect(() => {
-        const fetchData = async () => {
-            let myResponse: any = await ServiceSampleWithSpecimens(),
+        const fetchData = () => {
+            let myResponse: any = QueryService.SELECT.Tests(),
                 myData: DataType[] = [];
-            myResponse.forEach((sample: any) => {
-                myData.push({
-                    key: Number(sample["idSample"]),
-                    idsample: Number(sample["idSample"]),
-                    standard: sample["standard"],
-                    material: sample["material"],
-                    description: <SpecimenRow specimens={sample["mySpecimens"]} />
+            myResponse.then((Tests: TestSample[]) => {
+                Tests.forEach((Test: TestSample) => {
+                    myData.push({
+                        key: Number(Test["idSample"]),
+                        idsample: Number(Test["idSample"]),
+                        standard: Test["standard"],
+                        material: Test["material"],
+                        description: <SpecimenRow specimens={Test["mySpecimens"]} />
+                    });
+
                 });
 
+                setSampleList(myData);
             });
-            setSampleList(myData);
         };
 
         fetchData();
@@ -55,5 +53,4 @@ const sampleTable: FunctionComponent = () => {
         />
     )
 }
-
-export default sampleTable;
+export default SampleTable;

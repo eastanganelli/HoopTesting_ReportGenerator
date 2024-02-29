@@ -1,5 +1,5 @@
-import { BrowserWindow, ipcMain, screen, Rectangle, } from 'electron';
-import Store from 'electron-store';
+import { BrowserWindow, ipcMain/*  , screen, Rectangle */ } from 'electron';
+//import Store from 'electron-store';
 
 export interface winParams {
     windowID: string;
@@ -12,12 +12,15 @@ interface winOptions {
     width: number;
     height: number;
     autoHideMenuBar: boolean;
+	icon: string;
     webPreferences: {
         nodeIntegration: boolean;
         contextIsolation: boolean;
         preload: string;
     };
 }
+
+const iconPath: string = '../../../icons/logos_ezequiel2_03.ico';
 
 let preloadPath: string = '';
 
@@ -26,7 +29,7 @@ const setPreloadPath = (path: string) => {
 };
 
 const newWindow = (params: winParams): void => {
-	const key = 'window-state';
+/* 	const key = 'window-state';
 	const name = `window-state-${params.windowID}`;
 	const store = new Store<Rectangle>({ name });
 	const defaultSize = { width: params.windowParams.width, height: params.windowParams.height, };
@@ -83,8 +86,9 @@ const newWindow = (params: winParams): void => {
 		store.set(key, state)
 	};
 
-	state = ensureVisibleOnSomeDisplay(restore())
+	state = ensureVisibleOnSomeDisplay(restore())*/
     params['windowParams']['webPreferences']['preload'] = preloadPath;
+	params['windowParams']["icon"] = iconPath;
     const win: BrowserWindow = new BrowserWindow({
         width: params.windowParams.width,
         height: params.windowParams.height,
@@ -94,7 +98,7 @@ const newWindow = (params: winParams): void => {
     win.setTitle(params.windowTitle);
     win.loadURL('http://localhost:3000/' + params.windowPath);
 
-	win.on('close', saveState);
+	/* win.on('close', saveState); */
 };
 
 ipcMain.on('new-window', async (event, params: winParams) => {

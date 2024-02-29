@@ -1,48 +1,26 @@
-import React, { useState, useEffect, FunctionComponent } from 'react';
+import { useState, useEffect, FunctionComponent } from 'react';
 import { FolderOpenOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Table, Space, Button } from 'antd';
-import type { TableColumnsType } from 'antd';
 
 import { openNewWindow } from '../utils/newWindows';
+import QueryService from '../utils/database/dbquery';
 
-interface ExpandedDataType {
-    key: React.Key;
-    idspecimen: number;
-    init: string;
-    end: string;
-    duration: string;
-    operator: string;
-}
+import type { TableColumnsType } from 'antd';
+import type { TestSpecimen } from '../interfaces/query';
+import type { ExpandedDataType } from '../interfaces/tableData';
 
-interface Specimen {
-    idSpecimen: number;
-    begin: string;
-    end: string;
-    duration: string;
-    operator: number;
+interface Props { specimens: TestSpecimen[]; };
 
-}
-
-interface Props {
-    specimens: Specimen[];
-}
-
-const specimenTable: FunctionComponent<Props> = ({ specimens }: Props) => {
+const SpecimenTable: FunctionComponent<Props> = ({ specimens }: Props) => {
     const [specimenData, setSpecimenData] = useState<ExpandedDataType[]>([]);
 
-    const viewSampleTest = async (e: any, Specimen: any) => {
-        // openNewWindow('/testSample/testSample', { width: screen.availWidth, height: screen.availHeight }, 'idSpecimen=' + Specimen['idspecimen']);
-        console.log('/testSample?idSpecimen=' + Specimen['idspecimen']);
-        openNewWindow('test_'+Specimen['idspecimen'], 'Test Nro: XXXXXX', '/testSample?idSpecimen=' + Specimen['idspecimen']);
-    }
+    const viewTest = (e: any, Specimen: any) => { openNewWindow(`test_${Specimen['idspecimen']}`, `Test Nro: ${Specimen['idspecimen']}`, `/testSample?idSpecimen=${Specimen['idspecimen']}`); };
 
-    const deleteSampoTest = async (e: any, bla: any) => {
-        console.log(bla);
-    }
+    const deleteTest = (e: any, Specimen: any) => { QueryService.DELETE.Specimen([Specimen['idspecimen']]); };
 
     const columns: TableColumnsType<ExpandedDataType> = [
         { title: 'ID Specimen', dataIndex: 'idspecimen', key: 'idspecimen' },
-        { title: 'Inicio', dataIndex: 'init', key: 'init' },
+        { title: 'Inicio', dataIndex: 'init', key: 'begin' },
         { title: 'Fin', dataIndex: 'end', key: 'end' },
         { title: 'Duración', dataIndex: 'duration', key: 'duration' },
         { title: 'Operador', dataIndex: 'operator', key: 'operator' },
@@ -52,8 +30,8 @@ const specimenTable: FunctionComponent<Props> = ({ specimens }: Props) => {
             key: 'actions',
             render: (text, record, index) => (
                 <Space size="middle">
-                    <Button onClick={(event) => viewSampleTest(event, record)} icon={<FolderOpenOutlined />} type="primary">Ver</Button>
-                    <Button onClick={(event) => deleteSampoTest(event, record)} icon={<DeleteOutlined />} danger></Button>
+                    <Button onClick={(event) => viewTest(event, record)} icon={<FolderOpenOutlined />} type="primary">Ver</Button>
+                    <Button onClick={(event) => deleteTest(event, record)} icon={<DeleteOutlined />} danger></Button>
                 </Space>
             )
         }
@@ -61,11 +39,11 @@ const specimenTable: FunctionComponent<Props> = ({ specimens }: Props) => {
 
     const loadSpecimens = async () => {
         let myData: ExpandedDataType[] = [];
-        specimens.forEach((specimen: Specimen) => {
+        specimens.forEach((specimen: TestSpecimen) => {
             myData.push({
                 key: specimen.idSpecimen,
                 idspecimen: specimen.idSpecimen,
-                init: specimen.begin,
+                begin: specimen.init,
                 end: specimen.end,
                 duration: specimen.duration,
                 operator: String(specimen.operator)
@@ -83,4 +61,4 @@ const specimenTable: FunctionComponent<Props> = ({ specimens }: Props) => {
     )
 }
 
-export default specimenTable;
+export default SpecimenTable;

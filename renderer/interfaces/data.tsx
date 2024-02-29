@@ -8,7 +8,7 @@ export interface TestData {
 };
 
 export interface DataTest {
-    idData: number;
+    // idData: number;
     temperature: number;
     pressure: number;
     key: number;

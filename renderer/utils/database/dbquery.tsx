@@ -1,7 +1,8 @@
-import { TestData, DataTest } from '../../interfaces/data';
+import type { TestSample } from '../../interfaces/query';
+import { TestData } from '../../interfaces/data';
 
-const Query = async (query: string, values: any[] = []): Promise<any> => {
-    return new Promise<any>((resolve, reject) => {
+const Query = (query: string, values: any[] = []): Promise<TestSample[] | any> => {
+    return new Promise<any | TestData>((resolve, reject) => {
         if (global && global.ipcRenderer) {
             global.ipcRenderer.send('database-request', { query: query, values: values });
             global.ipcRenderer.on('database-response', (event, response: any) => {
@@ -15,48 +16,66 @@ const Query = async (query: string, values: any[] = []): Promise<any> => {
     });
 }
 
-const ServiceSampleWithSpecimens = async () => {
-    const SampleWithSpecimensQuery: string = "CALL getSampleWithSpecimens()";
-    let ServiceTestReponse = await Query(SampleWithSpecimensQuery, []);
-    return ServiceTestReponse;
-};
-
-const ServiceTestData = async (queryData: any[]) => {
-    const TestDataQuery: string = 'CALL getTest(?)';
-    let TestDataResponse = await Query(TestDataQuery, queryData);
-    TestDataResponse = TestDataResponse[0];
-    let myTestData: TestData = {
-        mySample: {
-            idSample: TestDataResponse["idSample"],
-            standard: TestDataResponse["standard"],
-            material: TestDataResponse["material"],
-            specification: TestDataResponse["specification"],
-            diameterReal: TestDataResponse["diameterReal"],
-            diameterNominal: TestDataResponse["diameterNominal"],
-            wallThickness: TestDataResponse["wallThickness"],
-            lengthTotal: TestDataResponse["lengthTotal"],
-            lengthFree: TestDataResponse["lengthFree"],
-            targetTemperature: TestDataResponse["targetTemperature"],
-            targetPressure: TestDataResponse["targetPressure"],
-            hoopStress: TestDataResponse["hoopStress"],
-            conditionalPeriod: TestDataResponse["conditionalPeriod"]
+const QueryService = {
+    SELECT: {
+        Tests: (): Promise<any> => {
+            const SampleWithSpecimensQuery: string = "CALL getTests()";
+            return Query(SampleWithSpecimensQuery, []);
         },
-        mySpecimen: {
-            idSpecimen: TestDataResponse["idSpecimen"],
-            operator: TestDataResponse["operator"],
-            environment: TestDataResponse["enviroment"],
-            initTime: TestDataResponse["initTime"],
-            endTime: TestDataResponse["endTime"],
-            duration: TestDataResponse["duration"],
-            counts: TestDataResponse["counts"],
-            testName: TestDataResponse["testName"],
-            endCap: TestDataResponse["endCap"],
-            fail: TestDataResponse["failText"]
-        },
-        myData: TestDataResponse["myData"]
-    };
-    // console.log(myTestData.mySample, myTestData.mySpecimen, TestDataResponse["myData"]);
-    return myTestData;
-};
+        Test: (queryData: any[] | string[] | number[]): Promise<TestData> => {
+            const TestDataQuery: string = 'CALL getTest(?)';
+            const TestDataResponse = Query(TestDataQuery, queryData);
+            return new Promise<TestData>((resolve, reject) => {
+                TestDataResponse.then((TestData) => {
+                    TestData = TestData[0];
+                    let myTestData: TestData = {
+                        mySample: {
+                            idSample: TestData["idSample"],
+                            standard: TestData["standard"],
+                            material: TestData["material"],
+                            specification: TestData["specification"],
+                            diameterReal: TestData["diameterReal"],
+                            diameterNominal: TestData["diameterNominal"],
+                            wallThickness: TestData["wallThickness"],
+                            lengthTotal: TestData["lengthTotal"],
+                            lengthFree: TestData["lengthFree"],
+                            targetTemperature: TestData["targetTemperature"],
+                            targetPressure: TestData["targetPressure"],
+                            hoopStress: TestData["hoopStress"],
+                            conditionalPeriod: TestData["conditionalPeriod"]
+                        },
+                        mySpecimen: {
+                            idSpecimen: TestData["idSpecimen"],
+                            operator: TestData["operator"],
+                            environment: TestData["enviroment"],
+                            initTime: TestData["initTime"],
+                            endTime: TestData["endTime"],
+                            duration: TestData["duration"],
+                            counts: TestData["counts"],
+                            testName: TestData["testName"],
+                            endCap: TestData["endCap"],
+                            fail: TestData["failText"],
+                            remark: TestData["remark"]
+                        },
+                        myData: TestData["myData"]
+                    };
+                    resolve(myTestData);
+                }).catch((error) => { reject(error); });
+            });
+        }
+    },
+    UPDATE: {
+        Specimen: (queryData: any[] | string[] | number[]): void => {
+            const SpecimenQuery: string = "CALL updateSpecimen(?,?,?,?,?)";
+            Query(SpecimenQuery, queryData).catch((error) => { console.error("Error updating specimen:", error) });
+        }
+    },
+    DELETE: {
+        Specimen: (queryData: any[] | string[] | number[]) => {
+            const SpecimenQuery: string = "CALL deleteTest(?)";
+            Query(SpecimenQuery, queryData).catch((error) => { console.error("Error deleting specimen:", error) });
+        }
+    }
+}
 
-export { ServiceSampleWithSpecimens, ServiceTestData };
+export default QueryService;

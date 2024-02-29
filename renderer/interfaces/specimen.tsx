@@ -9,4 +9,5 @@ export interface Specimen {
     testName: string;
     endCap: string;
     fail: string;
+    remark: string;
 };

@@ -29,8 +29,7 @@ app.on('ready', async () => {
 		windowID: 'main-window',
 		windowTitle: 'Main Window',
 		windowPath: 'index',
-		windowParams: { width: 1600, height: 900, autoHideMenuBar: false, webPreferences: { nodeIntegration: false, contextIsolation: false, preload: "" } }
-	
+		windowParams: { width: 1600, height: 900, autoHideMenuBar: false, icon: "", webPreferences: { nodeIntegration: false, contextIsolation: false, preload: "" } }
 	}
 	newWindow(windowParams);
 });

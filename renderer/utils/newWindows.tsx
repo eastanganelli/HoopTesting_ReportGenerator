@@ -5,7 +5,7 @@ const openNewWindow = (windowID: string, windowTitle: string, windowPath: string
         windowID: windowID,
 		windowTitle: windowTitle,
 		windowPath: windowPath,
-		windowParams: { width: 1600, height: 900, autoHideMenuBar: true, webPreferences: { nodeIntegration: false, contextIsolation: false, preload: "" } }
+		windowParams: { width: 1600, height: 900, autoHideMenuBar: true, icon: "", webPreferences: { nodeIntegration: false, contextIsolation: false, preload: "" } }
 	
 	}
     try {
