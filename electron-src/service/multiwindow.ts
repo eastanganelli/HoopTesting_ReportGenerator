@@ -1,23 +1,25 @@
-import { BrowserWindow, ipcMain/*  , screen, Rectangle */ } from 'electron';
+import { BrowserWindow, ipcMain } from 'electron';
 //import Store from 'electron-store';
 
+let activeWindows: Array<BrowserWindow> = [];
+
 export interface winParams {
-    windowID: string;
-    windowTitle: string;
-    windowPath: string;
-    windowParams: winOptions;
+	windowID: string;
+	windowTitle: string;
+	windowPath: string;
+	windowParams: winOptions;
 }
 
 interface winOptions {
-    width: number;
-    height: number;
-    autoHideMenuBar: boolean;
+	width: number;
+	height: number;
+	autoHideMenuBar: boolean;
 	icon: string;
-    webPreferences: {
-        nodeIntegration: boolean;
-        contextIsolation: boolean;
-        preload: string;
-    };
+	webPreferences: {
+		nodeIntegration: boolean;
+		contextIsolation: boolean;
+		preload: string;
+	};
 }
 
 const iconPath: string = '../../../icons/logos_ezequiel2_03.ico';
@@ -25,85 +27,49 @@ const iconPath: string = '../../../icons/logos_ezequiel2_03.ico';
 let preloadPath: string = '';
 
 const setPreloadPath = (path: string) => {
-    preloadPath = path;
+	preloadPath = path;
 };
 
 const newWindow = (params: winParams): void => {
-/* 	const key = 'window-state';
-	const name = `window-state-${params.windowID}`;
-	const store = new Store<Rectangle>({ name });
-	const defaultSize = { width: params.windowParams.width, height: params.windowParams.height, };
-	let state = {};
-
-	console.log('Window ID', name);
-
-	const restore = () => store.get(key, defaultSize);
-
-	const getCurrentPosition = () => {
-		const position = win.getPosition();
-		const size = win.getSize();
-		return {
-			x: position[0],
-			y: position[1],
-			width: size[0],
-			height: size[1],
-		};
-	};
-
-	const windowWithinBounds = (windowState: any, bounds: any) => {
-		return (
-			windowState.x >= bounds.x &&
-			windowState.y >= bounds.y &&
-			windowState.x + windowState.width <= bounds.x + bounds.width &&
-			windowState.y + windowState.height <= bounds.y + bounds.height
-		);
-	};
-
-	const resetToDefaults = () => {
-		const bounds = screen.getPrimaryDisplay().bounds
-		return Object.assign({}, defaultSize, {
-			x: (bounds.width - defaultSize.width) / 2,
-			y: (bounds.height - defaultSize.height) / 2,
-		})
-	};
-
-	const ensureVisibleOnSomeDisplay = (windowState: any) => {
-		const visible = screen.getAllDisplays().some((display) => {
-			return windowWithinBounds(windowState, display.bounds)
-		})
-		if (!visible) {
-			// Window is partially or fully not visible now.
-			// Reset it to safe defaults.
-			return resetToDefaults()
-		}
-		return windowState;
-	};
-
-	const saveState = () => {
-		if (!win?.isMinimized() && !win?.isMaximized()) {
-			Object.assign(state, getCurrentPosition())
-		}
-		store.set(key, state)
-	};
-
-	state = ensureVisibleOnSomeDisplay(restore())*/
-    params['windowParams']['webPreferences']['preload'] = preloadPath;
+	params['windowParams']['webPreferences']['preload'] = preloadPath;
 	params['windowParams']["icon"] = iconPath;
-    const win: BrowserWindow = new BrowserWindow({
-        width: params.windowParams.width,
-        height: params.windowParams.height,
-        webPreferences: params.windowParams.webPreferences,
-    });
-	// win.setMenu(null);
-    win.setTitle(params.windowTitle);
-    win.loadURL('http://localhost:3000/' + params.windowPath);
 
-	/* win.on('close', saveState); */
+	const myActiveWindow: BrowserWindow | undefined = activeWindows.find((window) => { if(window.title === params.windowTitle) { return window; } });
+
+	if (myActiveWindow !== undefined) {
+		// console.log('Window already exists:', myActiveWindow.id);
+		myActiveWindow.focus();
+		return;
+	}
+	const win: BrowserWindow = new BrowserWindow({
+		width: params.windowParams.width,
+		height: params.windowParams.height,
+		webPreferences: params.windowParams.webPreferences,
+	});
+	// win.setMenu(null);
+
+	// console.log('Creating new window:', win.id);
+	win.maximize();
+	win.setTitle(params.windowTitle);
+	win.loadURL('http://localhost:3000/' + params.windowPath);
+	activeWindows.push(win);
+
+	win.once('ready-to-show', () => { win.show(); });
+
+	win.on('close', () => {
+		// console.log('Window closed:', win.id);
+		if(activeWindows.length > 1 && win.id !== 1) {
+			activeWindows.find((window, index) => { if (window.id === win.id) { activeWindows.splice(index, 1); } });
+			win.destroy();
+		} else if(win.id === 1) {
+			activeWindows.reverse().forEach((window, index) => { if (index > 0) { window.close(); } });
+		}
+	});
 };
 
 ipcMain.on('new-window', async (event, params: winParams) => {
 	try {
-        newWindow(params);
+		newWindow(params);
 	} catch (error: any) {
 		event.reply('new-window-error', error.message);
 	}

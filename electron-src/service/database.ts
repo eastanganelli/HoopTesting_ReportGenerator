@@ -27,7 +27,7 @@ const connectDB = async () : Promise<Pool> => {
 
 ipcMain.on('database-request', async (event, requestData: DatabaseRequest) => {
 	try {
-		console.log(requestData)
+		// console.log(requestData)
 		const myConnection = await connectDB();
 		const [rows] = await myConnection?.execute(requestData.query, requestData.values);
 		event.reply('database-response', rows);

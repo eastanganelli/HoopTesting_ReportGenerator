@@ -1,11 +1,11 @@
-import type { TestSample } from '../../interfaces/query';
-import { TestData } from '../../interfaces/data';
+import type { QuerySampleTest, TestData, TestDataValues } from '../../interfaces/query';
 
-const Query = (query: string, values: any[] = []): Promise<TestSample[] | any> => {
-    return new Promise<any | TestData>((resolve, reject) => {
+const Query = <T extends unknown>(query: string, values: any[] = []): Promise<T> => {
+    return new Promise<T>((resolve, reject) => {
         if (global && global.ipcRenderer) {
             global.ipcRenderer.send('database-request', { query: query, values: values });
-            global.ipcRenderer.on('database-response', (event, response: any) => {
+            global.ipcRenderer.on('database-response', (event, response: T) => {
+                // console.log("Database response:", response)
                 resolve(response[0]);
             });
             global.ipcRenderer.on('database-error', (event, error) => {
@@ -18,50 +18,19 @@ const Query = (query: string, values: any[] = []): Promise<TestSample[] | any> =
 
 const QueryService = {
     SELECT: {
-        Tests: (): Promise<any> => {
-            const SampleWithSpecimensQuery: string = "CALL getTests()";
-            return Query(SampleWithSpecimensQuery, []);
-        },
-        Test: (queryData: any[] | string[] | number[]): Promise<TestData> => {
-            const TestDataQuery: string = 'CALL getTest(?)';
-            const TestDataResponse = Query(TestDataQuery, queryData);
-            return new Promise<TestData>((resolve, reject) => {
-                TestDataResponse.then((TestData) => {
-                    TestData = TestData[0];
-                    let myTestData: TestData = {
-                        mySample: {
-                            idSample: TestData["idSample"],
-                            standard: TestData["standard"],
-                            material: TestData["material"],
-                            specification: TestData["specification"],
-                            diameterReal: TestData["diameterReal"],
-                            diameterNominal: TestData["diameterNominal"],
-                            wallThickness: TestData["wallThickness"],
-                            lengthTotal: TestData["lengthTotal"],
-                            lengthFree: TestData["lengthFree"],
-                            targetTemperature: TestData["targetTemperature"],
-                            targetPressure: TestData["targetPressure"],
-                            hoopStress: TestData["hoopStress"],
-                            conditionalPeriod: TestData["conditionalPeriod"]
-                        },
-                        mySpecimen: {
-                            idSpecimen: TestData["idSpecimen"],
-                            operator: TestData["operator"],
-                            environment: TestData["enviroment"],
-                            initTime: TestData["initTime"],
-                            endTime: TestData["endTime"],
-                            duration: TestData["duration"],
-                            counts: TestData["counts"],
-                            testName: TestData["testName"],
-                            endCap: TestData["endCap"],
-                            fail: TestData["failText"],
-                            remark: TestData["remark"]
-                        },
-                        myData: TestData["myData"]
-                    };
-                    resolve(myTestData);
-                }).catch((error) => { reject(error); });
-            });
+        TEST: {
+            Tests: (): Promise<QuerySampleTest[]> => {
+                const SampleWithSpecimensQuery: string = "CALL selectTests()";
+                return Query<QuerySampleTest[]>(SampleWithSpecimensQuery, []);
+            },
+            Test: (queryData: any[] | string[] | number[]): Promise<TestData> => {
+                const TestDataQuery: string = 'CALL selectTest(?)';
+                return Query<TestData>(TestDataQuery, queryData);
+            },
+            Data: (queryData: any[] | string[] | number[]): Promise<TestDataValues[]> => {
+                const TestDataQuery: string = 'CALL selectTestData(?)';
+                return Query<TestDataValues[]>(TestDataQuery, queryData);
+            }
         }
     },
     UPDATE: {

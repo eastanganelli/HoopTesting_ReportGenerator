@@ -1,7 +1,15 @@
-import React from 'react';
+import { FunctionComponent } from 'react';
 import { Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer';
 
-const DocumentRender = () => {
+import type { TestSampleValue, TestSpecimenValue, TestDataValues } from '../interfaces/query';
+
+interface Props {
+    DataSample: TestSampleValue;
+    DataSpecimen: TestSpecimenValue;
+    DataPlot: TestDataValues[];
+};
+
+const DocumentRender: FunctionComponent<Props> = ({ DataSample, DataSpecimen, DataPlot }: Props) => {
     const styles = StyleSheet.create({
         page: {
             height: '100vh',

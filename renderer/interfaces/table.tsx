@@ -2,7 +2,7 @@ import { FunctionComponent, Key } from "react";
 
 interface DataType {
     key: Key;
-    idsample: number;
+    idSample: number;
     standard: string;
     material: string;
     description: FunctionComponent<{ specimens: ExpandedDataType[] }> | any;
@@ -10,7 +10,7 @@ interface DataType {
 
 interface ExpandedDataType {
     key: Key;
-    idspecimen: number;
+    idSpecimen: number;
     begin: string;
     end: string;
     duration: string;

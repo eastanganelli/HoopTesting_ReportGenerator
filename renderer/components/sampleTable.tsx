@@ -7,8 +7,8 @@ import type { TableColumnsType } from 'antd';
 import QueryService from '../utils/database/dbquery';
 const SpecimenRow = dynamic(() => import('./specimenRow'));
 
-import { DataType } from '../interfaces/tableData';
-import type { TestSample } from '../interfaces/query';
+import type { DataType } from '../interfaces/table';
+import type { QuerySampleTest } from '../interfaces/query';
 
 const SampleTable: FunctionComponent = () => {
     const [sampleList, setSampleList] = useState<DataType[]>([]);
@@ -20,13 +20,13 @@ const SampleTable: FunctionComponent = () => {
 
     useEffect(() => {
         const fetchData = () => {
-            let myResponse: any = QueryService.SELECT.Tests(),
+            let myResponse: any = QueryService.SELECT.TEST.Tests(),
                 myData: DataType[] = [];
-            myResponse.then((Tests: TestSample[]) => {
-                Tests.forEach((Test: TestSample) => {
+            myResponse.then((Tests: QuerySampleTest[]) => {
+                Tests.forEach((Test: QuerySampleTest) => {
                     myData.push({
                         key: Number(Test["idSample"]),
-                        idsample: Number(Test["idSample"]),
+                        idSample: Number(Test["idSample"]),
                         standard: Test["standard"],
                         material: Test["material"],
                         description: <SpecimenRow specimens={Test["mySpecimens"]} />
