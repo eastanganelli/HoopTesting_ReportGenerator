@@ -1,19 +1,16 @@
 import { CSSProperties, useState, useEffect, FunctionComponent } from 'react';
 import { useRouter } from 'next/router';
-import { Layout, Typography, Col, Row, FloatButton, Modal } from 'antd';
-import { FilePdfOutlined, LineChartOutlined } from '@ant-design/icons';
+import { Layout, Typography, Col, Row } from 'antd';
 
 import QueryService from '../utils/database/dbquery';
-import PlotTestResult from '../components/plot';
+import PlotTestResult from './plot';
 
 import type { TestData, TestDataValues } from '../interfaces/query';
 
 const { Content } = Layout;
 const { Paragraph } = Typography;
-const { info } = Modal;
 
 const contentStyle: CSSProperties = {
-    //backgroundColor: 'white',
     margin: 'auto',
     color: 'black',
     width: "80vw",
@@ -22,19 +19,18 @@ const textStyle: CSSProperties = {
     display: 'flex',
     textAlign: 'left',
     alignItems: 'center',
-    fontFamily: 'Garamond, SimSun',
-    //fontSize: "1.2vmax",
+    fontFamily: 'Garamond',
 };
 const paragraphStyle: CSSProperties = {
     borderBottom: "2px solid black",
     display: 'flex',
     textAlign: 'left',
-    //width: "80%",
-    fontFamily: 'Garamond, SimSun',
-    //fontSize: "1.1vmax",
+    fontFamily: 'Garamond',
 };
 
-const testSample: FunctionComponent = () => {
+interface Props { idSpecimen: number }
+
+const testSample: FunctionComponent<Props> = ({ idSpecimen }: Props) => {
     const { query, isReady } = useRouter();
 
     const [myTest, setMyTest] = useState<TestData>(null);
@@ -47,11 +43,11 @@ const testSample: FunctionComponent = () => {
         let auxData: TestData = myTest;
         auxData[parent][child] = data;
         setMyTest(auxData);
-        QueryService.UPDATE.Specimen([myTest['mySpecimen']['idSpecimen'], myTest['mySpecimen']['testName'], myTest['mySpecimen']['operator'], myTest['mySpecimen']['fail'], myTest['mySpecimen']['remark']]);
+        QueryService.UPDATE.Specimen([idSpecimen, myTest['mySpecimen']['testName'], myTest['mySpecimen']['operator'], myTest['mySpecimen']['fail'], myTest['mySpecimen']['remark']]);
     };
 
     const openModalPlot = () => {
-        QueryService.SELECT.TEST.Data([myTest['mySpecimen']['idSpecimen']]).then((data: TestDataValues[]) => {
+        /* QueryService.SELECT.TEST.Data([myTest['mySpecimen']['idSpecimen']]).then((data: TestDataValues[]) => {
             info({
                 icon: <LineChartOutlined />,
                 content: <PlotTestResult DataPlot={data} />,
@@ -65,38 +61,18 @@ const testSample: FunctionComponent = () => {
                     console.log('OK');
                 },
             });
-        });
+        }); */
     };
 
     useEffect((): void => {
-        const id_specimen: number = Number(query['idSpecimen']) as number;
-        if (isReady && id_specimen > 0) {
-            QueryService.SELECT.TEST.Test([id_specimen]).then((data: TestData) => {
+            QueryService.SELECT.TEST.Test([idSpecimen]).then((data: TestData) => {
                 setMyTest(data[0]);
             });
-        }
     }, [isReady]);
 
     return (
         <Layout style={{ padding: '12px', minHeight: "98vh", overflow: "auto" }}>
             <Content style={{ padding: 24, background: 'white', borderRadius: 25, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: "1vw" }}>
-                <FloatButton
-                    icon={<LineChartOutlined />}
-                    shape="square"
-                    style={{ right: 80 }}
-                    onClick={() => openModalPlot()}
-                ></FloatButton>
-                <FloatButton
-                    icon={<FilePdfOutlined />}
-                    shape="square"
-                    style={{ right: 32 }}
-                /* onClick={
-                    () => {
-                        handlePrint(null, () => contentToPrint.current);
-                    }
-                } */
-                >
-                </FloatButton>
                 <Content style={contentStyle}>
                     {/* Datos iniciales del Informe */}
                     <Content>

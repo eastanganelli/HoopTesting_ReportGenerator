@@ -7,8 +7,8 @@ interface QuerySampleTest {
 
 interface QuerySpecimenTest {
     idSpecimen: number;
-    begin: string;
-    end: string;
+    beginTime: string;
+    endTime: string;
     duration: string;
     operator: string;
 };

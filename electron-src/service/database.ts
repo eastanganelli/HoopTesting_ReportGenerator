@@ -16,24 +16,32 @@ export interface DatabaseRequest {
 
 let globalPool: Pool | undefined = undefined;
 
-const connectDB = async () : Promise<Pool> => {
-    if (typeof globalPool !== 'undefined') {
-        return globalPool;
-    }
+const myDB = {
+	connect: async(): Promise<Pool> => {
+		if (typeof globalPool !== 'undefined') {
+			return globalPool;
+		}
+	
+		globalPool = await createPool('mysql://' + DBCONFIG.USER + ':' + DBCONFIG.PASSWORD + '@' + DBCONFIG.HOST + ':' + DBCONFIG.PORT + '/' + DBCONFIG.DATABASE);
+		return globalPool;	
+	},
+	disconnect: () => {
 
-    globalPool = await createPool('mysql://' + DBCONFIG.USER + ':' + DBCONFIG.PASSWORD + '@' + DBCONFIG.HOST + ':' + DBCONFIG.PORT + '/' + DBCONFIG.DATABASE);
-    return globalPool;
+	},
+	get: (): Pool|undefined => {
+		return globalPool;
+	}
 }
 
 ipcMain.on('database-request', async (event, requestData: DatabaseRequest) => {
 	try {
-		// console.log(requestData)
-		const myConnection = await connectDB();
-		const [rows] = await myConnection?.execute(requestData.query, requestData.values);
-		event.reply('database-response', rows);
+		const myConnection = myDB.get();
+		myConnection?.execute(requestData.query, requestData.values).then(([rows]) => {
+			event.reply('database-response', rows);
+		});
 	} catch (error: any) {
 		event.reply('database-error', error.message);
 	}
 });
 
-export default connectDB;
+export default myDB;

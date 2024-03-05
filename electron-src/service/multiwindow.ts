@@ -22,7 +22,7 @@ interface winOptions {
 	};
 }
 
-const iconPath: string = '../../../icons/logos_ezequiel2_03.ico';
+const iconPath: string = '../../../logos_ezequiel2_03.ico';
 
 let preloadPath: string = '';
 

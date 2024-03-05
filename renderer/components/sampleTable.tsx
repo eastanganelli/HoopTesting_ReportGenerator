@@ -13,7 +13,7 @@ import type { QuerySampleTest } from '../interfaces/query';
 const SampleTable: FunctionComponent = () => {
     const [sampleList, setSampleList] = useState<DataType[]>([]);
     const columns: TableColumnsType<DataType> = [
-        { title: 'ID Sample', dataIndex: 'idsample', key: 'idsample' },
+        { title: 'ID Sample', dataIndex: 'idSample', key: 'idSample' },
         { title: 'Standard', dataIndex: 'standard', key: 'standard' },
         { title: 'Material', dataIndex: 'material', key: 'material' }
     ];
@@ -29,7 +29,7 @@ const SampleTable: FunctionComponent = () => {
                         idSample: Number(Test["idSample"]),
                         standard: Test["standard"],
                         material: Test["material"],
-                        description: <SpecimenRow specimens={Test["mySpecimens"]} />
+                        description: <SpecimenRow specimens={Test["mySpecimens"].reverse()} />
                     });
 
                 });

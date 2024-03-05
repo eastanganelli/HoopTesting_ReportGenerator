@@ -8,7 +8,7 @@ import { parse } from 'url';
 import next from 'next';
 
 import { newWindow, setPreloadPath, winParams } from './service/multiwindow';
-import connectDB from './service/database';
+import myDB from './service/database';
 
 setPreloadPath(join(__dirname, 'preload.js'));
 const nextApp = next({ dev: isDev, dir: app.getAppPath() + '/renderer' });
@@ -17,7 +17,7 @@ const handle = nextApp.getRequestHandler();
 // Prepare the renderer once the app is ready
 app.on('ready', async () => {
 	await nextApp.prepare();
-	await connectDB();
+	await myDB.connect();
 
 	createServer((req: any, res: any) => {
 		const parsedUrl = parse(req.url, true);
@@ -35,7 +35,10 @@ app.on('ready', async () => {
 });
 
 // Quit the app once all windows are closed
-app.on('window-all-closed', app.quit);
+app.on('window-all-closed', () => {
+	myDB.disconnect();
+	app.quit
+});
 
 // listen the channel `message` and resend the received message to the renderer process
 ipcMain.on('message', (event: IpcMainEvent, message: any) => {

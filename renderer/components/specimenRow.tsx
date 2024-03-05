@@ -1,5 +1,5 @@
 import { useState, useEffect, FunctionComponent } from 'react';
-import { EyeOutlined, DeleteOutlined } from '@ant-design/icons';
+import { EyeOutlined, FilePdfOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Table, Space, Button } from 'antd';
 
 import { openNewWindow } from '../utils/newWindows';
@@ -14,7 +14,11 @@ interface Props { specimens: QuerySpecimenTest[]; };
 const SpecimenTable: FunctionComponent<Props> = ({ specimens }: Props) => {
     const [specimenData, setSpecimenData] = useState<ExpandedDataType[]>([]);
 
-    const viewTest = (e: any, Specimen: any) => { openNewWindow(`test_${Specimen['idSpecimen']}`, `Test Nro: ${Specimen['idSpecimen']}`, `/testSample?idSpecimen=${Specimen['idSpecimen']}`); };
+    const viewTest = (e: any, Specimen: any) => {
+
+    };
+
+    const printTest = (e: any, Specimen: any) => { openNewWindow(`test_${Specimen['idSpecimen']}`, `Test Nro: ${Specimen['idSpecimen']}`, `/printer?idSpecimen=${Specimen['idSpecimen']}`); };
 
     const deleteTest = (e: any, Specimen: any) => { QueryService.DELETE.Specimen([Specimen['idSpecimen']]); };
 
@@ -31,6 +35,7 @@ const SpecimenTable: FunctionComponent<Props> = ({ specimens }: Props) => {
             render: (text, record, index) => (
                 <Space size="middle">
                     <Button onClick={(event) => viewTest(event, record)} icon={<EyeOutlined />} type="primary">Ver</Button>
+                    <Button onClick={(event) => printTest(event, record)} icon={<FilePdfOutlined />} type="primary">Imprimir</Button>
                     <Button onClick={(event) => deleteTest(event, record)} icon={<DeleteOutlined />} danger></Button>
                 </Space>
             )
@@ -44,8 +49,8 @@ const SpecimenTable: FunctionComponent<Props> = ({ specimens }: Props) => {
                 myData.push({
                     key: specimen['idSpecimen'],
                     idSpecimen: specimen['idSpecimen'],
-                    begin: specimen['begin'],
-                    end: specimen['end'],
+                    begin: specimen['beginTime'],
+                    end: specimen['endTime'],
                     duration: specimen['duration'],
                     operator: specimen['operator']
                 });
