@@ -1,26 +1,24 @@
+import dynamic from 'next/dynamic';
 import { useState } from 'react';
 import { Layout, Drawer, FloatButton, Space, Button } from 'antd';
 import { SettingOutlined } from '@ant-design/icons';
-import dynamic from 'next/dynamic';
-
-const SampleTable = dynamic(() => import('../components/sampleTable'));
+const SampleTable = dynamic(() => import('../components/sampleTable'), { ssr: true });
 
 const { Content } = Layout;
 
 const IndexPage = () => {
 	const [open, setOpen] = useState<boolean>(false);
+
 	return (
 		<Layout style={{ background: "lightgray", minHeight: "98vh", overflow: "auto" }}>
 			<FloatButton
 				tooltip="Abrir configuración"
-				icon={<SettingOutlined/>}
+				icon={<SettingOutlined />}
 				onClick={() => {
 					setOpen(true);
 					console.log("Configuration zone opening");
 				}}
-			>
-
-			</FloatButton>
+			/>
 			<Layout>
 				<Content style={{ padding: '12px' }}>
 					<div style={{ background: "white", padding: 24, borderRadius: 25 }} >
@@ -41,7 +39,7 @@ const IndexPage = () => {
 					</Space>
 				}
 			/>
-		</Layout >
+		</Layout>
 	);
 }
 

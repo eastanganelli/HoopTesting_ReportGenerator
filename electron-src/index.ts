@@ -1,6 +1,6 @@
 import { join } from 'path';
 // Packages
-import { app, ipcMain, IpcMainEvent } from 'electron';
+import { app } from 'electron';
 import isDev from 'electron-is-dev';
 
 import { createServer } from 'http';
@@ -36,12 +36,13 @@ app.on('ready', async () => {
 
 // Quit the app once all windows are closed
 app.on('window-all-closed', () => {
+	console.log('Closing app');
 	myDB.disconnect();
-	app.quit
+	app.quit();
 });
 
 // listen the channel `message` and resend the received message to the renderer process
-ipcMain.on('message', (event: IpcMainEvent, message: any) => {
+/* ipcMain.on('message', (event: IpcMainEvent, message: any) => {
 	console.log(message)
 	setTimeout(() => event.sender.send('message', 'hi from electron'), 500);
-});
+}); */

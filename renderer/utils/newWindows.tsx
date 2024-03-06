@@ -17,4 +17,4 @@ const openNewWindow = (windowID: string, windowTitle: string, windowPath: string
     }
 }
 
-export { openNewWindow };
+export default openNewWindow;

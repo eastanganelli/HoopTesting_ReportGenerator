@@ -1,6 +1,7 @@
 {
 	"name": "report-generator",
 	"version": "1.0.0",
+	"icon": "./electron-src/assets/logo.ico",
 	"author": {
 		"name": "Ezequiel Augusto Stanganelli",
 		"email": "ezequielstanganelli@gmail.com"
@@ -38,9 +39,6 @@
 		"electron-builder": "^22.9.1",
 		"rimraf": "^3.0.0",
 		"typescript": "^4.5.4"
-	},
-	"win": {
-		"icon": "./electron-src/assets/logo.ico"
 	},
 	"build": {
 		"asar": true,

@@ -13,20 +13,36 @@ import type { TestData, TestDataValues } from '../interfaces/query';
 
 const { Content } = Layout;
 
-const styles = StyleSheet.create({
-	page: {
-		height: '100vh',
-		// backgroundColor: '#E4E4E4'
+const styles = {
+	PDFStyle: StyleSheet.create({
+		page: {
+			height: '100vh',
+			// backgroundColor: '#E4E4E4'
+		},
+		section: {
+			margin: '25mm 19.1mm 25mm 19.1mm',
+			// backgroundColor: 'white'
+		},
+	}),
+	Content: StyleSheet.create({
+		table: { display: 'flex', flexDirection: 'column', fontSize: '10px' },
+		row: { flexDirection: 'row' },
+		cell: { flex: 1, justifyContent: 'center', textAlign: 'left', padding: 4, whiteSpace: 'nowrap'}
+	}),
+};
+
+const cellPropiertes = {
+	length: {
+		small: { maxWidth: '35mm' },
+		medium: { maxWidth: '50.9mm' },
+		large: { maxWidth: '80mm' },
+		half: { maxWidth: '85.9mm' },
+		third: { maxWidth: '136.8mm' },
+		full: { maxWidth: '171.8mm' },
 	},
-	section: {
-		margin: '25mm 19.1mm 25mm 19.1mm',
-		// backgroundColor: 'white'
-	},
-	table: { display: 'flex', flexDirection: 'column', fontSize: '10px' },
-	row: { flexDirection: 'row' },
-	cell: { flex: 1, justifyContent: 'center', textAlign: 'left', width: '30mm', padding: 4 },
-	cellBorder: { flex: 1, justifyContent: 'center', textAlign: 'left', width: '55.9mm', padding: 4, borderBottom: '1 solid black' },
-});
+	child: { borderBottom: '1 solid black' },
+	fullBorder: { border: '1 solid black' }
+};
 
 const PrinterPage: FunctionComponent = () => {
 	const { query, isReady } = useRouter();
@@ -43,41 +59,98 @@ const PrinterPage: FunctionComponent = () => {
 				author='STEL S.A.'
 				creator={`${myTest?.mySpecimen?.operator}`}
 			>
-				<Page size='A4' style={styles.page}>
-					<View style={styles.section}>
+				<Page size='A4' style={styles.PDFStyle.page}>
+					{/* Parte superior del informe */}
+					<View style={styles.PDFStyle.section}>
 						<Text style={{ margin: '0 auto 0 auto', fontSize: '30px' }}>STEL S.A.</Text>
-						<Text style={{ margin: '0 auto 0 auto', fontSize: '24px', paddingTop: '10px', paddingBottom: '20px' }}>Reporte de la Prueba</Text>
-						<View style={styles.table}>
-							<View style={styles.row}>
-								<Text style={styles.cell}>ID Prueba</Text>
-								<Text style={styles.cellBorder}>{myTest?.mySpecimen?.idSpecimen}</Text>
-								<Text style={styles.cell}>Nombre de la prueba</Text>
-								<Text style={styles.cellBorder}>{myTest?.mySpecimen?.testName}</Text>
+						<Text style={{ margin: '0 auto 0 auto', fontSize: '24px', paddingTop: '10px', paddingBottom: '40px' }}>Reporte de la Prueba</Text>
+						<View style={styles.Content.table}>
+							<View style={styles.Content.row}>
+								<Text style={[styles.Content.cell, cellPropiertes.length.small]}>{`ID Prueba`}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.medium, cellPropiertes.child]}>{myTest?.mySpecimen?.idSpecimen}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.small]}>{`Nombre de la\nPrueba`}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.medium, cellPropiertes.child]}>{myTest?.mySpecimen?.testName}</Text>
 							</View>
-							<View style={styles.row}>
-								<Text style={styles.cell}>{`Cantidad de\nespecimenes`}</Text>
-								<Text style={styles.cellBorder}>{myTest?.mySpecimen?.counts < 2 ? 'Muestra' : 'Muestras'} {myTest?.mySpecimen?.counts}</Text>
-								<Text style={styles.cell}>Estándar</Text>
-								<Text style={styles.cellBorder}>{myTest?.mySample?.standard}</Text>
+							<View style={styles.Content.row}>
+								<Text style={[styles.Content.cell, cellPropiertes.length.small]}>{`Cantidad de\nEspecimenes`}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.medium, cellPropiertes.child]}>{myTest?.mySpecimen?.counts < 2 ? 'Muestra' : 'Muestras'} {myTest?.mySpecimen?.counts}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.small]}>{`Estándar`}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.medium, cellPropiertes.child]}>{myTest?.mySample?.standard}</Text>
 							</View>
-							<View style={styles.row}>
-								<Text style={styles.cell}>Entorno</Text>
-								<Text style={styles.cellBorder}>{myTest?.mySpecimen?.enviroment}</Text>
-								<Text style={styles.cell}>Tapa de Extremo</Text>
-								<Text style={styles.cellBorder}>{myTest?.mySpecimen?.endCap}</Text>
+							<View style={styles.Content.row}>
+								<Text style={[styles.Content.cell, cellPropiertes.length.small]}>{`Entorno`}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.medium, cellPropiertes.child]}>{myTest?.mySpecimen?.enviroment}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.small]}>{`Tapa de Extremo`}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.medium, cellPropiertes.child]}>{myTest?.mySpecimen?.endCap}</Text>
 							</View>
-							<View style={styles.row}>
-								<Text style={styles.cell}>Operador</Text>
-								<Text style={styles.cellBorder}>{myTest?.mySpecimen?.operator}</Text>
-								<Text style={styles.cell}></Text>
-								<Text style={styles.cell}></Text>
+							<View style={styles.Content.row}>
+								<Text style={[styles.Content.cell, cellPropiertes.length.small]}>{`Operador`}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.medium, cellPropiertes.child]}>{myTest?.mySpecimen?.operator}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.small]}></Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.medium]}></Text>
 							</View>
 						</View>
 
+						{/* Parte superior del informe */}
+						<View style={[styles.Content.table, { paddingTop: '40px' }]}>
+							<View style={styles.Content.row}>
+								<Text style={[styles.Content.cell, cellPropiertes.length.full, cellPropiertes.fullBorder]}>{`Prueba Nro: ${myTest?.mySpecimen?.counts}`}</Text>
+							</View>
+							<View style={styles.Content.row}>
+								<Text style={[styles.Content.cell, cellPropiertes.length.small, cellPropiertes.fullBorder]}>{`Material`}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.medium, cellPropiertes.fullBorder]}>{myTest?.mySample?.material}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.small, cellPropiertes.fullBorder]}>{`Especificación`}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.medium, cellPropiertes.fullBorder]}>{myTest?.mySample?.specification}</Text>
+							</View>
+							<View style={styles.Content.row}>
+								<Text style={[styles.Content.cell, cellPropiertes.length.small, cellPropiertes.fullBorder]}>{`Diámetro Real [mm]`}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.medium, cellPropiertes.fullBorder]}>{myTest?.mySample?.diameterReal}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.small, cellPropiertes.fullBorder]}>{`Diámetro Normal [mm]`}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.medium, cellPropiertes.fullBorder]}>{myTest?.mySample?.diameterNominal}</Text>
+							</View>
+							<View style={styles.Content.row}>
+								<Text style={[styles.Content.cell, cellPropiertes.length.small, cellPropiertes.fullBorder]}>{`Longitud Libre [mm]`}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.medium, cellPropiertes.fullBorder]}>{myTest?.mySample?.lengthFree}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.small, cellPropiertes.fullBorder]}>{`Longitud Total [mm]`}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.medium, cellPropiertes.fullBorder]}>{myTest?.mySample?.lengthTotal}</Text>
+							</View>
+							<View style={styles.Content.row}>
+								<Text style={[styles.Content.cell, cellPropiertes.length.small, cellPropiertes.fullBorder]}>{`Tiempo de\nPrueba`}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.medium, cellPropiertes.fullBorder]}>{myTest?.mySpecimen?.duration}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.small, cellPropiertes.fullBorder]}>{`Temperatura [C]`}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.medium, cellPropiertes.fullBorder]}>{myTest?.mySample?.targetTemperature}</Text>
+							</View>
+							<View style={styles.Content.row}>
+								<Text style={[styles.Content.cell, cellPropiertes.length.small, cellPropiertes.fullBorder]}>{`Grosor Pared [mm]`}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.medium, cellPropiertes.fullBorder]}>{myTest?.mySample?.wallThickness}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.small, cellPropiertes.fullBorder]}>{`Período de\nCondicionamiento`}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.medium, cellPropiertes.fullBorder]}>{myTest?.mySample?.conditionalPeriod}</Text>
+							</View>
+							<View style={styles.Content.row}>
+								<Text style={[styles.Content.cell, cellPropiertes.length.small, cellPropiertes.fullBorder]}>{`Hoop Stress [Bar]`}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.medium, cellPropiertes.fullBorder]}>{``}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.small, cellPropiertes.fullBorder]}>{`Presión [Bar]`}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.medium, cellPropiertes.fullBorder]}>{myTest?.mySample?.targetPressure}</Text>
+							</View>
+							<View style={styles.Content.row}>
+								<Text style={[styles.Content.cell, cellPropiertes.length.small, cellPropiertes.fullBorder]}>{`Fecha de\nInicio`}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.medium, cellPropiertes.fullBorder]}>{myTest?.mySpecimen?.beginTime}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.small, cellPropiertes.fullBorder]}>{`Fecha de\nFinalización`}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.medium, cellPropiertes.fullBorder]}>{myTest?.mySpecimen?.endTime}</Text>
+							</View>
+							<View style={styles.Content.row}>
+								<Text style={[styles.Content.cell, cellPropiertes.length.small, cellPropiertes.fullBorder]}>{`Tipo de Falla`}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.third, cellPropiertes.fullBorder]}>{myTest?.mySpecimen?.fail}</Text>
+							</View>
+							<View style={styles.Content.row}>
+								<Text style={[styles.Content.cell, cellPropiertes.length.small, cellPropiertes.fullBorder]}>{`Observaciones`}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.third, cellPropiertes.fullBorder]}>{myTest?.mySpecimen?.remark}</Text>
+							</View>
+						</View>
 					</View>
 				</Page>
-				<Page size='A4' style={styles.page}>
-					<View style={styles.section}>
+				<Page size='A4' style={styles.PDFStyle.page}>
+					<View style={styles.PDFStyle.section}>
 						<Text style={{ margin: '0 auto 0 auto', fontSize: '13px' }}><Text style={{ color: "#8884d8" }}>Presión</Text><Text>    </Text><Text style={{ color: "#82ca9d" }}>Temperatura</Text></Text>
 						<ReactPDFChart>
 							<LineChart data={myData} height={350} width={525} margin={{ top: 15, right: 0, bottom: 0, left: -40 }}>

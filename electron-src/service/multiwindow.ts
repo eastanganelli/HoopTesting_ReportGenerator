@@ -60,7 +60,7 @@ const newWindow = (params: winParams): void => {
 		// console.log('Window closed:', win.id);
 		if(activeWindows.length > 1 && win.id !== 1) {
 			activeWindows.find((window, index) => { if (window.id === win.id) { activeWindows.splice(index, 1); } });
-			win.destroy();
+			win.close();
 		} else if(win.id === 1) {
 			activeWindows.reverse().forEach((window, index) => { if (index > 0) { window.close(); } });
 		}
@@ -72,6 +72,17 @@ ipcMain.on('new-window', async (event, params: winParams) => {
 		newWindow(params);
 	} catch (error: any) {
 		event.reply('new-window-error', error.message);
+	}
+});
+
+ipcMain.on('window-reload', async (event, windowTitle: string) => {
+	try {
+		const myActiveWindow: BrowserWindow | undefined = activeWindows.find((window) => { if(window.title === windowTitle) { return window; } });
+		if (myActiveWindow !== undefined) {
+			myActiveWindow.reload();
+		}
+	} catch (error: any) {
+		event.reply('window-reload-error', error.message);
 	}
 });
 
