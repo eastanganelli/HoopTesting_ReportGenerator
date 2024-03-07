@@ -1,6 +1,6 @@
 import { useState, useEffect, FunctionComponent } from 'react';
 import { useRouter } from 'next/router';
-import { Layout, Typography, Col, Row, FloatButton } from 'antd';
+import { Layout, Typography, FloatButton } from 'antd';
 
 import QueryService from '../utils/database/dbquery';
 
