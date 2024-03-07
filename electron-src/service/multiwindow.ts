@@ -75,15 +75,4 @@ ipcMain.on('new-window', async (event, params: winParams) => {
 	}
 });
 
-ipcMain.on('window-reload', async (event, windowTitle: string) => {
-	try {
-		const myActiveWindow: BrowserWindow | undefined = activeWindows.find((window) => { if(window.title === windowTitle) { return window; } });
-		if (myActiveWindow !== undefined) {
-			myActiveWindow.reload();
-		}
-	} catch (error: any) {
-		event.reply('window-reload-error', error.message);
-	}
-});
-
 export { setPreloadPath, newWindow };

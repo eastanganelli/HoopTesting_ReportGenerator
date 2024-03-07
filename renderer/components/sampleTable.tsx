@@ -9,14 +9,15 @@ const SpecimenRow = dynamic(() => import('./specimenRow'));
 import type { DataType } from '../interfaces/table';
 import type { QuerySampleTest } from '../interfaces/query';
 
-const SampleTable: FunctionComponent = () => {
-    const [sampleList, setSampleList] = useState<DataType[]>([]);
-    const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
+interface Props { selectedRowKeys: number[]; };
 
-    const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
-        if (newSelectedRowKeys.length > 0 && newSelectedRowKeys.length < 5) {
-            console.log('selected row keys: ', newSelectedRowKeys);
-            setSelectedRowKeys(newSelectedRowKeys);
+const SampleTable: FunctionComponent<Props> = ({ selectedRowKeys }: Props) => {
+    const [sampleList, setSampleList] = useState<DataType[]>([]);
+    const onSelectChange = (idTest: number) => {
+        if (selectedRowKeys.includes(idTest)) {
+            selectedRowKeys.splice(selectedRowKeys.indexOf(idTest), 1);
+        } else if (!selectedRowKeys.includes(idTest) && selectedRowKeys.length < 5) {
+            selectedRowKeys.push(idTest);
         }
     };
 
@@ -25,19 +26,11 @@ const SampleTable: FunctionComponent = () => {
         onChange: onSelectChange,
     };
 
-    const hasSelected = selectedRowKeys.length > 0;
-
     const columns: TableColumnsType<DataType> = [
         { title: 'ID Sample', dataIndex: 'idSample', key: 'idSample' },
         { title: 'Standard', dataIndex: 'standard', key: 'standard' },
         { title: 'Material', dataIndex: 'material', key: 'material' }
     ];
-
-    const changeState = () => {
-        try {
-            if (global && global.ipcRenderer) { global.ipcRenderer.send('window-reload', `Main Window`); }
-        } catch (e) { console.error(e); }
-    };
 
     useEffect(() => {
         const fetchData = () => {
@@ -49,7 +42,7 @@ const SampleTable: FunctionComponent = () => {
                         idSample: Number(Test["idSample"]),
                         standard: Test["standard"],
                         material: Test["material"],
-                        description: <SpecimenRow specimens={Test["mySpecimens"].reverse()} rowSelection={rowSelection} changesOnSpecimen={changeState} />
+                        description: <SpecimenRow specimens={Test["mySpecimens"].reverse()} rowSelection={rowSelection} />
                     });
                 });
                 setSampleList(myData);
@@ -59,16 +52,12 @@ const SampleTable: FunctionComponent = () => {
     }, []);
 
     return (
-        <div>
-            <span style={{ marginLeft: 8 }}>
-                {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
-            </span>
-            <Table
-                columns={columns}
-                expandable={{ expandedRowRender: record => (<div>{record.description}</div>) }}
-                dataSource={sampleList}
-            />
-        </div>
+        <Table
+            columns={columns}
+            expandable={{ expandedRowRender: record => (<div>{record.description}</div>) }}
+            dataSource={sampleList}
+            pagination={{ simple: true, disabled: false, size: "small", pageSize: 5, position: ["bottomCenter"] }}
+        />
     )
 }
 

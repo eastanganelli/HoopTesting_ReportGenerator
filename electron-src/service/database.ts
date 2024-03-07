@@ -33,6 +33,15 @@ const myDB = {
 	}
 }
 
+ipcMain.on('database-connect', async (event) => {
+	try {
+
+	} catch (error: any) {
+		event.reply('database-error', error.message);
+	}
+
+});
+
 ipcMain.on('database-request', async (event, requestData: DatabaseRequest) => {
 	try {
 		const myConnection = myDB.get();
