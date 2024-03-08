@@ -27,7 +27,7 @@ app.on('ready', async () => {
 	});
 	const windowParams: winParams = {
 		windowID: 'main-window',
-		windowTitle: 'Main Window',
+		windowTitle: 'Generador de Reportes',
 		windowPath: 'index',
 		windowParams: { width: 1600, height: 900, autoHideMenuBar: false, icon: "", webPreferences: { nodeIntegration: false, contextIsolation: false, preload: "" } }
 	}

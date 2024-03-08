@@ -2,7 +2,7 @@
 	"name": "report-generator",
 	"version": "1.0.0",
 	"win": {
-		"icon": "./electron-src/assets/logo.ico"
+		"icon": "./assets/logo.ico"
 	},
 	"author": {
 		"name": "Ezequiel Augusto Stanganelli",
@@ -48,6 +48,7 @@
 		"files": [
 			"main",
 			"renderer"
-		]
+		],
+		"icon": "./assets/logo.ico"
 	}
 }
