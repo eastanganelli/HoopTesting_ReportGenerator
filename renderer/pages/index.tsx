@@ -1,14 +1,24 @@
 import dynamic from 'next/dynamic';
-import { useState } from 'react';
-import { Layout, Drawer, FloatButton, Space, Button } from 'antd';
+import { useState, useEffect } from 'react';
+import { Layout, Drawer, FloatButton, Space, Button, message } from 'antd';
 import { DiffOutlined, SettingOutlined } from '@ant-design/icons';
+import DatabaseService from '../utils/database/database';
 const SampleTable = dynamic(() => import('../components/sampleTable'), { ssr: true });
+const DatabaseConfiguration = dynamic(() => import('../components/databaseConfig'), { ssr: true });
 
 const { Content } = Layout;
 
 const IndexPage = () => {
 	const [open, setOpen] = useState<boolean>(false);
 	let selectedRowKeys: number[] = [];
+
+	useEffect(() => {
+		DatabaseService.ISCONNECTED().then((response) => {
+			message.success('Conectado a la Base de Datos');
+		}).catch((error) => {
+			message.error('Error al conectar a la Base de Datos');
+		});
+	}, []);
 
 	return (
 		<Layout style={{ background: "lightgray", minHeight: "98vh", overflow: "auto" }}>
@@ -37,12 +47,12 @@ const IndexPage = () => {
 				/* size={450} */
 				onClose={() => { setOpen(false) }}
 				open={open}
-				extra={
-					<Space>
-						<Button type="primary" onClick={() => { setOpen(false) }}>Guardar</Button>
-					</Space>
-				}
-			/>
+
+			>
+				<Space>
+					<DatabaseConfiguration />
+				</Space>
+			</Drawer>
 		</Layout>
 	);
 }

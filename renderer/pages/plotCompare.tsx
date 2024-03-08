@@ -2,7 +2,7 @@ import { useState, useEffect, FunctionComponent } from 'react';
 import { useRouter } from 'next/router';
 import { Layout, Typography, FloatButton } from 'antd';
 
-import QueryService from '../utils/database/dbquery';
+import QueryService from '../utils/database/query';
 
 import type { TestData } from '../interfaces/query';
 

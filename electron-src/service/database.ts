@@ -1,12 +1,22 @@
 import { ipcMain } from "electron";
+import settings from 'electron-settings';
 import { createPool, Pool } from 'mysql2/promise';
+import { refreshWindow } from "./multiwindow";
 
-const DBCONFIG = {
+/* const DBCONFIG = {
 	HOST: "localhost",
-	PORT: 3306,
+	PORT: 33061,
 	USER: "reportGenerator",
 	PASSWORD: "STEL_ReportGenerator",
-	DATABASE: "STEL_DB_DATA"
+	DATABASE: "stel_db_data"
+}; */
+
+export interface DatabaseConfig {
+	HOST: string;
+	PORT: number;
+	USER: string;
+	PASSWORD: string;
+	DATABASE: string;
 };
 
 export interface DatabaseRequest {
@@ -17,16 +27,17 @@ export interface DatabaseRequest {
 let globalPool: Pool | undefined = undefined;
 
 const myDB = {
-	connect: async(): Promise<Pool> => {
-		if (typeof globalPool !== 'undefined') {
-			return globalPool;
-		}
-	
-		globalPool = await createPool('mysql://' + DBCONFIG.USER + ':' + DBCONFIG.PASSWORD + '@' + DBCONFIG.HOST + ':' + DBCONFIG.PORT + '/' + DBCONFIG.DATABASE);
-		return globalPool;	
+	connect: (): Promise<Pool> => {
+		return new Promise<Pool>((resolve, reject) => {
+			settings.get('dbConfig.data').then((response: any) => {
+				const DBCONFIG: DatabaseConfig = JSON.parse(response);
+				globalPool = createPool('mysql://' + DBCONFIG.USER + ':' + DBCONFIG.PASSWORD + '@' + DBCONFIG.HOST + ':' + DBCONFIG.PORT + '/' + DBCONFIG.DATABASE);
+				resolve(globalPool);
+			}).catch((error) => { reject(error); });
+		});
 	},
 	disconnect: () => {
-
+		globalPool?.end();
 	},
 	get: (): Pool|undefined => {
 		return globalPool;
@@ -35,11 +46,30 @@ const myDB = {
 
 ipcMain.on('database-connect', async (event) => {
 	try {
-
+		globalPool = await myDB.connect();
+		event.reply('database-connected', 'Connection Successful');
+		refreshWindow(1);
 	} catch (error: any) {
 		event.reply('database-error', error.message);
 	}
+});
 
+ipcMain.on('database-isconnected', async (event) => {
+	try {
+		globalPool = await myDB.get();
+		if(globalPool !== undefined) { event.reply('database-connected', 'Connection Successful'); }
+		else { throw new Error('No Connection'); }
+	} catch (error: any) {
+		event.reply('database-error', error.message);
+	}
+});
+
+ipcMain.on('database-save', async (event, requestData: DatabaseConfig) => {
+	settings.set('dbConfig', { data: JSON.stringify(requestData) }).then(() => {
+		event.reply('database-save-succes', 'Configuración guardada exitosamente');
+	}).catch((error) => {
+		event.reply('database-save-error', error.message);
+	});
 });
 
 ipcMain.on('database-request', async (event, requestData: DatabaseRequest) => {

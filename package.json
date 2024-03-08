@@ -1,7 +1,9 @@
 {
 	"name": "report-generator",
 	"version": "1.0.0",
-	"icon": "./electron-src/assets/logo.ico",
+	"win": {
+		"icon": "./electron-src/assets/logo.ico"
+	},
 	"author": {
 		"name": "Ezequiel Augusto Stanganelli",
 		"email": "ezequielstanganelli@gmail.com"
@@ -15,7 +17,7 @@
 		"build-electron": "tsc -p electron-src",
 		"build": "npm run clean && npm run build-renderer && npm run build-electron",
 		"pack-app": "npm run build && electron-builder --dir",
-		"dist": "npm run build && electron-builder",
+		"dist": "npm run build && electron-builder build --win",
 		"dist:debug": "lldb ./dist/mac/electron-quick-start-typescript.app",
 		"dist:unpack": "npx asar extract ./dist/mac/electron-quick-start-typescript.app/Contents/Resources/app.asar ./dist/unpack",
 		"type-check": "tsc"
@@ -25,7 +27,7 @@
 		"@react-pdf/renderer": "^3.1.12",
 		"antd": "^5.14.2",
 		"electron-is-dev": "^1.1.0",
-		"electron-store": "^8.1.0",
+		"electron-settings": "^4.0.2",
 		"mysql2": "^3.9.1",
 		"next": "^12.0.7",
 		"react": "^18.2.0",

@@ -67,6 +67,13 @@ const newWindow = (params: winParams): void => {
 	});
 };
 
+const refreshWindow = (windowID: number): void => {
+	const myActiveWindow: BrowserWindow | undefined = activeWindows.find((window) => { if(window.id === Number(windowID)) { return window; } });
+	if (myActiveWindow !== undefined) {
+		myActiveWindow.reload();
+	}
+}
+
 ipcMain.on('new-window', async (event, params: winParams) => {
 	try {
 		newWindow(params);
@@ -75,4 +82,4 @@ ipcMain.on('new-window', async (event, params: winParams) => {
 	}
 });
 
-export { setPreloadPath, newWindow };
+export { setPreloadPath, newWindow, refreshWindow };

@@ -1,32 +1,15 @@
-import Store from 'electron-store'
-
-
-let globalCached: Store | undefined = new Store();
+import settings from 'electron-settings';
 
 const setupCache = (key: string, value: any) => {
-    globalCached?.set(key, value);
+    return settings.set(key, { data: value });
 };
 
 const removeCache = (key: string): Promise<any> => {
-    return new Promise((resolve, reject) => {
-        try {
-            globalCached?.delete(key);
-            resolve('Cache removed');
-        } catch(error: any) {
-            reject(error.message);
-        }
-    });
+    return settings.unset(key);
 };
 
 const selectCache = (key: string): Promise<any> => {
-    return new Promise<any>((resolve, reject) => {
-        try {
-            const result = globalCached?.get(key);
-            resolve(result);
-        } catch(error: any) {
-            reject(error.message);
-        }
-    });
+    return settings.get(key);
 }
 
-export { setupCache, removeCache, selectCache};
+export { setupCache, removeCache, selectCache };

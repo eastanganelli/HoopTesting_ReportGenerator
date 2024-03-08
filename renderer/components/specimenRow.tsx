@@ -1,10 +1,10 @@
 import dynamic from 'next/dynamic';
 import { useState, useEffect, FunctionComponent } from 'react';
 import { PlusOutlined, MinusOutlined, EditOutlined, FilePdfOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Table, Space, Button, Modal, message } from 'antd';
+import { Table, Space, Button, Modal, message, Popconfirm } from 'antd';
 
 import openNewWindow from '../utils/newWindows';
-import QueryService from '../utils/database/dbquery';
+import QueryService from '../utils/database/query';
 
 const TestSample = dynamic(() => import('./testSample'), { ssr: false });
 
@@ -13,16 +13,16 @@ import type { QuerySpecimenTest } from '../interfaces/query';
 import type { ExpandedDataType } from '../interfaces/table';
 import type { TestData, TestDataValues } from '../interfaces/query';
 
-interface Props { specimens: QuerySpecimenTest[]; rowSelection: { selectedRowKeys: number[]; onChange: (idTest: number) => void; }; };
+interface Props { specimens: QuerySpecimenTest[]; rowSelection: { selectedRowKeys: number[]; onChange: (idTest: number) => void; }; tableUpdate: (value: number) => void; };
 
 const { info } = Modal;
 
-const SpecimenTable: FunctionComponent<Props> = ({ specimens, rowSelection }: Props) => {
+const SpecimenTable: FunctionComponent<Props> = ({ specimens, rowSelection, tableUpdate }: Props) => {
     const [tableUpdated, setTableUpdated] = useState<number>(0);
     const [specimenData, setSpecimenData] = useState<ExpandedDataType[]>([]);
     const [messageApi, contextHolder] = message.useMessage();
 
-    const viewTest = (e: any, Specimen: ExpandedDataType, index: number) => {
+    const viewTest = (e: any, Specimen: ExpandedDataType) => {
         QueryService.SELECT.TEST.Test([Specimen['idSpecimen']]).then((myTest: TestData) => {
             QueryService.SELECT.TEST.Data([Specimen['idSpecimen']]).then((TestResults: TestDataValues[]) => {
                 let testName: string = "",
@@ -42,11 +42,13 @@ const SpecimenTable: FunctionComponent<Props> = ({ specimens, rowSelection }: Pr
                     title: `Prueba ID: ${Specimen['idSpecimen']}`,
                     content: (<TestSample myTest={myTest[0]} myData={TestResults} changesOnSpecimen={updateSpecimen} />),
                     width: "80vw",
+                    closable: true,
                     okText: "Guardar",
                     afterClose() {
                         if (testName !== "" || operator !== "" || fail !== "" || reMark !== "") {
                             console.log('Params needs update in DB', testName, operator, fail, reMark);
                             QueryService.UPDATE.Specimen([Specimen['idSpecimen'], testName, operator, fail, reMark]);
+                            const index = specimens.findIndex((specimen: QuerySpecimenTest) => specimen['idSpecimen'] === Specimen['idSpecimen']);
                             specimens[index]['operator'] = operator;
                             setTableUpdated(tableUpdated + 1);
                         }
@@ -58,13 +60,16 @@ const SpecimenTable: FunctionComponent<Props> = ({ specimens, rowSelection }: Pr
 
     const printTest = (e: any, Specimen: ExpandedDataType) => { openNewWindow(`test_${Specimen['idSpecimen']}`, `Visualizador Reporte || Prueba Nro [${Specimen['idSpecimen']}] - Fecha: ${Specimen['beginTime']}`, `/printer?idSpecimen=${Specimen['idSpecimen']}`); };
 
-    const deleteTest = (e: any, Specimen: ExpandedDataType, index: number) => {
+    const deleteTest = (e: any, Specimen: ExpandedDataType) => {
         QueryService.DELETE.Specimen([Specimen['idSpecimen']]);
+        const index = specimens.findIndex((specimen: QuerySpecimenTest) => specimen['idSpecimen'] === Specimen['idSpecimen']);
         specimens.splice(index, 1);
+        setTableUpdated(tableUpdated + 1);
+        tableUpdate(tableUpdated);
     };
 
     const columns: TableColumnsType<ExpandedDataType> = [
-        { title: 'ID Specimen', dataIndex: 'idSpecimen', key: 'idSpecimen' },
+        { title: 'ID Especimen', dataIndex: 'idSpecimen', key: 'idSpecimen' },
         { title: 'Inicio', dataIndex: 'begin', key: 'begin' },
         { title: 'Fin', dataIndex: 'end', key: 'end' },
         { title: 'Duración', dataIndex: 'duration', key: 'duration' },
@@ -92,9 +97,17 @@ const SpecimenTable: FunctionComponent<Props> = ({ specimens, rowSelection }: Pr
                         ghost
                     >
                     </Button>
-                    <Button onClick={(event) => viewTest(event, record, index)} icon={<EditOutlined />} type="primary" ghost></Button>
+                    <Button onClick={(event) => viewTest(event, record)} icon={<EditOutlined />} type="primary" ghost></Button>
                     <Button onClick={(event) => printTest(event, record)} icon={<FilePdfOutlined />} type="primary" ghost></Button>
-                    <Button onClick={(event) => deleteTest(event, record, index)} icon={<DeleteOutlined />} danger></Button>
+                    <Popconfirm
+                        title="Eliminar Prueba?"
+                        description="Está seguro que desea eliminar la Prueba?"
+                        onConfirm={() => { deleteTest(event, record); }}
+                        okText="Si"
+                        cancelText="No"
+                    >
+                        <Button icon={<DeleteOutlined />} danger></Button>
+                    </Popconfirm>
                 </Space>
             )
         }
@@ -123,12 +136,11 @@ const SpecimenTable: FunctionComponent<Props> = ({ specimens, rowSelection }: Pr
             {contextHolder}
             <Table
                 columns={columns}
-                dataSource={specimenData}
+                dataSource={[...specimenData]}
                 pagination={{ disabled: false, size: "small", pageSize: 5, position: ["topCenter"] }}
             /* onChange={(...args) => { console.log(...args) }} */
             />
         </div>
     )
 }
-
 export default SpecimenTable;

@@ -7,7 +7,7 @@ import { LineChart, Line, XAxis, YAxis, Label } from 'recharts';
 import { Layout } from 'antd';
 const PDFViewer = dynamic(() => import('@react-pdf/renderer').then((mod) => mod.PDFViewer), { ssr: false });
 
-import QueryService from '../utils/database/dbquery';
+import QueryService from '../utils/database/query';
 
 import type { TestData, TestDataValues } from '../interfaces/query';
 

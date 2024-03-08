@@ -5,6 +5,7 @@ interface DataType {
     idSample: number;
     standard: string;
     material: string;
+    count: number;
     description: FunctionComponent<{ specimens: ExpandedDataType[] }> | any;
 };
 

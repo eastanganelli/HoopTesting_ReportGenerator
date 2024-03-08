@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic';
 import { Table } from 'antd';
 import type { TableColumnsType } from 'antd';
 
-import QueryService from '../utils/database/dbquery';
+import QueryService from '../utils/database/query';
 const SpecimenRow = dynamic(() => import('./specimenRow'));
 
 import type { DataType } from '../interfaces/table';
@@ -12,7 +12,9 @@ import type { QuerySampleTest } from '../interfaces/query';
 interface Props { selectedRowKeys: number[]; };
 
 const SampleTable: FunctionComponent<Props> = ({ selectedRowKeys }: Props) => {
+    const [tableUpdated, setTableUpdated] = useState<number>(0);
     const [sampleList, setSampleList] = useState<DataType[]>([]);
+
     const onSelectChange = (idTest: number) => {
         if (selectedRowKeys.includes(idTest)) {
             selectedRowKeys.splice(selectedRowKeys.indexOf(idTest), 1);
@@ -27,9 +29,10 @@ const SampleTable: FunctionComponent<Props> = ({ selectedRowKeys }: Props) => {
     };
 
     const columns: TableColumnsType<DataType> = [
-        { title: 'ID Sample', dataIndex: 'idSample', key: 'idSample' },
-        { title: 'Standard', dataIndex: 'standard', key: 'standard' },
-        { title: 'Material', dataIndex: 'material', key: 'material' }
+        { title: 'ID Muestra', dataIndex: 'idSample', key: 'idSample' },
+        { title: 'Estándard', dataIndex: 'standard', key: 'standard' },
+        { title: 'Material', dataIndex: 'material', key: 'material' },
+        { title: 'Cantidad', dataIndex: 'count', key: 'count' }
     ];
 
     useEffect(() => {
@@ -42,14 +45,15 @@ const SampleTable: FunctionComponent<Props> = ({ selectedRowKeys }: Props) => {
                         idSample: Number(Test["idSample"]),
                         standard: Test["standard"],
                         material: Test["material"],
-                        description: <SpecimenRow specimens={Test["mySpecimens"].reverse()} rowSelection={rowSelection} />
+                        count: Test["mySpecimens"].length,
+                        description: <SpecimenRow specimens={Test["mySpecimens"].reverse()} rowSelection={rowSelection} tableUpdate={setTableUpdated} />
                     });
                 });
                 setSampleList(myData);
             });
         };
         fetchData();
-    }, []);
+    }, [tableUpdated]);
 
     return (
         <Table
