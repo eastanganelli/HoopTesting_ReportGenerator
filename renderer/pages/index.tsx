@@ -2,6 +2,7 @@ import dynamic from 'next/dynamic';
 import { useState, useEffect } from 'react';
 import { Layout, Drawer, FloatButton, Space, Button, message } from 'antd';
 import { DiffOutlined, SettingOutlined } from '@ant-design/icons';
+import openNewWindow from '../utils/newWindows';
 import DatabaseService from '../utils/database/database';
 const SampleTable = dynamic(() => import('../components/sampleTable'), { ssr: true });
 const DatabaseConfiguration = dynamic(() => import('../components/databaseConfig'), { ssr: true });
@@ -31,7 +32,10 @@ const IndexPage = () => {
 				icon={<DiffOutlined />}
 				tooltip="Comparar Pruebas"
 				style={{ right: 72 }}
-				onClick={() => { console.log("Comparar pruebas", selectedRowKeys); }}
+				onClick={() => {
+					console.log("Comparar pruebas", selectedRowKeys);
+					openNewWindow("plotCompare", `Comparación de Pruebas: ${selectedRowKeys.toString()}`, `/plotCompare?idSpecimens=${selectedRowKeys.toString()}`);
+				}}
 			/>
 			<Layout>
 				<Content style={{ padding: '12px' }}>

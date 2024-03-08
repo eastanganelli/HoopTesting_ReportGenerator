@@ -13,12 +13,13 @@ const testSample: FunctionComponent = () => {
     const [myTest, setMyTest] = useState<TestData>(null);
 
     useEffect((): void => {
-        const id_specimen: number = Number(query['idSpecimen']) as number;
-        if (isReady && id_specimen > 0) {
+        const id_specimen: string = String(query['idSpecimens']) as string;
+        /* if (isReady && id_specimen > 0) {
             QueryService.SELECT.TEST.Test([id_specimen]).then((data: TestData) => {
                 setMyTest(data[0]);
             });
-        }
+        } */
+        console.log("id_specimen", id_specimen);
     }, [isReady]);
 
     return (

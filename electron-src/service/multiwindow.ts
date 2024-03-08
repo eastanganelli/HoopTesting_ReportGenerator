@@ -67,7 +67,7 @@ const newWindow = (params: winParams): void => {
 	});
 };
 
-const refreshWindow = (windowID: number): void => {
+const refreshWindow = (windowID: string): void => {
 	const myActiveWindow: BrowserWindow | undefined = activeWindows.find((window) => { if(window.id === Number(windowID)) { return window; } });
 	if (myActiveWindow !== undefined) {
 		myActiveWindow.reload();

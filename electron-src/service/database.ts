@@ -48,7 +48,7 @@ ipcMain.on('database-connect', async (event) => {
 	try {
 		globalPool = await myDB.connect();
 		event.reply('database-connected', 'Connection Successful');
-		refreshWindow(1);
+		refreshWindow('main-window');
 	} catch (error: any) {
 		event.reply('database-error', error.message);
 	}
