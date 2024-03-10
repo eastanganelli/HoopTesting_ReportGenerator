@@ -40,7 +40,7 @@ const IndexPage = () => {
 			<Layout>
 				<Content style={{ padding: '12px' }}>
 					<div style={{ background: "white", padding: 24, borderRadius: 25 }} >
-						<SampleTable selectedRowKeys={selectedRowKeys} />
+					<SampleTable selectedRowKeys={selectedRowKeys} />
 					</div>
 				</Content>
 			</Layout>
