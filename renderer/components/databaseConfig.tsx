@@ -1,6 +1,6 @@
 import { FunctionComponent, useState } from 'react';
-import { Button, Form, Collapse, Divider, type FormProps, Input } from 'antd';
-import { SaveOutlined } from '@ant-design/icons';
+import { Button, Form, Collapse, Divider, type FormProps, Input, Space, message } from 'antd';
+import { ConsoleSqlOutlined, SaveOutlined } from '@ant-design/icons';
 import DatabaseService from '../utils/database/database';
 
 import type { DatabaseConfig } from '../../electron-src/service/database';
@@ -14,9 +14,9 @@ type FieldType = {
 
 const onFinish: FormProps<FieldType>["onFinish"] = (values) => {
     DatabaseService.SAVE(values.host, values.port, values.username, values.password).then((response) => {
-        console.log(response);
+        message.success('Configuración guardada');
     }).catch((error) => {
-        console.error(error);
+        message.error('Error al guardar la configuración');
     });
 };
 
@@ -78,7 +78,12 @@ const DatabaseConfiguration: FunctionComponent = () => {
                                     <Input.Password />
                                 </Form.Item>
 
-                                <Form.Item wrapperCol={{ offset: 8, span: 16 }}><Button type="primary" icon={<SaveOutlined />} htmlType="submit">{`Guardar`}</Button></Form.Item>
+                                <Form.Item>
+                                    <Space>
+                                        <Button type="primary" icon={<SaveOutlined />} htmlType="submit" ghost>{/* {`Guardar`} */}</Button>
+                                        <Button type="primary" icon={<ConsoleSqlOutlined />} htmlType="submit" ghost>{/* {`Conectar`} */}</Button>
+                                    </Space>
+                                </Form.Item>
                             </Form>
                         )
                     }

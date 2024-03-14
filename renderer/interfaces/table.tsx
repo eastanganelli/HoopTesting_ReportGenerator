@@ -1,21 +1,50 @@
 import { FunctionComponent, Key } from "react";
 
-interface DataType {
+interface SampleType {
     key: Key;
     idSample: number;
     standard: string;
     material: string;
     count: number;
-    description: FunctionComponent<{ specimens: ExpandedDataType[] }> | any;
+    description: FunctionComponent<{ specimens: SpecimenType[] }> | any;
 };
 
-interface ExpandedDataType {
+interface SpecimenType {
     key: Key;
     idSpecimen: number;
     begin: string;
     end: string;
+    testNumber: number;
     duration: string;
     operator: string;
 };
 
-export type { DataType, ExpandedDataType };
+interface CompareType {
+    idSample: number;
+    standard: string;
+    material: string;
+    specification: string;
+    diameterReal: number;
+    diameterNominal: number;
+    wallThickness: number;
+    lengthTotal: number;
+    lengthFree: number;
+    targetTemperature: number;
+    targetPressure: number;
+    hoopStress: number;
+    conditionalPeriod: string;
+    idSpecimen: number;
+    operator: string;
+    enviroment: string;
+    beginTime: string;
+    endTime: string;
+    duration: string;
+    counts: number;
+    testName: string;
+    testNumber: number;
+    endCap: string;
+    fail: string;
+    remark: string;
+};
+
+export type { SampleType, SpecimenType, CompareType };

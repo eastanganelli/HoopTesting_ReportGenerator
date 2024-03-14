@@ -43,6 +43,7 @@ interface TestSpecimenValue {
     duration: string;
     counts: number;
     testName: string;
+    testNumber: number;
     endCap: string;
     fail: string;
     remark: string;
@@ -54,4 +55,32 @@ interface TestDataValues {
     temperature: number;
 };
 
-export type { QuerySampleTest, QuerySpecimenTest, TestData, TestSampleValue, TestSpecimenValue, TestDataValues };
+interface TestCompare{
+    idSample: number;
+    standard: string;
+    material: string;
+    specification: string;
+    diameterReal: number;
+    diameterNominal: number;
+    wallThickness: number;
+    lengthTotal: number;
+    lengthFree: number;
+    targetTemperature: number;
+    targetPressure: number;
+    hoopStress: number;
+    conditionalPeriod: string;
+    idSpecimen: number;
+    operator: string;
+    enviroment: string;
+    beginTime: string;
+    endTime: string;
+    duration: string;
+    counts: number;
+    testName: string;
+    testNumber: number;
+    endCap: string;
+    fail: string;
+    remark: string;
+};
+
+export type { QuerySampleTest, QuerySpecimenTest, TestData, TestSampleValue, TestSpecimenValue, TestDataValues, TestCompare };

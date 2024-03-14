@@ -30,7 +30,10 @@ const myDB = {
 	connect: (): Promise<Pool> => {
 		return new Promise<Pool>((resolve, reject) => {
 			settings.get('dbConfig.data').then((response: any) => {
+				if(response === undefined) { reject(new Error('No Data to Logging')); }
+
 				const DBCONFIG: DatabaseConfig = JSON.parse(response);
+
 				globalPool = createPool('mysql://' + DBCONFIG.USER + ':' + DBCONFIG.PASSWORD + '@' + DBCONFIG.HOST + ':' + DBCONFIG.PORT + '/' + DBCONFIG.DATABASE);
 				resolve(globalPool);
 			}).catch((error) => { reject(error); });

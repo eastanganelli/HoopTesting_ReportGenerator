@@ -1,4 +1,4 @@
-import type { QuerySampleTest, TestData, TestDataValues } from '../../interfaces/query';
+import type { QuerySampleTest, TestData, TestDataValues, TestCompare } from '../../interfaces/query';
 
 const Query = <T extends unknown>(query: string, values: any[] = []): Promise<T> => {
     return new Promise<T>((resolve, reject) => {
@@ -23,9 +23,46 @@ const QueryService = {
                 const SampleWithSpecimensQuery: string = "CALL selectTests()";
                 return Query<QuerySampleTest[]>(SampleWithSpecimensQuery, []);
             },
-            Test: (queryData: any[] | string[] | number[]): Promise<TestData> => {
+            Test: async (queryData: any[] | string[] | number[]): Promise<TestData> => {
                 const TestDataQuery: string = 'CALL selectTest(?)';
                 return Query<TestData>(TestDataQuery, queryData);
+            },
+            TestCompare: async(queryData: any[] | string[] | number[]): Promise<TestCompare[]> => {
+                const TestDataQuery: string = 'CALL selectTest(?)';
+                const queryResult: TestData[] = await Query<TestData[]>(TestDataQuery, queryData);
+                let parseData: TestCompare[] = [];
+
+                queryResult.forEach((test: TestData) => {
+                    parseData.push({
+                        idSample: test['mySample']['idSample'],
+                        standard: test['mySample']['standard'],
+                        material: test['mySample']['material'],
+                        specification: test['mySample']['specification'],
+                        diameterReal: test['mySample']['diameterReal'],
+                        diameterNominal: test['mySample']['diameterNominal'],
+                        wallThickness: test['mySample']['wallThickness'],
+                        lengthTotal: test['mySample']['lengthTotal'],
+                        lengthFree: test['mySample']['lengthFree'],
+                        targetTemperature: test['mySample']['targetTemperature'],
+                        targetPressure: test['mySample']['targetPressure'],
+                        hoopStress: test['mySample']['hoopStress'],
+                        conditionalPeriod: test['mySample']['conditionalPeriod'],
+                        idSpecimen: test['mySpecimen']['idSpecimen'],
+                        operator: test['mySpecimen']['operator'],
+                        enviroment: test['mySpecimen']['enviroment'],
+                        beginTime: test['mySpecimen']['beginTime'],
+                        endTime: test['mySpecimen']['endTime'],
+                        duration: test['mySpecimen']['duration'],
+                        counts: test['mySpecimen']['counts'],
+                        testName: test['mySpecimen']['testName'],
+                        testNumber: test['mySpecimen']['testNumber'],
+                        endCap: test['mySpecimen']['endCap'],
+                        fail: test['mySpecimen']['fail'],
+                        remark: test['mySpecimen']['remark']
+                    });
+                });
+                
+                return parseData;
             },
             Data: (queryData: any[] | string[] | number[]): Promise<TestDataValues[]> => {
                 const TestDataQuery: string = 'CALL selectTestData(?)';

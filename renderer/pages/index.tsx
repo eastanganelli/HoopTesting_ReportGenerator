@@ -14,11 +14,7 @@ const IndexPage = () => {
 	let selectedRowKeys: number[] = [];
 
 	useEffect(() => {
-		DatabaseService.ISCONNECTED().then((response) => {
-			message.success('Conectado a la Base de Datos');
-		}).catch((error) => {
-			message.error('Error al conectar a la Base de Datos');
-		});
+		DatabaseService.ISCONNECTED().then((response) => { message.success('Conectado a la Base de Datos'); }).catch((error) => { message.error('Error al conectar a la Base de Datos'); });
 	}, []);
 
 	return (
@@ -33,14 +29,15 @@ const IndexPage = () => {
 				tooltip="Comparar Pruebas"
 				style={{ right: 72 }}
 				onClick={() => {
-					console.log("Comparar pruebas", selectedRowKeys);
-					openNewWindow("plotCompare", `Comparación de Pruebas: ${selectedRowKeys.toString()}`, `/plotCompare?idSpecimens=${selectedRowKeys.toString()}`);
+					if(selectedRowKeys.length > 1) {
+						openNewWindow("plotCompare", `Comparación de Pruebas: ${selectedRowKeys.toString()}`, `/plotCompare?idSpecimens=${selectedRowKeys.toString()}`);
+					}
 				}}
 			/>
 			<Layout>
 				<Content style={{ padding: '12px' }}>
 					<div style={{ background: "white", padding: 24, borderRadius: 25 }} >
-					<SampleTable selectedRowKeys={selectedRowKeys} />
+						<SampleTable selectedRowKeys={selectedRowKeys} />
 					</div>
 				</Content>
 			</Layout>
@@ -51,7 +48,6 @@ const IndexPage = () => {
 				/* size={450} */
 				onClose={() => { setOpen(false) }}
 				open={open}
-
 			>
 				<Space>
 					<DatabaseConfiguration />

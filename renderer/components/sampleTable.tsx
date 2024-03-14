@@ -6,14 +6,14 @@ import type { TableColumnsType } from 'antd';
 import QueryService from '../utils/database/query';
 const SpecimenRow = dynamic(() => import('./specimenRow'));
 
-import type { DataType } from '../interfaces/table';
+import type { SampleType } from '../interfaces/table';
 import type { QuerySampleTest } from '../interfaces/query';
 
 interface Props { selectedRowKeys: number[]; };
 
 const SampleTable: FunctionComponent<Props> = ({ selectedRowKeys }: Props) => {
     const [tableUpdated, setTableUpdated] = useState<number>(0);
-    const [sampleList, setSampleList] = useState<DataType[]>([]);
+    const [sampleList, setSampleList] = useState<SampleType[]>([]);
 
     const onSelectChange = (idTest: number) => {
         if (selectedRowKeys.includes(idTest)) {
@@ -28,7 +28,7 @@ const SampleTable: FunctionComponent<Props> = ({ selectedRowKeys }: Props) => {
         onChange: onSelectChange,
     };
 
-    const columns: TableColumnsType<DataType> = [
+    const columns: TableColumnsType<SampleType> = [
         { title: 'ID Muestra', dataIndex: 'idSample', key: 'idSample' },
         { title: 'Estándard', dataIndex: 'standard', key: 'standard' },
         { title: 'Material', dataIndex: 'material', key: 'material' },
@@ -37,7 +37,7 @@ const SampleTable: FunctionComponent<Props> = ({ selectedRowKeys }: Props) => {
 
     useEffect(() => {
         const fetchData = () => {
-            let myData: DataType[] = [];
+            let myData: SampleType[] = [];
             QueryService.SELECT.TEST.Tests().then((Tests: QuerySampleTest[]) => {
                 Tests.forEach((Test: QuerySampleTest) => {
                     myData.push({
