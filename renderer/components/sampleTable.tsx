@@ -13,7 +13,12 @@ interface Props { selectedRowKeys: number[]; };
 
 const SampleTable: FunctionComponent<Props> = ({ selectedRowKeys }: Props) => {
     const [tableUpdated, setTableUpdated] = useState<number>(0);
+    const [queryData, setQueryData] = useState<QuerySampleTest[]>([]);
     const [sampleList, setSampleList] = useState<SampleType[]>([]);
+
+    const callDatabase = async () => {
+        
+    };
 
     const onSelectChange = (idTest: number) => {
         if (selectedRowKeys.includes(idTest)) {
@@ -36,9 +41,9 @@ const SampleTable: FunctionComponent<Props> = ({ selectedRowKeys }: Props) => {
     ];
 
     useEffect(() => {
-        const fetchData = () => {
+        const fetchData = async () => {
             let myData: SampleType[] = [];
-            QueryService.SELECT.TEST.Tests().then((Tests: QuerySampleTest[]) => {
+            await QueryService.SELECT.TEST.Tests().then((Tests: QuerySampleTest[]) => {
                 Tests.forEach((Test: QuerySampleTest) => {
                     myData.push({
                         key: Number(Test["idSample"]),
