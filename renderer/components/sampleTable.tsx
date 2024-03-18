@@ -9,29 +9,14 @@ const SpecimenRow = dynamic(() => import('./specimenRow'));
 import type { SampleType } from '../interfaces/table';
 import type { QuerySampleTest } from '../interfaces/query';
 
-interface Props { selectedRowKeys: number[]; };
+interface Props { rowSelection: { selectedRowKeys: number[], onChange: (idTest: number) => void } };
 
-const SampleTable: FunctionComponent<Props> = ({ selectedRowKeys }: Props) => {
+const SampleTable: FunctionComponent<Props> = ({ rowSelection }: Props) => {
     const [tableUpdated, setTableUpdated] = useState<number>(0);
     const [queryData, setQueryData] = useState<QuerySampleTest[]>([]);
     const [sampleList, setSampleList] = useState<SampleType[]>([]);
 
-    const callDatabase = async () => {
-        
-    };
-
-    const onSelectChange = (idTest: number) => {
-        if (selectedRowKeys.includes(idTest)) {
-            selectedRowKeys.splice(selectedRowKeys.indexOf(idTest), 1);
-        } else if (!selectedRowKeys.includes(idTest) && selectedRowKeys.length < 5) {
-            selectedRowKeys.push(idTest);
-        }
-    };
-
-    const rowSelection = {
-        selectedRowKeys,
-        onChange: onSelectChange,
-    };
+    const callDatabase = async () => { setQueryData(await QueryService.SELECT.TEST.Tests()); };
 
     const columns: TableColumnsType<SampleType> = [
         { title: 'ID Muestra', dataIndex: 'idSample', key: 'idSample' },
@@ -40,25 +25,25 @@ const SampleTable: FunctionComponent<Props> = ({ selectedRowKeys }: Props) => {
         { title: 'Cantidad', dataIndex: 'count', key: 'count' }
     ];
 
-    useEffect(() => {
-        const fetchData = async () => {
-            let myData: SampleType[] = [];
-            await QueryService.SELECT.TEST.Tests().then((Tests: QuerySampleTest[]) => {
-                Tests.forEach((Test: QuerySampleTest) => {
-                    myData.push({
-                        key: Number(Test["idSample"]),
-                        idSample: Number(Test["idSample"]),
-                        standard: Test["standard"],
-                        material: Test["material"],
-                        count: Test["mySpecimens"].length,
-                        description: <SpecimenRow specimens={Test["mySpecimens"].reverse()} rowSelection={rowSelection} tableUpdate={setTableUpdated} />
-                    });
-                });
-                setSampleList(myData);
+    const loadDataTable = () => {
+        let myData: SampleType[] = [];
+        queryData.forEach((Test: QuerySampleTest) => {
+            myData.push({
+                key: Number(Test["idSample"]),
+                idSample: Number(Test["idSample"]),
+                standard: Test["standard"],
+                material: Test["material"],
+                count: Test["mySpecimens"].length,
+                description: <SpecimenRow specimens={Test["mySpecimens"]/* .reverse() */} rowSelection={rowSelection} tableUpdate={setTableUpdated} />
             });
-        };
-        fetchData();
-    }, [tableUpdated]);
+        });
+        setSampleList(myData);
+    };
+
+    useEffect(() => {
+        if(queryData.length === 0) { callDatabase(); }
+        loadDataTable();
+    }, [queryData, tableUpdated]);
 
     return (
         <Table

@@ -27,12 +27,12 @@ const QueryService = {
                 const TestDataQuery: string = 'CALL selectTest(?)';
                 return Query<TestData>(TestDataQuery, queryData);
             },
-            TestCompare: async (queryData: any[] | string[] | number[]): Promise<TestCompare[]> => {
-                const TestDataQuery: string = 'CALL selectTest(?)';
-                const queryResult: TestData[] = await Query<TestData[]>(TestDataQuery, queryData);
-
-                return new Promise<TestCompare[]>((resolve, reject) => {
-                    if(queryResult.length === 0) reject("No data found");
+            TestCompare: (queryData: any[] | string[] | number[]): Promise<TestCompare[]> => {
+                return new Promise<TestCompare[]>(async (resolve, reject) => {
+                    console.log('QueryData:', queryData);
+                    const TestDataQuery: string = 'CALL selectCompareTests(?)';
+                    const queryResult: TestData[] = await Query<TestData[]>(TestDataQuery, queryData);
+                    if (queryResult.length === 0) reject("No data found");
 
                     let parseData: TestCompare[] = [];
 

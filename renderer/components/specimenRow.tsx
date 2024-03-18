@@ -13,7 +13,7 @@ import type { QuerySpecimenTest } from '../interfaces/query';
 import type { SpecimenType } from '../interfaces/table';
 import type { TestData, TestDataValues } from '../interfaces/query';
 
-interface Props { specimens: QuerySpecimenTest[]; rowSelection: { selectedRowKeys: number[]; onChange: (idTest: number) => void; }; tableUpdate: (value: number) => void; };
+interface Props { specimens: QuerySpecimenTest[]; rowSelection: { selectedRowKeys: number[], onChange: (idTest: number) => void }; tableUpdate: (value: number) => void; };
 
 const { info } = Modal;
 
@@ -61,18 +61,18 @@ const SpecimenTable: FunctionComponent<Props> = ({ specimens, rowSelection, tabl
     const printTest = (e: any, Specimen: SpecimenType) => { openNewWindow(`test_${Specimen['idSpecimen']}`, `Visualizador Reporte || Prueba Nro [${Specimen['idSpecimen']}] - Fecha: ${Specimen['beginTime']}`, `/printer?idSpecimen=${Specimen['idSpecimen']}`); };
 
     const deleteTest = (e: any, Specimen: SpecimenType) => {
-        QueryService.DELETE.Specimen([Specimen['idSpecimen']]);
+        // QueryService.DELETE.Specimen([Specimen['idSpecimen']]);
         const index = specimens.findIndex((specimen: QuerySpecimenTest) => specimen['idSpecimen'] === Specimen['idSpecimen']);
         specimens.splice(index, 1);
+        tableUpdate(tableUpdated + 1);
         setTableUpdated(tableUpdated + 1);
-        tableUpdate(tableUpdated);
     };
 
     const columns: TableColumnsType<SpecimenType> = [
         { title: 'ID Especimen', dataIndex: 'idSpecimen', key: 'idSpecimen' },
+        { title: 'Prueba N°', dataIndex: 'testNumber', key: 'testNumber' },
         { title: 'Inicio', dataIndex: 'begin', key: 'begin' },
         { title: 'Fin', dataIndex: 'end', key: 'end' },
-        { title: 'Numero de Prueba', dataIndex: 'testNumber', key: 'testNumber' },
         { title: 'Duración', dataIndex: 'duration', key: 'duration' },
         { title: 'Operador', dataIndex: 'operator', key: 'operator' },
         {
@@ -116,7 +116,7 @@ const SpecimenTable: FunctionComponent<Props> = ({ specimens, rowSelection, tabl
 
     useEffect(() => {
         const loadSpecimens = () => {
-            let myData: ExpandedDataType[] = [];
+            let myData: SpecimenType[] = [];
             specimens.forEach((specimen: QuerySpecimenTest) => {
                 myData.push({
                     key: specimen['idSpecimen'],
@@ -124,6 +124,7 @@ const SpecimenTable: FunctionComponent<Props> = ({ specimens, rowSelection, tabl
                     begin: specimen['beginTime'],
                     end: specimen['endTime'],
                     duration: specimen['duration'],
+                    testNumber: specimen['testNumber'],
                     operator: specimen['operator']
                 });
             });

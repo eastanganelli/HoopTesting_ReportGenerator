@@ -9,6 +9,7 @@ interface QuerySpecimenTest {
     idSpecimen: number;
     beginTime: string;
     endTime: string;
+    testNumber: number;
     duration: string;
     operator: string;
 };
