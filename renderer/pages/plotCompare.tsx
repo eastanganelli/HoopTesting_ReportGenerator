@@ -1,49 +1,91 @@
 import { useState, useEffect, FunctionComponent } from 'react';
 import { useRouter } from 'next/router';
-import { Layout, Table } from 'antd';
-import type { TableColumnsType } from 'antd';
+import { Layout, Table, Checkbox } from 'antd';
+import type { CheckboxOptionType, TableColumnsType } from 'antd';
 
 import QueryService from '../utils/database/query';
 
-import type { TestData } from '../interfaces/query';
+import type { TestCompare } from '../interfaces/query';
 import type { CompareType } from '../interfaces/table';
 
 const { Content } = Layout;
 
 const columns: TableColumnsType<CompareType> = [
-    { title: 'ID Muestra', dataIndex: 'idSample', key: 'idSample', fixed: 'left' },
-    { title: 'ID Especimen', dataIndex: 'idSpecimen', key: 'idSpecimen', fixed: 'left' },
-    { title: 'Prueba N°', dataIndex: 'testNumber', key: 'testNumber', fixed: 'left' },
-    { title: 'Temperatura', dataIndex: 'targetTemperature', key: 'targetTemperature' },
-    { title: 'Presión', dataIndex: 'targetPressure', key: 'targetPressure' },
-    { title: 'Esfuerzo', dataIndex: 'hoopStress', key: 'hoopStress' },
-    { title: 'Estándard', dataIndex: 'standard', key: 'standard' },
-    { title: 'Material', dataIndex: 'material', key: 'material' },
-    { title: 'Especificación', dataIndex: 'specification', key: 'specification' },
-    { title: 'Diámetro Real', dataIndex: 'diameterReal', key: 'diameterReal' },
-    { title: 'Diámetro Nominal', dataIndex: 'diameterNominal', key: 'diameterNominal' },
-    { title: 'Espesor', dataIndex: 'wallThickness', key: 'wallThickness' },
-    { title: 'Operador', dataIndex: 'operator', key: 'operator' },
-    { title: 'Ambiente', dataIndex: 'enviroment', key: 'enviroment' },
-    { title: 'Inicio', dataIndex: 'beginTime', key: 'beginTime' },
-    { title: 'Fin', dataIndex: 'endTime', key: 'endTime' },
-    { title: 'Duración', dataIndex: 'duration', key: 'duration' },
-    { title: 'Conteos', dataIndex: 'counts', key: 'counts' },
-    { title: 'Prueba', dataIndex: 'testName', key: 'testName' },
-    { title: 'Tapas', dataIndex: 'endCap', key: 'endCap' },
-    { title: 'Falla', dataIndex: 'fail', key: 'fail' },
-    { title: 'Observaciones', dataIndex: 'remark', key: 'remark' },
+    { title: 'ID Muestra', dataIndex: 'idSample', key: 'idSample', fixed: 'left', width: 85 },
+    { title: 'ID Especimen', dataIndex: 'idSpecimen', key: 'idSpecimen', fixed: 'left', width: 90 },
+    { title: 'Prueba N°', dataIndex: 'testNumber', key: 'testNumber', fixed: 'left', width: 85 },
+    { title: 'Muestras', dataIndex: 'counts', key: 'counts', width: 100 },
+    { title: 'Estándard', dataIndex: 'standard', key: 'standard', width: 150 },
+    { title: 'Material', dataIndex: 'material', key: 'material', width: 125 },
+    { title: 'Especificación', dataIndex: 'specification', key: 'specification', width: 125 },
+    { title: 'Diámetro Real [mm]', dataIndex: 'diameterReal', key: 'diameterReal', width: 100 },
+    { title: 'Diámetro Nominal [mm]', dataIndex: 'diameterNominal', key: 'diameterNominal', width: 100 },
+    { title: 'Espesor [mm]', dataIndex: 'wallThickness', key: 'wallThickness', width: 100 },
+    { title: 'Temperatura  [°C]', dataIndex: 'targetTemperature', key: 'targetTemperature', width: 100 },
+    { title: 'Presión [bar]', dataIndex: 'targetPressure', key: 'targetPressure', width: 100 },
+    { title: 'Entorno', dataIndex: 'enviroment', key: 'enviroment', width: 100 },
+    { title: 'Inicio', dataIndex: 'beginTime', key: 'beginTime', width: 150 },
+    { title: 'Fin', dataIndex: 'endTime', key: 'endTime', width: 150 },
+    { title: 'Duración', dataIndex: 'duration', key: 'duration', width: 100 },
+    { title: 'Tapa', dataIndex: 'endCap', key: 'endCap', width: 100 },
+    { title: 'Operador', dataIndex: 'operator', key: 'operator', width: 150 , hidden: true },
+    { title: 'Falla', dataIndex: 'fail', key: 'fail', hidden: true },
+    { title: 'Observaciones', dataIndex: 'remark', key: 'remark', hidden: true },
 ];
+
+const defaultCheckedList = columns.map((column) => { if(column.key !== 'operator' && column.key !== "fail" && column.key !== "remark") { return column.key as string; } });
 
 const testSample: FunctionComponent = () => {
     const { query, isReady } = useRouter();
     const [myTest, setMyTest] = useState<CompareType[]>([]);
+    const [checkedList, setCheckedList] = useState(defaultCheckedList);
 
     const loadCompareTable = async (idsSpecimens: string) => {
-        const data: CompareType[] = await QueryService.SELECT.TEST.TestCompare([idsSpecimens]);
-        await console.log('Data:', data);
-        await setMyTest(data);
+        const resultQueryy: TestCompare[] = await QueryService.SELECT.TEST.TestCompare([idsSpecimens]);
+        let tableData: CompareType[] = [];
+
+        resultQueryy.forEach((Test: TestCompare) => {
+            tableData.push({
+                key: Number(Test["idSpecimen"]),
+                idSample: Number(Test["idSample"]),
+                standard: Test["standard"],
+                material: Test["material"],
+                specification: Test["specification"],
+                diameterReal: Test["diameterReal"],
+                diameterNominal: Test["diameterNominal"],
+                wallThickness: Test["wallThickness"],
+                lengthTotal: Test["lengthTotal"],
+                lengthFree: Test["lengthFree"],
+                targetTemperature: Test["targetTemperature"],
+                targetPressure: Test["targetPressure"],
+                conditionalPeriod: Test["conditionalPeriod"],
+                idSpecimen: Number(Test["idSpecimen"]),
+                operator: Test["operator"],
+                enviroment: Test["enviroment"],
+                beginTime: Test["beginTime"],
+                endTime: Test["endTime"],
+                duration: Test["duration"],
+                counts: Test["counts"],
+                testName: Test["testName"],
+                testNumber: Test["testNumber"],
+                endCap: Test["endCap"],
+                fail: Test["fail"],
+                remark: Test["remark"],
+            });
+        });
+
+        await setMyTest(tableData);
     };
+    const options = columns.map(({ key, title }) => ({
+        label: title,
+        value: key,
+        disabled: (key === 'idSample' || key === 'idSpecimen' || key === 'testNumber' ? true : false)
+    }));
+
+    const newColumns = columns.map((item) => ({
+        ...item,
+        hidden: !checkedList.includes(item.key as string)
+    }));
 
     useEffect(() => {
         const idsSpecimens: string = String(query['idSpecimens']) as string;
@@ -53,10 +95,11 @@ const testSample: FunctionComponent = () => {
     }, [isReady]);
 
     return (
-        <Layout style={{ background: "lightgray", minHeight: "98vh", overflow: "auto" }}>
-            <Layout style={{ padding: '12px', minHeight: "98vh", overflow: "auto" }}>
-                <Content style={{ padding: 24, background: 'white', borderRadius: 25, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: "1vw" }}>
-                    <Table columns={columns} dataSource={myTest} scroll={{ x: 2800 }} />
+        <Layout style={{ background: "lightgrey", minHeight: "98vh", overflow: "auto" }}>
+            <Layout>
+                <Content style={{ padding: 24, background: 'white', borderRadius: 25, alignItems: 'center', justifyContent: 'center', fontSize: "1vw" }}>
+                    <><Checkbox.Group value={checkedList} options={options as CheckboxOptionType[]} onChange={(value) => { setCheckedList(value as string[]) }} /></>
+                    <><Table style={{ paddingTop: 20 }} columns={newColumns} dataSource={myTest} scroll={{ x: 2800 }} pagination={{ position: [] }} /></>
                 </Content>
             </Layout>
         </Layout>

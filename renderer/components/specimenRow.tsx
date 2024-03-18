@@ -58,7 +58,7 @@ const SpecimenTable: FunctionComponent<Props> = ({ specimens, rowSelection, tabl
         });
     };
 
-    const printTest = (e: any, Specimen: SpecimenType) => { openNewWindow(`test_${Specimen['idSpecimen']}`, `Visualizador Reporte || Prueba Nro [${Specimen['idSpecimen']}] - Fecha: ${Specimen['beginTime']}`, `/printer?idSpecimen=${Specimen['idSpecimen']}`); };
+    const printTest = (e: any, Specimen: SpecimenType) => { openNewWindow(`test_${Specimen['idSpecimen']}`, `Prueba Nro [${Specimen['idSpecimen']}] - Fecha: ${Specimen['beginTime']}`, `/printer?idSpecimen=${Specimen['idSpecimen']}`); };
 
     const deleteTest = (e: any, Specimen: SpecimenType) => {
         // QueryService.DELETE.Specimen([Specimen['idSpecimen']]);
@@ -118,6 +118,8 @@ const SpecimenTable: FunctionComponent<Props> = ({ specimens, rowSelection, tabl
         const loadSpecimens = () => {
             let myData: SpecimenType[] = [];
             specimens.forEach((specimen: QuerySpecimenTest) => {
+
+                console.log(specimen['idSpecimen']);
                 myData.push({
                     key: specimen['idSpecimen'],
                     idSpecimen: specimen['idSpecimen'],

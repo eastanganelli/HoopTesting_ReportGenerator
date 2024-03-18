@@ -38,7 +38,7 @@ const IndexPage = () => {
 	}, []);
 
 	return (
-		<Layout style={{ background: "lightgray", minHeight: "98vh", overflow: "auto" }}>
+		<Layout style={{ background: "lightgrey", minHeight: "98vh", overflow: "auto" }}>
 			<FloatButton
 				tooltip="Abrir configuración"
 				icon={<SettingOutlined />}

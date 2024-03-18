@@ -20,6 +20,7 @@ interface SpecimenType {
 };
 
 interface CompareType {
+    key: Key;
     idSample: number;
     standard: string;
     material: string;
@@ -31,7 +32,6 @@ interface CompareType {
     lengthFree: number;
     targetTemperature: number;
     targetPressure: number;
-    hoopStress: number;
     conditionalPeriod: string;
     idSpecimen: number;
     operator: string;
