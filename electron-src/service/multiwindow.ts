@@ -72,7 +72,7 @@ const refreshWindow = (windowID: string): void => {
 	if (myActiveWindow !== undefined) {
 		myActiveWindow.reload();
 	}
-}
+};
 
 ipcMain.on('new-window', async (event, params: winParams) => {
 	try {

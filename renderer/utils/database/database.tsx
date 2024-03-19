@@ -1,9 +1,9 @@
 import type { DatabaseConfig } from '../../../electron-src/service/database';
 
 const DatabaseService = {
-    CONNECT: (): Promise<any> => {
+    CONNECT: (wasClicked: boolean): Promise<any> => {
         return new Promise((resolve, reject) => {
-            global.ipcRenderer.send('database-connect');
+            global.ipcRenderer.send('database-connect', { clicked: wasClicked });
             global.ipcRenderer.on('database-connected', (event, response: string) => { resolve(response); });
             global.ipcRenderer.on('database-error', (event, error) => { reject(error); });
         });

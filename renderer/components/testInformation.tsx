@@ -1,7 +1,7 @@
 import dynamic from 'next/dynamic';
 import { CSSProperties, useState, FunctionComponent } from 'react';
 import { Typography, Descriptions } from 'antd';
-const PlotTestResult = dynamic(() => import('./plot'), { ssr: false });
+const PlotTestResult = dynamic(() => import('./testPlot'), { ssr: false });
 
 import type { TestData, TestDataValues } from '../interfaces/query';
 
@@ -16,7 +16,7 @@ const paragraphEditableStyle: CSSProperties = {
 
 interface Props { myTest: TestData; myData: TestDataValues[]; changesOnSpecimen: (testName: string, operator: string, fail: string, reMark: string) => void; }
 
-const testSample: FunctionComponent<Props> = ({ myTest, myData, changesOnSpecimen }: Props) => {
+const testInformation: FunctionComponent<Props> = ({ myTest, myData, changesOnSpecimen }: Props) => {
     const [testName, setTestName] = useState<string>(myTest?.mySpecimen?.testName);
     const [operator, setOperator] = useState<string>(myTest?.mySpecimen?.operator);
     const [fail, setFail] = useState<string>((myTest?.mySpecimen?.fail !== `` ? myTest?.mySpecimen?.fail : 'Sin Fallas'));
@@ -95,4 +95,4 @@ const testSample: FunctionComponent<Props> = ({ myTest, myData, changesOnSpecime
     );
 }
 
-export default testSample;
+export default testInformation;

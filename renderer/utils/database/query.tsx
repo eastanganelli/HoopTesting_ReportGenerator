@@ -61,7 +61,8 @@ const QueryService = {
                             testNumber: test['mySpecimen']['testNumber'],
                             endCap: test['mySpecimen']['endCap'],
                             fail: test['mySpecimen']['fail'],
-                            remark: test['mySpecimen']['remark']
+                            remark: test['mySpecimen']['remark'],
+                            myData: test['myData']
                         });
                     });
                     resolve(parseData);

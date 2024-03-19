@@ -11,6 +11,7 @@
 	"description": "A minimal Electron application written with Typescript",
 	"main": "main/index.js",
 	"scripts": {
+		"install": "npm install",
 		"clean": "rimraf dist main renderer/out renderer/.next",
 		"start": "npm run build && electron .",
 		"build-renderer": "next build renderer",

@@ -14,9 +14,9 @@ type FieldType = {
 
 const onFinish: FormProps<FieldType>["onFinish"] = (values) => {
     DatabaseService.SAVE(values.host, values.port, values.username, values.password).then((response) => {
-        message.success('Configuración guardada');
+        message.success(response);
     }).catch((error) => {
-        message.error('Error al guardar la configuración');
+        message.error(error);
     });
 };
 
@@ -27,8 +27,16 @@ const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
 const DatabaseConfiguration: FunctionComponent = () => {
     const [dbConfig, setDBConfig] = useState<DatabaseConfig>(null);
 
+    const connectDatabase = () => {
+        DatabaseService.CONNECT(true).then((response) => {
+            message.success(response);
+        }).catch((error) => {
+            message.error(error);
+        });
+    };
+
     return (
-        <div>
+        <>
             <Divider orientation="left">{`Configuración`}</Divider>
             <Collapse
                 defaultActiveKey={['1']}
@@ -81,7 +89,7 @@ const DatabaseConfiguration: FunctionComponent = () => {
                                 <Form.Item>
                                     <Space>
                                         <Button type="primary" icon={<SaveOutlined />} htmlType="submit" ghost>{/* {`Guardar`} */}</Button>
-                                        <Button type="primary" icon={<ConsoleSqlOutlined />} htmlType="submit" ghost>{/* {`Conectar`} */}</Button>
+                                        <Button type="primary" icon={<ConsoleSqlOutlined />} onClick={connectDatabase} ghost>{/* {`Conectar`} */}</Button>
                                     </Space>
                                 </Form.Item>
                             </Form>
@@ -89,7 +97,7 @@ const DatabaseConfiguration: FunctionComponent = () => {
                     }
                 ]}
             />
-        </div>
+        </>
 
     );
 };

@@ -82,6 +82,7 @@ interface TestCompare{
     endCap: string;
     fail: string;
     remark: string;
+    myData: TestDataValues[];
 };
 
 export type { QuerySampleTest, QuerySpecimenTest, TestData, TestSampleValue, TestSpecimenValue, TestDataValues, TestCompare };

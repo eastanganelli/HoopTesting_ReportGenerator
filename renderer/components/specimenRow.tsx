@@ -6,7 +6,7 @@ import { Table, Space, Button, Modal, message, Popconfirm } from 'antd';
 import openNewWindow from '../utils/newWindows';
 import QueryService from '../utils/database/query';
 
-const TestSample = dynamic(() => import('./testSample'), { ssr: false });
+const TestInformation = dynamic(() => import('./testInformation'), { ssr: false });
 
 import type { TableColumnsType } from 'antd';
 import type { QuerySpecimenTest } from '../interfaces/query';
@@ -40,7 +40,7 @@ const SpecimenTable: FunctionComponent<Props> = ({ specimens, rowSelection, tabl
 
                 info({
                     title: `Prueba ID: ${Specimen['idSpecimen']}`,
-                    content: (<TestSample myTest={myTest[0]} myData={TestResults} changesOnSpecimen={updateSpecimen} />),
+                    content: (<TestInformation myTest={myTest[0]} myData={TestResults} changesOnSpecimen={updateSpecimen} />),
                     width: "80vw",
                     closable: true,
                     okText: "Guardar",
@@ -58,7 +58,7 @@ const SpecimenTable: FunctionComponent<Props> = ({ specimens, rowSelection, tabl
         });
     };
 
-    const printTest = (e: any, Specimen: SpecimenType) => { openNewWindow(`test_${Specimen['idSpecimen']}`, `Prueba Nro [${Specimen['idSpecimen']}] - Fecha: ${Specimen['beginTime']}`, `/printer?idSpecimen=${Specimen['idSpecimen']}`); };
+    const printTest = (e: any, Specimen: SpecimenType) => { openNewWindow(`test_${Specimen['idSpecimen']}`, `Prueba Nro [${Specimen['idSpecimen']}] - Fecha: ${Specimen['beginTime']}`, `/printTest?idSpecimen=${Specimen['idSpecimen']}`); };
 
     const deleteTest = (e: any, Specimen: SpecimenType) => {
         // QueryService.DELETE.Specimen([Specimen['idSpecimen']]);

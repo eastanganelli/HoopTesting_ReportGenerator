@@ -1,15 +1,6 @@
-import { ipcMain } from "electron";
+import { ipcMain, app } from "electron";
 import settings from 'electron-settings';
 import { createPool, Pool } from 'mysql2/promise';
-import { refreshWindow } from "./multiwindow";
-
-/* const DBCONFIG = {
-	HOST: "localhost",
-	PORT: 33061,
-	USER: "reportGenerator",
-	PASSWORD: "STEL_ReportGenerator",
-	DATABASE: "stel_db_data"
-}; */
 
 export interface DatabaseConfig {
 	HOST: string;
@@ -47,11 +38,13 @@ const myDB = {
 	}
 }
 
-ipcMain.on('database-connect', async (event) => {
+ipcMain.on('database-connect', async (event, requestData: { clicked: boolean }) => {
 	try {
 		globalPool = await myDB.connect();
-		event.reply('database-connected', 'Connection Successful');
-		refreshWindow('main-window');
+		if(requestData.clicked) {
+			setTimeout(() => { app.relaunch(); app.exit(); }, 4000);
+			event.reply('database-connected', 'Base de Datos: La aplicación se reiniciará para aplicar los cambios en la conexión!');
+		} else { event.reply('database-connected', 'Base de Datos: Conexión Exitosa!'); }
 	} catch (error: any) {
 		event.reply('database-error', error.message);
 	}
@@ -60,7 +53,7 @@ ipcMain.on('database-connect', async (event) => {
 ipcMain.on('database-isconnected', async (event) => {
 	try {
 		globalPool = await myDB.get();
-		if(globalPool !== undefined) { event.reply('database-connected', 'Connection Successful'); }
+		if(globalPool !== undefined) { event.reply('database-connected', 'Base de Datos: Conexión Exitosa!'); }
 		else { throw new Error('No Connection'); }
 	} catch (error: any) {
 		event.reply('database-error', error.message);
@@ -69,7 +62,7 @@ ipcMain.on('database-isconnected', async (event) => {
 
 ipcMain.on('database-save', async (event, requestData: DatabaseConfig) => {
 	settings.set('dbConfig', { data: JSON.stringify(requestData) }).then(() => {
-		event.reply('database-save-succes', 'Configuración guardada exitosamente');
+		event.reply('database-save-succes', 'Base de Datos: Configuración Guardada!');
 	}).catch((error) => {
 		event.reply('database-save-error', error.message);
 	});
