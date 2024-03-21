@@ -75,15 +75,21 @@ const QueryService = {
         }
     },
     UPDATE: {
-        Specimen: (queryData: any[] | string[] | number[]): void => {
+        Specimen: (queryData: any[] | string[] | number[]): Promise<string> => {
             const SpecimenQuery: string = "CALL updateSpecimen(?,?,?,?,?)";
-            Query(SpecimenQuery, queryData).catch((error) => { console.error("Error updating specimen:", error) });
+            return new Promise<string>((resolve, reject) => {
+                Query(SpecimenQuery, queryData).catch((error) => { console.error("Base de Datos: Error al actualizar!", error) })
+                .then(() => { resolve("Base de Datos: Actualización Exitosa!"); });
+            });
         }
     },
     DELETE: {
-        Specimen: (queryData: any[] | string[] | number[]) => {
+        Specimen: (queryData: any[] | string[] | number[]): Promise<string> => {
             const SpecimenQuery: string = "CALL deleteTest(?)";
-            Query(SpecimenQuery, queryData).catch((error) => { console.error("Error deleting specimen:", error) });
+            return new Promise<string>((resolve, reject) => {
+                Query(SpecimenQuery, queryData).catch((error) => { console.error("Base de Datos: Error al eliminar Prueba!", error) })
+                .then(() => { resolve("Base de Datos: Eliminación Exitosa!"); });
+            });
         }
     }
 }

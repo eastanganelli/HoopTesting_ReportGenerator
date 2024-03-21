@@ -1,9 +1,10 @@
-import { FunctionComponent, useState } from 'react';
+import { FunctionComponent, useEffect, useState } from 'react';
 import { Button, Form, Collapse, Divider, type FormProps, Input, Space, message } from 'antd';
 import { ConsoleSqlOutlined, SaveOutlined } from '@ant-design/icons';
 import DatabaseService from '../utils/database/database';
 
 import type { DatabaseConfig } from '../../electron-src/service/database';
+import { set } from 'electron-settings';
 
 type FieldType = {
     host?: string;
@@ -24,20 +25,21 @@ const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
     console.log('Failed:', errorInfo);
 };
 
+const defaultConfig: DatabaseConfig = { HOST: '', PORT: 0, USER: '', PASSWORD : '', DATABASE: '' };
+
 const DatabaseConfiguration: FunctionComponent = () => {
-    const [dbConfig, setDBConfig] = useState<DatabaseConfig>(null);
+    const [dbConfig, setDBConfig] = useState<DatabaseConfig>(defaultConfig);
 
     const connectDatabase = () => {
-        DatabaseService.CONNECT(true).then((response) => {
-            message.success(response);
-        }).catch((error) => {
-            message.error(error);
-        });
+        DatabaseService.CONNECT(true).then((response) => { message.success(response); }).catch((error) => { message.error(error); });
     };
+
+    useEffect(() => {
+        DatabaseService.READ().then((response: DatabaseConfig) => { setDBConfig(response); }).catch((error) => { setDBConfig(defaultConfig); })
+    }, []);
 
     return (
         <>
-            <Divider orientation="left">{`Configuración`}</Divider>
             <Collapse
                 defaultActiveKey={['1']}
                 ghost
@@ -58,28 +60,31 @@ const DatabaseConfiguration: FunctionComponent = () => {
                                     label="Host"
                                     name="host"
                                     rules={[{ required: true, message: 'Dirección del Host' }]}
+                                    initialValue={dbConfig['HOST'] as string}
                                 >
                                     <Input />
                                 </Form.Item>
 
                                 <Form.Item<FieldType>
-                                    label="Port"
+                                    label="Puerto"
                                     name="port"
                                     rules={[{ required: true, message: 'Puerto' }]}
+                                    initialValue={dbConfig['PORT'] as number}
                                 >
                                     <Input />
                                 </Form.Item>
 
                                 <Form.Item<FieldType>
-                                    label="Username"
+                                    label="Usuario"
                                     name="username"
                                     rules={[{ required: true, message: 'Please input your username!' }]}
+                                    initialValue={dbConfig['USER'] as string}
                                 >
                                     <Input />
                                 </Form.Item>
 
                                 <Form.Item<FieldType>
-                                    label="Password"
+                                    label="Contraseña"
                                     name="password"
                                     rules={[{ required: true, message: 'Please input your password!' }]}
                                 >

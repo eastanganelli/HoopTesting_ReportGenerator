@@ -1,6 +1,5 @@
 import dynamic from 'next/dynamic';
 import { useState, useEffect, FunctionComponent } from 'react';
-import { PlusOutlined, MinusOutlined, EditOutlined, FilePdfOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Table, Space, Button, Modal, message, Popconfirm } from 'antd';
 
 import openNewWindow from '../utils/newWindows';
@@ -12,6 +11,8 @@ import type { TableColumnsType } from 'antd';
 import type { QuerySpecimenTest } from '../interfaces/query';
 import type { SpecimenType } from '../interfaces/table';
 import type { TestData, TestDataValues } from '../interfaces/query';
+
+import { PlusOutlined, MinusOutlined, EditOutlined, FilePdfOutlined, DeleteOutlined } from '@ant-design/icons';
 
 interface Props { specimens: QuerySpecimenTest[]; rowSelection: { selectedRowKeys: number[], onChange: (idTest: number) => void }; tableUpdate: (value: number) => void; };
 
@@ -35,7 +36,6 @@ const SpecimenTable: FunctionComponent<Props> = ({ specimens, rowSelection, tabl
                     operator = operatorInput;
                     fail = failInput;
                     reMark = reMarkInput;
-                    //console.log('Params needs update in DB', testName, operator, fail, reMark);
                 };
 
                 info({
@@ -46,11 +46,12 @@ const SpecimenTable: FunctionComponent<Props> = ({ specimens, rowSelection, tabl
                     okText: "Guardar",
                     afterClose() {
                         if (testName !== "" || operator !== "" || fail !== "" || reMark !== "") {
-                            console.log('Params needs update in DB', testName, operator, fail, reMark);
-                            QueryService.UPDATE.Specimen([Specimen['idSpecimen'], testName, operator, fail, reMark]);
-                            const index = specimens.findIndex((specimen: QuerySpecimenTest) => specimen['idSpecimen'] === Specimen['idSpecimen']);
-                            specimens[index]['operator'] = operator;
-                            setTableUpdated(tableUpdated + 1);
+                            QueryService.UPDATE.Specimen([Specimen['idSpecimen'], testName, operator, fail, reMark]).then((response) => {
+                                const index = specimens.findIndex((specimen: QuerySpecimenTest) => specimen['idSpecimen'] === Specimen['idSpecimen']);
+                                specimens[index]['operator'] = operator;
+                                setTableUpdated(tableUpdated + 1);
+                                message.success(response);
+                            }).catch((error) => { message.error(error); });
                         }
                     }
                 });
@@ -58,14 +59,16 @@ const SpecimenTable: FunctionComponent<Props> = ({ specimens, rowSelection, tabl
         });
     };
 
-    const printTest = (e: any, Specimen: SpecimenType) => { openNewWindow(`test_${Specimen['idSpecimen']}`, `Prueba Nro [${Specimen['idSpecimen']}] - Fecha: ${Specimen['beginTime']}`, `/printTest?idSpecimen=${Specimen['idSpecimen']}`); };
+    const printTest = (e: any, Specimen: SpecimenType) => { openNewWindow(`test_${Specimen['idSpecimen']}`, `Prueba Nro [${Specimen['idSpecimen']}] - Fecha: ${Specimen['begin']}`, `/printTest?idSpecimen=${Specimen['idSpecimen']}`); };
 
     const deleteTest = (e: any, Specimen: SpecimenType) => {
-        // QueryService.DELETE.Specimen([Specimen['idSpecimen']]);
-        const index = specimens.findIndex((specimen: QuerySpecimenTest) => specimen['idSpecimen'] === Specimen['idSpecimen']);
-        specimens.splice(index, 1);
-        tableUpdate(tableUpdated + 1);
-        setTableUpdated(tableUpdated + 1);
+        QueryService.DELETE.Specimen([Specimen['idSpecimen']]).then((response) => {
+            const index = specimens.findIndex((specimen: QuerySpecimenTest) => specimen['idSpecimen'] === Specimen['idSpecimen']);
+            specimens.splice(index, 1);
+            tableUpdate(tableUpdated + 1);
+            setTableUpdated(tableUpdated + 1);
+            message.success(response);
+        }).catch((error) => { message.error(error); });
     };
 
     const columns: TableColumnsType<SpecimenType> = [
@@ -118,8 +121,6 @@ const SpecimenTable: FunctionComponent<Props> = ({ specimens, rowSelection, tabl
         const loadSpecimens = () => {
             let myData: SpecimenType[] = [];
             specimens.forEach((specimen: QuerySpecimenTest) => {
-
-                console.log(specimen['idSpecimen']);
                 myData.push({
                     key: specimen['idSpecimen'],
                     idSpecimen: specimen['idSpecimen'],
@@ -136,7 +137,7 @@ const SpecimenTable: FunctionComponent<Props> = ({ specimens, rowSelection, tabl
     }, [tableUpdated]);
 
     return (
-        <div>
+        <>
             {contextHolder}
             <Table
                 columns={columns}
@@ -144,7 +145,7 @@ const SpecimenTable: FunctionComponent<Props> = ({ specimens, rowSelection, tabl
                 pagination={{ disabled: false, size: "small", pageSize: 5, position: ["bottomCenter"] }}
             /* onChange={(...args) => { console.log(...args) }} */
             />
-        </div>
+        </>
     )
 }
 export default SpecimenTable;
