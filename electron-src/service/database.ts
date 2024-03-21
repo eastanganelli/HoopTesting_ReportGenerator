@@ -24,8 +24,7 @@ const myDB = {
 				if(response === undefined) { reject(new Error('No Data to Logging')); }
 
 				const DBCONFIG: DatabaseConfig = JSON.parse(response);
-
-				globalPool = createPool('mysql://' + DBCONFIG.USER + ':' + DBCONFIG.PASSWORD + '@' + DBCONFIG.HOST + ':' + DBCONFIG.PORT + '/' + DBCONFIG.DATABASE);
+				globalPool = createPool(`mysql://${DBCONFIG.USER}:${DBCONFIG.PASSWORD}@${DBCONFIG.HOST}:${DBCONFIG.PORT}/${DBCONFIG.DATABASE}`);
 				resolve(globalPool);
 			}).catch((error) => { reject(error); });
 		});
@@ -65,6 +64,18 @@ ipcMain.on('database-save', async (event, requestData: DatabaseConfig) => {
 		event.reply('database-save-succes', 'Base de Datos: Configuración Guardada!');
 	}).catch((error) => {
 		event.reply('database-save-error', error.message);
+	});
+});
+ipcMain.on('database-read', async (event) => {
+
+	settings.get('dbConfig.data').then((response: any) => {
+		if(response === undefined) { throw new Error('Base de Datos: No Hay Configuración!'); }
+		const DBCONFIG: DatabaseConfig = JSON.parse(response);
+		DBCONFIG['PASSWORD'] = '';
+		DBCONFIG['DATABASE'] = '';
+		event.reply('database-read-response', DBCONFIG);
+	}).catch((error) => {
+		event.reply('database-read-error', error.message);
 	});
 });
 

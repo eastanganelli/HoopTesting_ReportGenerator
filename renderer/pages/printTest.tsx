@@ -158,7 +158,7 @@ const PrinterPage: FunctionComponent = () => {
 									<Label value="Tiempo [Hora]" offset={1.5} />
 								</XAxis>
 								<YAxis yAxisId="left" dataKey="pressure" label={{ value: "Presión [Bar]", viewBox: { x: 85, y: 13 }, position: 'insideTopLeft' }} />
-								<YAxis yAxisId="right" dataKey="temperature" orientation="right" label={{ value: "Temperature [°C]", viewBox: { x: 475, y: 13 }, position: 'insideTopLeft' }} />
+								<YAxis yAxisId="right" dataKey="temperature" orientation="right" label={{ value: "Temperatura [°C]", viewBox: { x: 475, y: 13 }, position: 'insideTopLeft' }} />
 								<Line yAxisId="left" type="monotone" dataKey="pressure" name="Presión" stroke="#8884d8" scale='identity' dot={false} isAnimationActive={false} />
 								<Line yAxisId="right" type="monotone" dataKey="temperature" name="Temperatura" scale='identity' stroke="#82ca9d" dot={false} isAnimationActive={false} />
 							</LineChart>

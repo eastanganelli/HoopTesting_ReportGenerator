@@ -23,7 +23,7 @@ const testInformation: FunctionComponent<Props> = ({ myTest, myData, changesOnSp
     const [reMark, setReMark] = useState<string>((myTest?.mySpecimen?.remark !== `` ? myTest?.mySpecimen?.remark : 'Sin Observaciones'));
 
     return (
-        <div>
+        <>
             {/* Datos iniciales del Informe */}
             <Descriptions bordered>
                 <Descriptions.Item label="Nombre de la Prueba" span={2}>
@@ -91,7 +91,7 @@ const testInformation: FunctionComponent<Props> = ({ myTest, myData, changesOnSp
             </Descriptions>
 
             <PlotTestResult DataPlot={myData} />
-        </div>
+        </>
     );
 }
 

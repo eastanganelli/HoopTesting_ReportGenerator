@@ -1,4 +1,5 @@
 import { BrowserWindow, ipcMain } from 'electron';
+import isDev from 'electron-is-dev';
 //import Store from 'electron-store';
 
 let activeWindows: Array<BrowserWindow> = [];
@@ -37,7 +38,6 @@ const newWindow = (params: winParams): void => {
 	const myActiveWindow: BrowserWindow | undefined = activeWindows.find((window) => { if(window.title === params.windowTitle) { return window; } });
 
 	if (myActiveWindow !== undefined) {
-		// console.log('Window already exists:', myActiveWindow.id);
 		myActiveWindow.focus();
 		return;
 	}
@@ -46,9 +46,9 @@ const newWindow = (params: winParams): void => {
 		height: params.windowParams.height,
 		webPreferences: params.windowParams.webPreferences,
 	});
-	// win.setMenu(null);
+	
+	if(!isDev) { win.setMenu(null); }
 
-	// console.log('Creating new window:', win.id);
 	win.maximize();
 	win.setTitle(params.windowTitle);
 	win.loadURL('http://localhost:3000/' + params.windowPath);
@@ -57,7 +57,6 @@ const newWindow = (params: winParams): void => {
 	win.once('ready-to-show', () => { win.show(); });
 
 	win.on('close', () => {
-		// console.log('Window closed:', win.id);
 		if(activeWindows.length > 1 && win.id !== 1) {
 			activeWindows.find((window, index) => { if (window.id === win.id) { activeWindows.splice(index, 1); } });
 			win.close();

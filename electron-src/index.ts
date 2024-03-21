@@ -17,8 +17,8 @@ const handle = nextApp.getRequestHandler();
 // Prepare the renderer once the app is ready
 app.on('ready', async () => {
 	await nextApp.prepare();
-	await myDB.connect().catch((error: any) => { console.log(error); })
-
+	await myDB.connect().catch((error: any) => { console.log(error); });
+	
 	createServer((req: any, res: any) => {
 		const parsedUrl = parse(req.url, true);
 		handle(req, res, parsedUrl);
