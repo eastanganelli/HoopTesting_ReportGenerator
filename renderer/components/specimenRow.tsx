@@ -39,7 +39,7 @@ const SpecimenTable: FunctionComponent<Props> = ({ specimens, rowSelection, tabl
                 };
 
                 info({
-                    title: `Prueba ID: ${Specimen['idSpecimen']}`,
+                    title: `Prueba Nro.: ${Specimen['testNumber']} [ID: ${Specimen['idSpecimen']}]`,
                     content: (<TestInformation myTest={myTest[0]} myData={TestResults} changesOnSpecimen={updateSpecimen} />),
                     width: "80vw",
                     closable: true,

@@ -46,11 +46,11 @@ const testInformation: FunctionComponent<Props> = ({ myTest, myData, changesOnSp
                 {/* Sample Information */}
                 <Descriptions.Item label="Estándar" span={1}>{myTest?.mySample?.standard}</Descriptions.Item>
                 <Descriptions.Item label="Material" span={1}>{myTest?.mySample?.material}</Descriptions.Item>
-                <Descriptions.Item label="Especifición" span={1}>{myTest?.mySample?.specification}</Descriptions.Item>
+                <Descriptions.Item label="Especificación" span={1}>{myTest?.mySample?.specification}</Descriptions.Item>
                 {/* Enviroment */}
                 <Descriptions.Item label="Tapa de Extremo" span={1}>{myTest?.mySpecimen?.endCap}</Descriptions.Item>
                 <Descriptions.Item label="Entorno" span={1}>{myTest?.mySpecimen?.enviroment}</Descriptions.Item>
-                <Descriptions.Item label="Cantidad de Especimenes" span={1}>{myTest?.mySpecimen?.counts < 2 ? 'Muestra' : 'Muestras'} {myTest?.mySpecimen?.counts}</Descriptions.Item>
+                <Descriptions.Item label="Cantidad de Especimenes" span={1}>{myTest?.mySpecimen?.counts}</Descriptions.Item>
                 {/* Target Data */}
                 <Descriptions.Item label="Hoop Stress [Bar]" span={1}>{``}</Descriptions.Item>
                 <Descriptions.Item label="Presión [Bar]" span={1}>{myTest?.mySample?.targetPressure}</Descriptions.Item>
@@ -62,7 +62,7 @@ const testInformation: FunctionComponent<Props> = ({ myTest, myData, changesOnSp
                 {/* Diameter */}
                 <Descriptions.Item label="Diámetro Nominal [mm]" span={1}>{myTest?.mySample?.diameterNominal}</Descriptions.Item>
                 <Descriptions.Item label="Diámetro Real [mm]" span={1}>{myTest?.mySample?.diameterReal}</Descriptions.Item>
-                <Descriptions.Item label="Grosor Pared [mm]" span={2}>{myTest?.mySample?.diameterReal}</Descriptions.Item>
+                <Descriptions.Item label="Grosor Pared [mm]" span={2}>{myTest?.mySample?.wallThickness}</Descriptions.Item>
                 {/* Time */}
                 <Descriptions.Item label="Fecha de Inicio" span={1}>{myTest?.mySpecimen?.beginTime}</Descriptions.Item>
                 <Descriptions.Item label="Fecha de Finalización" span={1}>{myTest?.mySpecimen?.endTime}</Descriptions.Item>
