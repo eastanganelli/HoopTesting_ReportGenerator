@@ -59,7 +59,7 @@ const SpecimenTable: FunctionComponent<Props> = ({ specimens, rowSelection, tabl
         });
     };
 
-    const printTest = (e: any, Specimen: SpecimenType) => { openNewWindow(`test_${Specimen['idSpecimen']}`, `Prueba Nro [${Specimen['idSpecimen']}] - Fecha: ${Specimen['begin']}`, `/printTest?idSpecimen=${Specimen['idSpecimen']}`); };
+    const printTest = (e: any, Specimen: SpecimenType) => { openNewWindow(`test_${Specimen['idSpecimen']}`, `Generación de Informe > Prueba Nro [${Specimen['idSpecimen']}] - Fecha: ${Specimen['begin']}`, `/printTest?idSpecimen=${Specimen['idSpecimen']}`); };
 
     const deleteTest = (e: any, Specimen: SpecimenType) => {
         QueryService.DELETE.Specimen([Specimen['idSpecimen']]).then((response) => {

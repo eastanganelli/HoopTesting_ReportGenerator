@@ -52,7 +52,7 @@ const IndexPage = () => {
 						icon={<DiffOutlined />}
 						tooltip="Comparar Pruebas"
 						style={{ right: 72 }} 
-						onClick={() => { openNewWindow("testsCompare", `Comparación de Pruebas: ${selectedRowKeys.toString()}`, `/testsCompare?idSpecimens=${selectedRowKeys.toString()}`); }}
+						onClick={() => { openNewWindow("testsCompare", `Comparación de Pruebas: [${selectedRowKeys.toString()}]`, `/testsCompare?idSpecimens=${selectedRowKeys.toString()}`); }}
 					/>
 			}
 			<Layout>
