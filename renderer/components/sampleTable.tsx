@@ -20,9 +20,9 @@ const SampleTable: FunctionComponent<Props> = ({ rowSelection }: Props) => {
 
     const columns: TableColumnsType<SampleType> = [
         { title: 'ID Muestra', dataIndex: 'idSample', key: 'idSample' },
-        { title: 'Estándard', dataIndex: 'standard', key: 'standard' },
-        { title: 'Material', dataIndex: 'material', key: 'material' },
-        { title: 'Cantidad', dataIndex: 'count', key: 'count' }
+        { title: 'Estándard',  dataIndex: 'standard', key: 'standard' },
+        { title: 'Material',   dataIndex: 'material', key: 'material' },
+        { title: 'Cantidad',   dataIndex: 'count',    key: 'count' }
     ];
 
     const loadDataTable = () => {
