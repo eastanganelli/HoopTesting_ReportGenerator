@@ -36,7 +36,7 @@ const IndexPage = () => {
 	};
 
 	useEffect(() => {
-		DatabaseService.ISCONNECTED().then((response) => { message.success('Conectado a la Base de Datos'); }).catch((error) => { message.error('Error al conectar a la Base de Datos'); });
+		DatabaseService.ISCONNECTED().then((response) => { message.success(response); }).catch((error) => { message.error(error); });
 	}, []);
 
 	return (

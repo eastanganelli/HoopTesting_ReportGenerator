@@ -24,8 +24,13 @@ const myDB = {
 				if(response === undefined) { reject(new Error('No Data to Logging')); }
 
 				const DBCONFIG: DatabaseConfig = JSON.parse(response);
-				globalPool = createPool(`mysql://${DBCONFIG.USER}:${DBCONFIG.PASSWORD}@${DBCONFIG.HOST}:${DBCONFIG.PORT}/${DBCONFIG.DATABASE}`);
-				resolve(globalPool);
+				try {
+					globalPool = createPool(`mysql://${DBCONFIG.USER}:${DBCONFIG.PASSWORD}@${DBCONFIG.HOST}:${DBCONFIG.PORT}/${DBCONFIG.DATABASE}`);
+					resolve(globalPool);
+				} catch (error: any) {
+					globalPool = undefined;
+					reject(error);
+				}
 			}).catch((error) => { reject(error); });
 		});
 	},
@@ -43,19 +48,22 @@ ipcMain.on('database-connect', async (event, requestData: { clicked: boolean }) 
 		if(requestData.clicked) {
 			setTimeout(() => { app.relaunch(); app.exit(); }, 4000);
 			event.reply('database-connected', 'Base de Datos: La aplicación se reiniciará para aplicar los cambios en la conexión!');
-		} else { event.reply('database-connected', 'Base de Datos: Conexión Exitosa!'); }
+		}// } else { event.reply('database-connected', 'Base de Datos: Conexión Exitosa!'); }
 	} catch (error: any) {
-		event.reply('database-error', error.message);
+		event.reply('database-error', 'Base de Datos: Conexión No Exitosa!');
 	}
 });
 
 ipcMain.on('database-isconnected', async (event) => {
 	try {
 		globalPool = await myDB.get();
-		if(globalPool !== undefined) { event.reply('database-connected', 'Base de Datos: Conexión Exitosa!'); }
-		else { throw new Error('No Connection'); }
+		globalPool?.execute('SELECT 1').then(() => {
+			event.reply('database-connected', 'Base de Datos: Conexión Exitosa!');
+		}).catch(() => {
+			event.reply('database-error', 'Base de Datos: Conexión No Exitosa!');
+		});
 	} catch (error: any) {
-		event.reply('database-error', error.message);
+		event.reply('database-error', 'Base de Datos: Conexión No Exitosa!');
 	}
 });
 
