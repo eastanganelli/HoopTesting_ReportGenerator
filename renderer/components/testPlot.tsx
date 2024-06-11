@@ -7,9 +7,7 @@ interface Props { DataPlot: TestDataValues[]; };
 
 const plotTestResult: FunctionComponent<Props> = ({ DataPlot }: Props) => {
     const hoursInSeconds = [];
-    for (let i = Math.min(...DataPlot.map(d => d.key)); i <= Math.max(...DataPlot.map(d => d.key)); i += 3600) {
-        hoursInSeconds.push(i);
-    }
+    for (let i = Math.min(...DataPlot.map(d => d.key)); i <= Math.max(...DataPlot.map(d => d.key)); i += 3600) { hoursInSeconds.push(i); }
 
     return (
         <ResponsiveContainer height={(globalThis.innerHeight * 0.8) - 48}>
@@ -24,7 +22,7 @@ const plotTestResult: FunctionComponent<Props> = ({ DataPlot }: Props) => {
                     <Label value="Temperatura [°C]" angle={90} position="insideRight" />
                 </YAxis>
                 <Legend verticalAlign="top" />
-                <Line yAxisId="left" type="monotone" dataKey="pressure" name="Presión" stroke="#8884d8" scale='identity' dot={false} isAnimationActive={false}/>
+                <Line yAxisId="left"  type="monotone" dataKey="pressure"    name="Presión"     scale='identity' stroke="#8884d8" dot={false} isAnimationActive={false}/>
                 <Line yAxisId="right" type="monotone" dataKey="temperature" name="Temperatura" scale='identity' stroke="#82ca9d" dot={false} isAnimationActive={false}/>
             </LineChart>
         </ResponsiveContainer>

@@ -1,6 +1,6 @@
 import dynamic from 'next/dynamic';
 import { useState, useEffect, FunctionComponent } from 'react';
-import { Table, Space, Button, Modal, message, Popconfirm } from 'antd';
+import { Table, Space, Button, Modal, message, Popconfirm, Form } from 'antd';
 
 import openNewWindow from '../utils/newWindows';
 import QueryService from '../utils/database/query';
@@ -14,45 +14,60 @@ import type { TestData, TestDataValues } from '../interfaces/query';
 
 import { PlusOutlined, MinusOutlined, EditOutlined, FilePdfOutlined, DeleteOutlined } from '@ant-design/icons';
 
-interface Props { specimens: QuerySpecimenTest[]; rowSelection: { selectedRowKeys: number[], onChange: (idTest: number) => void }; tableUpdate: (value: number) => void; };
+interface Props { specimens: QuerySpecimenTest[]; rowSelection: { selectedRowKeys: number[], onChange: (idTest: number) => void }; };
 
 const { info } = Modal;
 
-const SpecimenTable: FunctionComponent<Props> = ({ specimens, rowSelection, tableUpdate }: Props) => {
-    const [tableUpdated, setTableUpdated] = useState<number>(0);
+const SpecimenTable: FunctionComponent<Props> = (Props: Props) => {
+    const { specimens, rowSelection } = Props;
+    const [specimensData, setSpecimensData] = useState<QuerySpecimenTest[]>(specimens);
     const [specimenData, setSpecimenData] = useState<SpecimenType[]>([]);
     const [messageApi, contextHolder] = message.useMessage();
+    const [mySpecimenForm] = Form.useForm();
 
     const viewTest = (e: any, Specimen: SpecimenType) => {
+        if(mySpecimenForm.isFieldsTouched()) { mySpecimenForm.resetFields(); }
         QueryService.SELECT.TEST.Test([Specimen['idSpecimen']]).then((myTest: TestData) => {
+            const auxTestData: TestData = { ...myTest[0] };
+            const formData = {
+                "operator": auxTestData['mySpecimen']['operator'],
+                "testName": auxTestData['mySpecimen']['testName'],
+                "standard": auxTestData['mySample']['standard'],
+                "material": auxTestData['mySample']['material'],
+                "specification": auxTestData['mySample']['specification'],
+                "endcap": auxTestData['mySample']['endCap'],
+                "enviroment": auxTestData['mySpecimen']['enviroment'],
+                "specimensCount": auxTestData['mySpecimen']['counts'],
+                "targetPressure": auxTestData['mySample']['targetPressure'],
+                "targetTemperature": auxTestData['mySample']['targetTemperature'],
+                "lengthTotal": auxTestData['mySample']['lengthTotal'],
+                "lengthFree": auxTestData['mySample']['lengthFree'],
+                "conditionalPeriod": auxTestData['mySample']['conditionalPeriod'],
+                "diameterNominal": auxTestData['mySample']['diameterNominal'],
+                "diameterReal": auxTestData['mySample']['diameterReal'],
+                "wallThickness": auxTestData['mySample']['wallThickness'],
+                "beginTime": auxTestData['mySpecimen']['beginTime'],
+                "endTime": auxTestData['mySpecimen']['endTime'],
+                "duration": auxTestData['mySpecimen']['duration'],
+                "fail": auxTestData['mySpecimen']['fail'],
+                "remark": auxTestData['mySpecimen']['remark']
+            };
+            mySpecimenForm.setFieldsValue(formData);
             QueryService.SELECT.TEST.Data([Specimen['idSpecimen']]).then((TestResults: TestDataValues[]) => {
-                let testName: string = "",
-                    operator: string = "",
-                    fail: string = "",
-                    reMark: string = "";
-
-                const updateSpecimen = (testNameInput: string, operatorInput: string, failInput: string, reMarkInput: string) => {
-                    testName = testNameInput;
-                    operator = operatorInput;
-                    fail = failInput;
-                    reMark = reMarkInput;
-                };
-
                 info({
                     title: `Prueba Nro.: ${Specimen['testNumber']} [ID: ${Specimen['idSpecimen']}]`,
-                    content: (<TestInformation myTest={myTest[0]} myData={TestResults} changesOnSpecimen={updateSpecimen} />),
+                    content: (<TestInformation myTestForm={mySpecimenForm} myData={TestResults} />),
                     width: "80vw",
                     closable: true,
                     okText: "Guardar",
-                    afterClose() {
-                        if (testName !== "" || operator !== "" || fail !== "" || reMark !== "") {
-                            QueryService.UPDATE.Specimen([Specimen['idSpecimen'], testName, operator, fail, reMark]).then((response) => {
-                                const index = specimens.findIndex((specimen: QuerySpecimenTest) => specimen['idSpecimen'] === Specimen['idSpecimen']);
-                                specimens[index]['operator'] = operator;
-                                setTableUpdated(tableUpdated + 1);
-                                message.success(response);
-                            }).catch((error) => { message.error(error); });
-                        }
+                    onOk: () => {
+                        QueryService.UPDATE.Specimen([Specimen['idSpecimen'], mySpecimenForm.getFieldValue('testName'), mySpecimenForm.getFieldValue('operator'), mySpecimenForm.getFieldValue('fail'), mySpecimenForm.getFieldValue('remark')]).then((response) => {
+                            const arrAux: QuerySpecimenTest[] = [...specimens];
+                            const index = arrAux.findIndex((specimen: QuerySpecimenTest) => specimen['idSpecimen'] === Specimen['idSpecimen']);
+                            arrAux[index]['operator'] = mySpecimenForm.getFieldValue('operator');
+                            setSpecimensData(arrAux);
+                            message.success(response);
+                        }).catch((error) => { message.error(error); });
                     }
                 });
             });
@@ -65,8 +80,6 @@ const SpecimenTable: FunctionComponent<Props> = ({ specimens, rowSelection, tabl
         QueryService.DELETE.Specimen([Specimen['idSpecimen']]).then((response) => {
             const index = specimens.findIndex((specimen: QuerySpecimenTest) => specimen['idSpecimen'] === Specimen['idSpecimen']);
             specimens.splice(index, 1);
-            tableUpdate(tableUpdated + 1);
-            setTableUpdated(tableUpdated + 1);
             message.success(response);
         }).catch((error) => { message.error(error); });
     };
@@ -89,7 +102,6 @@ const SpecimenTable: FunctionComponent<Props> = ({ specimens, rowSelection, tabl
                         onClick={
                             () => {
                                 rowSelection.onChange(record['idSpecimen']);
-                                setTableUpdated(tableUpdated + 1);
                                 messageApi.info({
                                     content: `${rowSelection.selectedRowKeys.length} de 5 seleccionados`,
                                     duration: 4,
@@ -120,7 +132,7 @@ const SpecimenTable: FunctionComponent<Props> = ({ specimens, rowSelection, tabl
     useEffect(() => {
         const loadSpecimens = () => {
             let myData: SpecimenType[] = [];
-            specimens.forEach((specimen: QuerySpecimenTest) => {
+            specimensData.forEach((specimen: QuerySpecimenTest) => {
                 myData.push({
                     key: specimen['idSpecimen'],
                     idSpecimen: specimen['idSpecimen'],
@@ -134,7 +146,7 @@ const SpecimenTable: FunctionComponent<Props> = ({ specimens, rowSelection, tabl
             setSpecimenData(myData);
         };
         loadSpecimens();
-    }, [tableUpdated]);
+    }, []);
 
     return (
         <>
@@ -143,7 +155,6 @@ const SpecimenTable: FunctionComponent<Props> = ({ specimens, rowSelection, tabl
                 columns={columns}
                 dataSource={[...specimenData]}
                 pagination={{ disabled: false, size: "small", pageSize: 5, position: ["bottomCenter"] }}
-            /* onChange={(...args) => { console.log(...args) }} */
             />
         </>
     )

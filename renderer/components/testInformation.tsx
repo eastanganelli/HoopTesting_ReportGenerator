@@ -1,98 +1,54 @@
 import dynamic from 'next/dynamic';
-import { CSSProperties, useState, FunctionComponent } from 'react';
-import { Typography, Descriptions } from 'antd';
+import { FunctionComponent } from 'react';
+import { Form, FormInstance, Row, Col, Input, InputNumber } from 'antd';
 const PlotTestResult = dynamic(() => import('./testPlot'), { ssr: false });
 
-import type { TestData, TestDataValues } from '../interfaces/query';
+import type { TestDataValues } from '../interfaces/query';
 
-const { Paragraph } = Typography;
+interface specimenForm { operator: string; testName: string; standard: string; material: string; specification: string; endcap: string; enviroment: string; specimensCount: number; targetPressure: number; targetTemperature: number; lengthTotal: number; lengthFree: number; conditionalPeriod: number; diameterNominal: number; diameterReal: number; wallThickness: number; beginTime: string; endTime: string; duration: number; fail: string; remark: string; };
 
-const paragraphEditableStyle: CSSProperties = {
-    borderBottom: "2px solid black",
-    display: 'flex',
-    textAlign: 'left',
-    fontFamily: 'Garamond',
-};
+interface Props { myTestForm: FormInstance<specimenForm>; myData: TestDataValues[]; }
 
-interface Props { myTest: TestData; myData: TestDataValues[]; changesOnSpecimen: (testName: string, operator: string, fail: string, reMark: string) => void; }
-
-const testInformation: FunctionComponent<Props> = ({ myTest, myData, changesOnSpecimen }: Props) => {
-    const [testName, setTestName] = useState<string>(myTest?.mySpecimen?.testName);
-    const [operator, setOperator] = useState<string>(myTest?.mySpecimen?.operator);
-    const [fail, setFail] = useState<string>((myTest?.mySpecimen?.fail !== `` ? myTest?.mySpecimen?.fail : 'Sin Fallas'));
-    const [reMark, setReMark] = useState<string>((myTest?.mySpecimen?.remark !== `` ? myTest?.mySpecimen?.remark : 'Sin Observaciones'));
+const testInformation: FunctionComponent<Props> = (Props: Props) => {
+    const { myTestForm, myData } = Props;
 
     return (
         <>
-            {/* Datos iniciales del Informe */}
-            <Descriptions bordered>
-                <Descriptions.Item label="Nombre de la Prueba" span={2}>
-                    <Paragraph style={paragraphEditableStyle} editable={{
-                        tooltip: "Editar Nombre de la Prueba", onChange: (e: string) => {
-                            setTestName(e);
-                            changesOnSpecimen(e, operator, fail, reMark);
-                        }, triggerType: ['text'], maxLength: 150
-                    }}>{testName}
-                    </Paragraph>
-                </Descriptions.Item>
-                <Descriptions.Item label="Operador" span={2}>
-                <Paragraph style={paragraphEditableStyle} editable={{
-                            tooltip: "Editar Operador", onChange: (e: string) => {
-                                setOperator(e);
-                                changesOnSpecimen(testName, e, fail, reMark);
-                            }, triggerType: ['text'], maxLength: 40
-                        }}>{operator}</Paragraph>
-                </Descriptions.Item>
-                {/* Sample Information */}
-                <Descriptions.Item label="Estándar" span={1}>{myTest?.mySample?.standard}</Descriptions.Item>
-                <Descriptions.Item label="Material" span={1}>{myTest?.mySample?.material}</Descriptions.Item>
-                <Descriptions.Item label="Especificación" span={1}>{myTest?.mySample?.specification}</Descriptions.Item>
-                {/* Enviroment */}
-                <Descriptions.Item label="Tapa de Extremo" span={1}>{myTest?.mySpecimen?.endCap}</Descriptions.Item>
-                <Descriptions.Item label="Entorno" span={1}>{myTest?.mySpecimen?.enviroment}</Descriptions.Item>
-                <Descriptions.Item label="Cantidad de Especimenes" span={1}>{myTest?.mySpecimen?.counts}</Descriptions.Item>
-                {/* Target Data */}
-                <Descriptions.Item label="Hoop Stress [Bar]" span={1}>{``}</Descriptions.Item>
-                <Descriptions.Item label="Presión [Bar]" span={1}>{myTest?.mySample?.targetPressure}</Descriptions.Item>
-                <Descriptions.Item label="Temperatura [°C]" span={1}>{myTest?.mySample?.targetTemperature}</Descriptions.Item>
-                {/* Length */}
-                <Descriptions.Item label="Longitud Total [mm]" span={1}>{myTest?.mySample?.lengthTotal}</Descriptions.Item>
-                <Descriptions.Item label="Longitud Libre [mm]" span={1}>{myTest?.mySample?.lengthFree}</Descriptions.Item>
-                <Descriptions.Item label="Período de Condicionamiento" span={1}>{myTest?.mySample?.conditionalPeriod}</Descriptions.Item>
-                {/* Diameter */}
-                <Descriptions.Item label="Diámetro Nominal [mm]" span={1}>{myTest?.mySample?.diameterNominal}</Descriptions.Item>
-                <Descriptions.Item label="Diámetro Real [mm]" span={1}>{myTest?.mySample?.diameterReal}</Descriptions.Item>
-                <Descriptions.Item label="Grosor Pared [mm]" span={2}>{myTest?.mySample?.wallThickness}</Descriptions.Item>
-                {/* Time */}
-                <Descriptions.Item label="Fecha de Inicio" span={1}>{myTest?.mySpecimen?.beginTime}</Descriptions.Item>
-                <Descriptions.Item label="Fecha de Finalización" span={1}>{myTest?.mySpecimen?.endTime}</Descriptions.Item>
-                <Descriptions.Item label="Tiempo de Prueba" span={2}>{myTest?.mySpecimen?.duration}</Descriptions.Item>
-                {/* State Information */}
-                <Descriptions.Item label="Tipo de falla" span={5}>
-                    <Paragraph
-                        style={paragraphEditableStyle} editable={{
-                            tooltip: "Click para editar", onChange: (e: string) => {
-                                setFail(e);
-                                changesOnSpecimen(testName, operator, e, reMark);
-                            }, triggerType: ['text'], maxLength: 255
-                        }}>{fail}
-                    </Paragraph>
-                </Descriptions.Item>
-                <Descriptions.Item label="Observación" span={5}>
-                    <Paragraph
-                        style={paragraphEditableStyle} editable={{
-                            tooltip: "Click para editar", onChange: (e: string) => {
-                                setReMark(e);
-                                changesOnSpecimen(testName, operator, fail, e);
-                            }, triggerType: ['text'], maxLength: 255
-                        }}>{reMark == null ? 'Sin Observaciones' : reMark}
-                    </Paragraph>
-                </Descriptions.Item>
-            </Descriptions>
-
+            <Form form={myTestForm} layout='horizontal'>
+                <Row gutter={[8, 8]}>
+                    <Col span={16}><Form.Item label="Nombre de la Prueba" name='testName'><Input type='text'/></Form.Item></Col>
+                    <Col span={8}><Form.Item label="Operador" name='operator'><Input type='text'/></Form.Item></Col>
+                    {/* Sample Information */}
+                    <Col span={8}><Form.Item label="Estándar" name='standard'><Input type='text' disabled/></Form.Item></Col>
+                    <Col span={8}><Form.Item label="Material" name='material'><Input type='text' disabled/></Form.Item></Col>
+                    <Col span={8}><Form.Item label="Especificación" name='specification'><Input type='text' disabled/></Form.Item></Col>
+                    {/* Eviroment */}
+                    <Col span={8}><Form.Item label="Tapa de Extremo" name='endcap'><Input type='text' disabled/></Form.Item></Col>
+                    <Col span={8}><Form.Item label="Entorno" name='enviroment'><Input type='text' disabled/></Form.Item></Col>
+                    <Col span={8}><Form.Item label="Cantidad de Especimenes" name='specimensCount'><Input type='text' disabled/></Form.Item></Col>
+                    {/* Target Data */}
+                    <Col span={8}><Form.Item label="Hoop Stress"><Input type='text' addonAfter={'Bar'} disabled/></Form.Item></Col>
+                    <Col span={8}><Form.Item label="Presión" name='targetPressure'><Input type='text' addonAfter={'Bar'} disabled/></Form.Item></Col>
+                    <Col span={8}><Form.Item label="Temperatura" name='targetTemperature'><Input type='text' addonAfter={'°C'} disabled/></Form.Item></Col>
+                    {/* Length */}
+                    <Col span={8}><Form.Item label="Longitud Total" name='lengthTotal'><Input type='text' addonAfter={'mm'} disabled/></Form.Item></Col>
+                    <Col span={8}><Form.Item label="Longitud Libre" name='lengthFree'><Input type='text' addonAfter={'mm'} disabled/></Form.Item></Col>
+                    <Col span={8}><Form.Item label="Período de Condicionamiento" name='conditionalPeriod'><Input type='text' disabled/></Form.Item></Col>
+                    {/* Diameter */}
+                    <Col span={8}><Form.Item label="Diámetro Nominal" name='diameterNominal'><Input type='text' addonAfter={'mm'} disabled/></Form.Item></Col>
+                    <Col span={8}><Form.Item label="Diámetro Real" name='diameterReal'><Input type='text' addonAfter={'mm'} disabled/></Form.Item></Col>
+                    <Col span={8}><Form.Item label="Grosor Pared" name='wallThickness'><Input type='text' addonAfter={'mm'} disabled/></Form.Item></Col>
+                    {/* Time */}
+                    <Col span={8}><Form.Item label="Fecha de Inicio" name='beginTime'><Input disabled/></Form.Item></Col>
+                    <Col span={8}><Form.Item label="Fecha de Finalización" name='endTime'><Input disabled/></Form.Item></Col>
+                    <Col span={8}><Form.Item label="Tiempo de Prueba" name='duration'><InputNumber disabled/></Form.Item></Col>
+                    {/* State Information */}
+                    <Col span={24}><Form.Item label="Tipo de Falla" name='fail'><Input type='text'/></Form.Item></Col>
+                    <Col span={24}><Form.Item label="Observación" name='remark'><Input type='text'/></Form.Item></Col>
+                </Row>
+            </Form>
             <PlotTestResult DataPlot={myData} />
         </>
     );
 }
-
 export default testInformation;
