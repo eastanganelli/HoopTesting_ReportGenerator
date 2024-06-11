@@ -46,11 +46,11 @@ const newWindow = (params: winParams): void => {
 		height: params.windowParams.height,
 		webPreferences: params.windowParams.webPreferences,
 	});
-	
+
 	if(!isDev) { win.setMenu(null); }
 
 	win.maximize();
-	win.setTitle(params.windowTitle);
+	win.setTitle(`Hoop Testing - ${params.windowTitle}`);
 	win.loadURL('http://localhost:3000/' + params.windowPath);
 	activeWindows.push(win);
 

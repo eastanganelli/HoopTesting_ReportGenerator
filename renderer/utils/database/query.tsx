@@ -78,7 +78,7 @@ const QueryService = {
         Specimen: (queryData: any[] | string[] | number[]): Promise<string> => {
             const SpecimenQuery: string = "CALL updateSpecimen(?,?,?,?,?)";
             return new Promise<string>((resolve, reject) => {
-                Query(SpecimenQuery, queryData).catch((error) => { console.error("Base de Datos: Error al actualizar!", error) })
+                Query(SpecimenQuery, queryData).catch((error) => { console.error("Base de Datos: Error al actualizar!", error); reject("Base de Datos: Error al actualizar!"); })
                 .then(() => { resolve("Base de Datos: Actualización Exitosa!"); });
             });
         }
@@ -87,7 +87,7 @@ const QueryService = {
         Specimen: (queryData: any[] | string[] | number[]): Promise<string> => {
             const SpecimenQuery: string = "CALL deleteTest(?)";
             return new Promise<string>((resolve, reject) => {
-                Query(SpecimenQuery, queryData).catch((error) => { console.error("Base de Datos: Error al eliminar Prueba!", error) })
+                Query(SpecimenQuery, queryData).catch((error) => { console.error("Base de Datos: Error al eliminar Prueba!", error); reject("Base de Datos: Error al eliminar Prueba!"); })
                 .then(() => { resolve("Base de Datos: Eliminación Exitosa!"); });
             });
         }

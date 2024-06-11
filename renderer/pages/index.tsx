@@ -36,7 +36,7 @@ const IndexPage = () => {
 	};
 
 	useEffect(() => {
-		DatabaseService.ISCONNECTED().then((response) => { message.success('Conectado a la Base de Datos'); }).catch((error) => { message.error('Error al conectar a la Base de Datos'); });
+		DatabaseService.ISCONNECTED().then((response) => { message.success(response); }).catch((error) => { message.error(error); });
 	}, []);
 
 	return (
@@ -52,7 +52,7 @@ const IndexPage = () => {
 						icon={<DiffOutlined />}
 						tooltip="Comparar Pruebas"
 						style={{ right: 72 }} 
-						onClick={() => { openNewWindow("testsCompare", `Comparación de Pruebas: ${selectedRowKeys.toString()}`, `/testsCompare?idSpecimens=${selectedRowKeys.toString()}`); }}
+						onClick={() => { openNewWindow("testsCompare", `Comparación de Pruebas: [${selectedRowKeys.toString()}]`, `/testsCompare?idSpecimens=${selectedRowKeys.toString()}`); }}
 					/>
 			}
 			<Layout>
