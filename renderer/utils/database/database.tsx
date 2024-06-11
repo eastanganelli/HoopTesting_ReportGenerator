@@ -16,7 +16,7 @@ const DatabaseService = {
         });
     },
     SAVE: (address: string, port: number, user: string, password: string): Promise<any> => {
-        const dbConfig: DatabaseConfig = { HOST: address, PORT: port, USER: user, PASSWORD: password, DATABASE: 'stel_db_data' };
+        const dbConfig: DatabaseConfig = { HOST: address, PORT: port, USER: user, PASSWORD: password, DATABASE: 'data_db' };
         return new Promise((resolve, reject) => {
             global.ipcRenderer.send('database-save', dbConfig);
             global.ipcRenderer.on('database-save-succes', (event, response: string) => { resolve(response); });
