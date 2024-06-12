@@ -47,8 +47,8 @@
 	},
 	"build": {
 		"appId": "com.eastanganelli.reportgenerator",
-		"productName": "Hoop Testing - Generador de Reportes",
-		"copyright": "Ezequiel Augusto Stanganelli - 2024",
+		"productName": "Hoop Testing - Report Generator",
+		"copyright": "Copyright © 2024 Ezequiel Augusto Stanganelli",
 		"asar": true,
 		"files": [
 			"main",
