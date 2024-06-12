@@ -48,6 +48,7 @@ ipcMain.on('database-connect', async (event, requestData: { clicked: boolean }) 
 		if(requestData.clicked) {
 			setTimeout(() => { app.relaunch(); app.exit(); }, 4000);
 			event.reply('database-connected', 'Base de Datos: La aplicación se reiniciará para aplicar los cambios en la conexión!');
+		}
 	} catch (error: any) {
 		event.reply('database-error', 'Base de Datos: Conexión No Exitosa!');
 	}

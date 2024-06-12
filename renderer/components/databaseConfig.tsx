@@ -35,7 +35,7 @@ const DatabaseConfiguration: FunctionComponent = () => {
     };
 
     useEffect(() => {
-        DatabaseService.READ().then((response: DatabaseConfig) => { setDBConfig(response); }).catch((error) => { setDBConfig(defaultConfig); })
+        DatabaseService.READ().then((response: DatabaseConfig) => { setDBConfig(response); }).catch(() => { setDBConfig(defaultConfig); })
     }, []);
 
     return (
@@ -56,38 +56,19 @@ const DatabaseConfiguration: FunctionComponent = () => {
                                 onFinishFailed={onFinishFailed}
                                 autoComplete="off"
                             >
-                                <Form.Item<FieldType>
-                                    label="Host"
-                                    name="host"
-                                    rules={[{ required: true, message: 'Dirección del Host' }]}
-                                    initialValue={dbConfig['HOST'] as string}
-                                >
+                                <Form.Item label="Host" name="host" rules={[{ required: true }]} initialValue={dbConfig['HOST'] as string}>
                                     <Input />
                                 </Form.Item>
 
-                                <Form.Item<FieldType>
-                                    label="Puerto"
-                                    name="port"
-                                    rules={[{ required: true, message: 'Puerto' }]}
-                                    initialValue={dbConfig['PORT'] as number}
-                                >
+                                <Form.Item label="Puerto" name="port" rules={[{ required: true }]} initialValue={dbConfig['PORT'] as number}>
                                     <Input />
                                 </Form.Item>
 
-                                <Form.Item<FieldType>
-                                    label="Usuario"
-                                    name="username"
-                                    rules={[{ required: true, message: 'Please input your username!' }]}
-                                    initialValue={dbConfig['USER'] as string}
-                                >
+                                <Form.Item label="Usuario" name="username" rules={[{ required: true }]} initialValue={dbConfig['USER'] as string}>
                                     <Input />
                                 </Form.Item>
 
-                                <Form.Item<FieldType>
-                                    label="Contraseña"
-                                    name="password"
-                                    rules={[{ required: true, message: 'Please input your password!' }]}
-                                >
+                                <Form.Item label="Contraseña" name="password" rules={[{ required: true }]}>
                                     <Input.Password />
                                 </Form.Item>
 

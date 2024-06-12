@@ -1,7 +1,7 @@
 {
 	"name": "report-generator",
 	"productName": "Hoop Testing - Generador de Reportes",
-	"version": "1.1.3",
+	"version": "1.1.5",
 	"win": {
 		"icon": "./assets/logo.ico"
 	},
