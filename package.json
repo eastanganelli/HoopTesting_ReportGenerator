@@ -1,6 +1,6 @@
 {
 	"name": "report-generator",
-	"productName": "Hoop Testing - Generador de Reportes",
+	"productName": "ReportGenerator",
 	"version": "1.1.5",
 	"win": {
 		"icon": "./assets/logo.ico"
@@ -47,7 +47,7 @@
 	},
 	"build": {
 		"appId": "com.eastanganelli.reportgenerator",
-		"productName": "Hoop Testing - Report Generator",
+		"productName": "ReportGenerator",
 		"copyright": "Copyright © 2024 Ezequiel Augusto Stanganelli",
 		"asar": true,
 		"files": [
@@ -55,7 +55,7 @@
 			"renderer"
 		],
 		"win": {
-			"publisherName": "Hoop Testing - Generador de Reportes",
+			"publisherName": "ReportGenerator",
 			"icon": "./assets/logo.ico",
 			"target": [
 			  {
