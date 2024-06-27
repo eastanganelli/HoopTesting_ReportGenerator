@@ -35,7 +35,7 @@ const SpecimenTable: FunctionComponent<Props> = (Props: Props) => {
                 "standard": auxTestData['mySample']['standard'],
                 "material": auxTestData['mySample']['material'],
                 "specification": auxTestData['mySample']['specification'],
-                "endcap": auxTestData['mySample']['endCap'],
+                "endCap": auxTestData['mySpecimen']['endCap'],
                 "enviroment": auxTestData['mySpecimen']['enviroment'],
                 "specimensCount": auxTestData['mySpecimen']['counts'],
                 "targetPressure": auxTestData['mySample']['targetPressure'],
@@ -62,7 +62,7 @@ const SpecimenTable: FunctionComponent<Props> = (Props: Props) => {
                     okText: "Guardar",
                     onOk: () => {
                         QueryService.UPDATE.Specimen([Specimen['idSpecimen'], mySpecimenForm.getFieldValue('testName'), mySpecimenForm.getFieldValue('operator'), mySpecimenForm.getFieldValue('fail'), mySpecimenForm.getFieldValue('remark')]).then((response) => {
-                            const arrAux: QuerySpecimenTest[] = [...specimens];
+                            const arrAux: QuerySpecimenTest[] = [...specimensData];
                             const index = arrAux.findIndex((specimen: QuerySpecimenTest) => specimen['idSpecimen'] === Specimen['idSpecimen']);
                             arrAux[index]['operator'] = mySpecimenForm.getFieldValue('operator');
                             setSpecimensData(arrAux);
@@ -78,8 +78,8 @@ const SpecimenTable: FunctionComponent<Props> = (Props: Props) => {
 
     const deleteTest = (e: any, Specimen: SpecimenType) => {
         QueryService.DELETE.Specimen([Specimen['idSpecimen']]).then((response) => {
-            const index = specimens.findIndex((specimen: QuerySpecimenTest) => specimen['idSpecimen'] === Specimen['idSpecimen']);
-            specimens.splice(index, 1);
+            const index = specimensData.findIndex((specimen: QuerySpecimenTest) => specimen['idSpecimen'] === Specimen['idSpecimen']);
+            specimensData.splice(index, 1);
             message.success(response);
         }).catch((error) => { message.error(error); });
     };

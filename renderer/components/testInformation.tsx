@@ -5,7 +5,7 @@ const PlotTestResult = dynamic(() => import('./testPlot'), { ssr: false });
 
 import type { TestDataValues } from '../interfaces/query';
 
-interface specimenForm { operator: string; testName: string; standard: string; material: string; specification: string; endcap: string; enviroment: string; specimensCount: number; targetPressure: number; targetTemperature: number; lengthTotal: number; lengthFree: number; conditionalPeriod: number; diameterNominal: number; diameterReal: number; wallThickness: number; beginTime: string; endTime: string; duration: number; fail: string; remark: string; };
+interface specimenForm { operator: string; testName: string; standard: string; material: string; specification: string; endCap: string; enviroment: string; specimensCount: number; targetPressure: number; targetTemperature: number; lengthTotal: number; lengthFree: number; conditionalPeriod: number; diameterNominal: number; diameterReal: number; wallThickness: number; beginTime: string; endTime: string; duration: number; fail: string; remark: string; };
 
 interface Props { myTestForm: FormInstance<specimenForm>; myData: TestDataValues[]; }
 
@@ -23,7 +23,7 @@ const testInformation: FunctionComponent<Props> = (Props: Props) => {
                     <Col span={8}><Form.Item label="Material" name='material'><Input type='text' disabled/></Form.Item></Col>
                     <Col span={8}><Form.Item label="Especificación" name='specification'><Input type='text' disabled/></Form.Item></Col>
                     {/* Eviroment */}
-                    <Col span={8}><Form.Item label="Tapa de Extremo" name='endcap'><Input type='text' disabled/></Form.Item></Col>
+                    <Col span={8}><Form.Item label="Tapa de Extremo" name='endCap'><Input type='text' disabled/></Form.Item></Col>
                     <Col span={8}><Form.Item label="Entorno" name='enviroment'><Input type='text' disabled/></Form.Item></Col>
                     <Col span={8}><Form.Item label="Cantidad de Especimenes" name='specimensCount'><Input type='text' disabled/></Form.Item></Col>
                     {/* Target Data */}
