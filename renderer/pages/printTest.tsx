@@ -44,6 +44,14 @@ const cellPropiertes = {
 	fullBorder: { border: '1 solid black' }
 };
 
+const chartLine = {
+	width: 525,
+	height: 350,
+	margin: { top: 15, right: 15, bottom: 0, left: -35 },
+	yAxisDomain: ['auto', 'auto'],
+	xAxis: { yPosition: 10 }
+}
+
 const PrinterPage: FunctionComponent = () => {
 	const { query, isReady } = useRouter();
 	const [myTest, setMyTest] = useState<TestData>(null);
@@ -151,16 +159,20 @@ const PrinterPage: FunctionComponent = () => {
 				</Page>
 				<Page size='A4' style={styles.PDFStyle.page}>
 					<View style={styles.PDFStyle.section}>
-						<Text style={{ margin: '0 auto 0 auto', fontSize: '13px' }}><Text style={{ color: "#8884d8" }}>Presión</Text><Text>    </Text><Text style={{ color: "#82ca9d" }}>Temperatura</Text></Text>
+						<Text style={{ margin: '0 auto 0 auto', fontSize: '13px' }}><Text style={{ color: "#8884d8" }}>{`Presión [Bar]`}</Text></Text>
 						<ReactPDFChart>
-							<LineChart data={myData} height={350} width={525} margin={{ top: 15, right: 0, bottom: 0, left: -40 }}>
-								<XAxis dataKey="key" ticks={hoursInSeconds} tickFormatter={(tick) => `${tick / 3600}`}>
-									<Label value="Tiempo [Hora]" offset={1.5} />
-								</XAxis>
-								<YAxis yAxisId="left" dataKey="pressure" label={{ value: "Presión [Bar]", viewBox: { x: 85, y: 13 }, position: 'insideTopLeft' }} />
-								<YAxis yAxisId="right" dataKey="temperature" orientation="right" label={{ value: "Temperatura [°C]", viewBox: { x: 475, y: 13 }, position: 'insideTopLeft' }} />
-								<Line yAxisId="left" type="monotone" dataKey="pressure" name="Presión" stroke="#8884d8" scale='identity' dot={false} isAnimationActive={false} />
-								<Line yAxisId="right" type="monotone" dataKey="temperature" name="Temperatura" scale='identity' stroke="#82ca9d" dot={false} isAnimationActive={false} />
+							<LineChart data={myData} height={chartLine['height']} width={chartLine['width']} margin={chartLine['margin']}>
+								<XAxis dataKey="key" ticks={hoursInSeconds} tickFormatter={(tick) => `${tick / 3600}`}><Label dy={chartLine['xAxis']['yPosition']} value="Tiempo [Hora]" /></XAxis>
+								<YAxis yAxisId="left" dataKey="pressure" domain={chartLine['yAxisDomain']} />
+								<Line  yAxisId="left" type="monotone" dataKey="pressure" name="Presión" stroke="#8884d8" scale='identity' dot={false} isAnimationActive={false} />
+							</LineChart>
+						</ReactPDFChart>
+						<Text style={{ margin: '10px auto 0 auto', fontSize: '13px' }}><Text style={{ color: "#82ca9d" }}>{`Temperatura [°C]`}</Text></Text>
+						<ReactPDFChart>
+							<LineChart data={myData} height={chartLine['height']} width={chartLine['width']} margin={chartLine['margin']}>
+								<XAxis dataKey="key" ticks={hoursInSeconds} tickFormatter={(tick) => `${tick / 3600}`}><Label dy={chartLine['xAxis']['yPosition']} value="Tiempo [Hora]" /></XAxis>
+								<YAxis yAxisId="left" dataKey="temperature" domain={chartLine['yAxisDomain']} />
+								<Line  yAxisId="left" type="monotone" dataKey="temperature" name="Temperatura" scale='identity' stroke="#82ca9d" dot={false} isAnimationActive={false} />
 							</LineChart>
 						</ReactPDFChart>
 					</View>
