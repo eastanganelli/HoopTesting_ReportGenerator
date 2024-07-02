@@ -3,7 +3,7 @@ import { useState, useEffect, FunctionComponent } from 'react';
 import { Table } from 'antd';
 import type { TableColumnsType } from 'antd';
 
-import useWindowSize from '../utils/windowState';
+import useWindowSize from '../utils/window/windowState';
 import QueryService from '../utils/database/query';
 const SpecimenRow = dynamic(() => import('./specimenTable'));
 
@@ -12,11 +12,11 @@ import type { QuerySampleTest } from '../interfaces/query';
 
 interface Props { rowSelection: { selectedRowKeys: number[], onChange: (idTest: number) => void } };
 
-const SampleTable: FunctionComponent<Props> = ({ rowSelection }: Props) => {
-    const [queryData, setQueryData] = useState<QuerySampleTest[]>([]);
+const SampleTable: FunctionComponent<Props> = (Props: Props) => {
+    const [queryData, setQueryData]   = useState<QuerySampleTest[]>([]);
     const [sampleList, setSampleList] = useState<SampleType[]>([]);
     const [pageSizing, setPageSizing] = useState<number>(5);
-    const size = useWindowSize();
+    const size                        = useWindowSize();
 
     const calculatePageSize = () => {
         if (size.height > 900) { setPageSizing(14); }
@@ -29,9 +29,9 @@ const SampleTable: FunctionComponent<Props> = ({ rowSelection }: Props) => {
 
     const columns: TableColumnsType<SampleType> = [
         { title: 'ID Muestra', dataIndex: 'idSample', key: 'idSample' },
-        { title: 'Estándard', dataIndex: 'standard', key: 'standard' },
-        { title: 'Material', dataIndex: 'material', key: 'material' },
-        { title: 'Cantidad', dataIndex: 'count', key: 'count' }
+        { title: 'Estándard',  dataIndex: 'standard', key: 'standard' },
+        { title: 'Material',   dataIndex: 'material', key: 'material' },
+        { title: 'Cantidad',   dataIndex: 'count',    key: 'count' }
     ];
 
     const loadDataTable = () => {
@@ -43,7 +43,7 @@ const SampleTable: FunctionComponent<Props> = ({ rowSelection }: Props) => {
                 standard: Test["standard"],
                 material: Test["material"],
                 count: Test["mySpecimens"].length,
-                description: <SpecimenRow specimens={Test["mySpecimens"]/* .reverse() */} rowSelection={rowSelection} />
+                description: <SpecimenRow specimens={Test["mySpecimens"]/* .reverse() */} rowSelection={Props['rowSelection']} />
             });
         });
         setSampleList(myData);

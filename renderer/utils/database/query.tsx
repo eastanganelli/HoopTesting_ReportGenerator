@@ -4,11 +4,10 @@ const Query = <T extends unknown>(query: string, values: any[] = []): Promise<T>
     return new Promise<T>((resolve, reject) => {
         if (global && global.ipcRenderer) {
             global.ipcRenderer.send('database-request', { query: query, values: values });
-            global.ipcRenderer.on('database-response', (event, response: T) => {
-                // console.log("Database response:", response)
+            global.ipcRenderer.on('database-response', (_, response: T) => {
                 resolve(response[0]);
             });
-            global.ipcRenderer.on('database-error', (event, error) => {
+            global.ipcRenderer.on('database-error', (_, error) => {
                 console.error("Database error:", error)
                 reject(error);
             });
@@ -78,7 +77,7 @@ const QueryService = {
         Specimen: (queryData: any[] | string[] | number[]): Promise<string> => {
             const SpecimenQuery: string = "CALL updateSpecimen(?,?,?,?,?)";
             return new Promise<string>((resolve, reject) => {
-                Query(SpecimenQuery, queryData).catch((error) => { console.error("Base de Datos: Error al actualizar!", error); reject("Base de Datos: Error al actualizar!"); })
+                Query(SpecimenQuery, queryData).catch(() => { reject("Base de Datos: Error al actualizar!"); })
                 .then(() => { resolve("Base de Datos: Actualización Exitosa!"); });
             });
         }
@@ -87,7 +86,7 @@ const QueryService = {
         Specimen: (queryData: any[] | string[] | number[]): Promise<string> => {
             const SpecimenQuery: string = "CALL deleteTest(?)";
             return new Promise<string>((resolve, reject) => {
-                Query(SpecimenQuery, queryData).catch((error) => { console.error("Base de Datos: Error al eliminar Prueba!", error); reject("Base de Datos: Error al eliminar Prueba!"); })
+                Query(SpecimenQuery, queryData).catch(() => { reject("Base de Datos: Error al eliminar Prueba!"); })
                 .then(() => { resolve("Base de Datos: Eliminación Exitosa!"); });
             });
         }

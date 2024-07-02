@@ -1,10 +1,9 @@
 import { FunctionComponent, useEffect, useState } from 'react';
-import { Button, Form, Collapse, Divider, type FormProps, Input, Space, message } from 'antd';
+import { Button, Form, Collapse, type FormProps, Input, Space, message } from 'antd';
 import { ConsoleSqlOutlined, SaveOutlined } from '@ant-design/icons';
 import DatabaseService from '../utils/database/database';
 
 import type { DatabaseConfig } from '../../electron-src/service/database';
-import { set } from 'electron-settings';
 
 type FieldType = {
     host?: string;
@@ -40,22 +39,11 @@ const DatabaseConfiguration: FunctionComponent = () => {
 
     return (
         <>
-            <Collapse
-                defaultActiveKey={['1']}
-                ghost
-                items={[
+            <Collapse defaultActiveKey={['1']} ghost items={[
                     {
                         label: 'Base de Datos',
                         children: (
-                            <Form
-                                name="basic"
-                                labelCol={{ span: 8 }}
-                                wrapperCol={{ span: 16 }}
-                                initialValues={{ remember: true }}
-                                onFinish={onFinish}
-                                onFinishFailed={onFinishFailed}
-                                autoComplete="off"
-                            >
+                            <Form name="basic" labelCol={{ span: 8 }} wrapperCol={{ span: 16 }} initialValues={{ remember: true }} onFinish={onFinish} onFinishFailed={onFinishFailed} autoComplete="off">
                                 <Form.Item label="Host" name="host" rules={[{ required: true }]} initialValue={dbConfig['HOST'] as string}>
                                     <Input />
                                 </Form.Item>
@@ -75,7 +63,7 @@ const DatabaseConfiguration: FunctionComponent = () => {
                                 <Form.Item>
                                     <Space>
                                         <Button type="primary" icon={<SaveOutlined />} htmlType="submit" ghost>{/* {`Guardar`} */}</Button>
-                                        <Button type="primary" icon={<ConsoleSqlOutlined />} onClick={connectDatabase} ghost>{/* {`Conectar`} */}</Button>
+                                        <Button type="primary" icon={<ConsoleSqlOutlined />} onClick={connectDatabase} ghost>{`Conectar`}</Button>
                                     </Space>
                                 </Form.Item>
                             </Form>

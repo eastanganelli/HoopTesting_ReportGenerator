@@ -1,7 +1,6 @@
 import { useState, useEffect, FunctionComponent } from 'react';
 import { useRouter } from 'next/router';
-import { Layout, Table, Checkbox, Typography, Divider } from 'antd';
-import type { CheckboxOptionType, TableColumnsType } from 'antd';
+import { Layout, Table, Checkbox, Typography, Divider, type CheckboxOptionType, type TableColumnsType } from 'antd';
 
 import QueryService from '../utils/database/query';
 
@@ -39,14 +38,14 @@ const columns: TableColumnsType<CompareType> = [
 const defaultCheckedList = columns.map((column) => { if (column.key !== 'operator' && column.key !== "fail" && column.key !== "remark") { return column.key as string; } });
 
 const testSample: FunctionComponent = () => {
-    const { query, isReady } = useRouter();
-    const [myTest, setMyTest] = useState<CompareType[]>([]);
-    const [plotData, setPlotData] = useState<TestDataValues[][]>([]);
+    const { query, isReady }            = useRouter();
+    const [myTest, setMyTest]           = useState<CompareType[]>([]);
+    const [plotData, setPlotData]       = useState<TestDataValues[][]>([]);
     const [checkedList, setCheckedList] = useState(defaultCheckedList);
 
     const loadCompareTable = async (idsSpecimens: string) => {
-        const resultQueryy: TestCompare[] = await QueryService.SELECT.TEST.TestCompare([idsSpecimens]);
-        let tableData: CompareType[] = [];
+        const resultQueryy: TestCompare[]   = await QueryService.SELECT.TEST.TestCompare([idsSpecimens]);
+        let tableData: CompareType[]        = [];
         let plotDataAux: TestDataValues[][] = [];
 
         resultQueryy.forEach((Test: TestCompare) => {

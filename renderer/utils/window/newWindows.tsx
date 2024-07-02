@@ -1,4 +1,4 @@
-import { winParams } from '../../electron-src/service/multiwindow';
+import { winParams } from '../../../electron-src/service/multiwindow';
 
 const openNewWindow = (windowID: string, windowTitle: string, windowPath: string) => {
     const windowParams: winParams = {
@@ -6,7 +6,6 @@ const openNewWindow = (windowID: string, windowTitle: string, windowPath: string
 		windowTitle: windowTitle,
 		windowPath: windowPath,
 		windowParams: { width: 1600, height: 900, autoHideMenuBar: true, icon: "", webPreferences: { nodeIntegration: false, contextIsolation: false, preload: "" } }
-	
 	}
     try {
         if (global && global.ipcRenderer) {

@@ -47,25 +47,38 @@ const cellPropiertes = {
 const chartLine = {
 	width: 525,
 	height: 350,
-	margin: { top: 15, right: 15, bottom: 0, left: -35 },
+	margin: { top: 15, right: 25, bottom: 0, left: -25 },
 	yAxisDomain: ['auto', 'auto'],
 	xAxis: { yPosition: 10 }
 }
 
 const PrinterPage: FunctionComponent = () => {
 	const { query, isReady } = useRouter();
-	const [myTest, setMyTest] = useState<TestData>(null);
-	const [myData, setMyData] = useState<TestDataValues[]>(null);
+    const [axisColors, setAxisColors] 		  = useState<{ pressureColor: string; temperatureColor: string; }>({ pressureColor: '00ff00', temperatureColor: 'ff0000' });
+    const [pdfConfig, setPDFConfig]			  = useState<{ companyName: string; }>({ companyName: 'None' });
+	const [myTest, setMyTest] 				  = useState<TestData>(null);
+	const [myData, setMyData] 				  = useState<TestDataValues[]>(null);
 	const [hoursInSeconds, setHoursInSeconds] = useState<number[]>(null);
+	
+    useEffect(() => {
+        const storedConfig    = JSON.parse(localStorage.getItem('chartConfig') || '{}');
+		const storedPDFConfig = JSON.parse(localStorage.getItem('pdfConfig') || '{}');
+        if (storedConfig) {
+            setAxisColors({ pressureColor: storedConfig.pressureColor, temperatureColor: storedConfig.temperatureColor });
+        }
+		if (storedPDFConfig) {
+			setPDFConfig({ companyName: storedPDFConfig.companyName });
+		}
+    }, []);
 
 	const MyDocument = () => {
 		return (
 			<Document
-				title={`STEL S.A. - Reporte de la Prueba ${myTest?.mySpecimen?.idSpecimen} - ${(new Date()).toDateString()}`}
-				subject={`STEL S.A. - Reporte de la Prueba ${myTest?.mySpecimen?.idSpecimen} - ${(new Date()).toDateString()}`}
-				producer='STEL S.A.'
-				author='STEL S.A.'
-				creator={`${myTest?.mySpecimen?.operator}`}
+				title    = {pdfConfig['companyName'] + ` - Reporte de la Prueba ${myTest?.mySpecimen?.idSpecimen} - ${(new Date()).toDateString()}`}
+				subject  = {pdfConfig['companyName'] + ` - Reporte de la Prueba ${myTest?.mySpecimen?.idSpecimen} - ${(new Date()).toDateString()}`}
+				producer = {pdfConfig['companyName']}
+				author   = {pdfConfig['companyName']}
+				creator  = {`${myTest?.mySpecimen?.operator}`}
 			>
 				<Page size='A4' style={styles.PDFStyle.page}>
 					{/* Parte superior del informe */}
@@ -159,20 +172,20 @@ const PrinterPage: FunctionComponent = () => {
 				</Page>
 				<Page size='A4' style={styles.PDFStyle.page}>
 					<View style={styles.PDFStyle.section}>
-						<Text style={{ margin: '0 auto 0 auto', fontSize: '13px' }}><Text style={{ color: "#8884d8" }}>{`Presión [Bar]`}</Text></Text>
+						<Text style={{ margin: '0 auto 0 auto', fontSize: '13px' }}>{`Presión [Bar]`}</Text>
 						<ReactPDFChart>
 							<LineChart data={myData} height={chartLine['height']} width={chartLine['width']} margin={chartLine['margin']}>
 								<XAxis dataKey="key" ticks={hoursInSeconds} tickFormatter={(tick) => `${tick / 3600}`}><Label dy={chartLine['xAxis']['yPosition']} value="Tiempo [Hora]" /></XAxis>
 								<YAxis yAxisId="left" dataKey="pressure" domain={chartLine['yAxisDomain']} />
-								<Line  yAxisId="left" type="monotone" dataKey="pressure" name="Presión" stroke="#8884d8" scale='identity' dot={false} isAnimationActive={false} />
+								<Line  yAxisId="left" type="monotone" dataKey="pressure" name="Presión" stroke={axisColors['pressureColor']} scale='identity' dot={false} isAnimationActive={false} />
 							</LineChart>
 						</ReactPDFChart>
-						<Text style={{ margin: '10px auto 0 auto', fontSize: '13px' }}><Text style={{ color: "#82ca9d" }}>{`Temperatura [°C]`}</Text></Text>
+						<Text style={{ margin: '10px auto 0 auto', fontSize: '13px' }}>{`Temperatura [°C]`}</Text>
 						<ReactPDFChart>
 							<LineChart data={myData} height={chartLine['height']} width={chartLine['width']} margin={chartLine['margin']}>
 								<XAxis dataKey="key" ticks={hoursInSeconds} tickFormatter={(tick) => `${tick / 3600}`}><Label dy={chartLine['xAxis']['yPosition']} value="Tiempo [Hora]" /></XAxis>
 								<YAxis yAxisId="left" dataKey="temperature" domain={chartLine['yAxisDomain']} />
-								<Line  yAxisId="left" type="monotone" dataKey="temperature" name="Temperatura" scale='identity' stroke="#82ca9d" dot={false} isAnimationActive={false} />
+								<Line  yAxisId="left" type="monotone" dataKey="temperature" name="Temperatura" scale='identity' stroke={axisColors['temperatureColor']} dot={false} isAnimationActive={false} />
 							</LineChart>
 						</ReactPDFChart>
 					</View>
