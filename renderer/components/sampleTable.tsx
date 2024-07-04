@@ -48,8 +48,8 @@ const SampleTable: FunctionComponent<Props> = (Props: Props) => {
                 diameter: Test["diameter"],
                 wallThickness: Test["wallThickness"],
                 length: Test["length"],
-                count: Test["mySpecimens"].length,
-                description: <SpecimenRow specimens={Test["mySpecimens"]/* .reverse() */} rowSelection={Props['rowSelection']} />
+                count: Test["mySpecimens"]?.length,
+                description: <SpecimenRow specimens={Test["mySpecimens"]?.length > 0 ? Test["mySpecimens"] : []/* .reverse() */} rowSelection={Props['rowSelection']} />
             });
         });
         setSampleList(myData);

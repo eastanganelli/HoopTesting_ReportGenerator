@@ -34,7 +34,6 @@ interface TestSampleValue {
     wallThickness: number;
     lengthTotal: number;
     lengthFree: number;
-    hoopStress: number;
     conditionalPeriod: string;
 };
 
@@ -42,6 +41,7 @@ interface TestSpecimenValue {
     idSpecimen: number;
     targetTemperature: number;
     targetPressure: number;
+    hoopStress: number;
     operator: string;
     enviroment: string;
     beginTime: string;
