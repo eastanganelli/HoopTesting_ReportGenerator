@@ -130,6 +130,8 @@ const SpecimenTable: FunctionComponent<Props> = (Props: Props) => {
                 myData.push({
                     key:        specimen['idSpecimen'],
                     idSpecimen: specimen['idSpecimen'],
+                    pressure:   specimen['pressure'],
+                    temperature: specimen['temperature'],
                     begin:      specimen['beginTime'],
                     end:        specimen['endTime'],
                     duration:   specimen['duration'],

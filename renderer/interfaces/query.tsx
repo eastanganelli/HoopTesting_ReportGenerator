@@ -1,17 +1,22 @@
 interface QuerySampleTest {
     idSample: number;
-    standard: string;
     material: string;
+    specification: string;
+    diameter: number;
+    wallThickness: number;
+    length: number;
     mySpecimens: QuerySpecimenTest[];
 };
 
 interface QuerySpecimenTest {
     idSpecimen: number;
+    pressure: number;
+    temperature: number;
+    operator: string;
+    testNumber: number;
     beginTime: string;
     endTime: string;
-    testNumber: number;
     duration: string;
-    operator: string;
 };
 
 interface TestData {
@@ -29,14 +34,14 @@ interface TestSampleValue {
     wallThickness: number;
     lengthTotal: number;
     lengthFree: number;
-    targetTemperature: number;
-    targetPressure: number;
     hoopStress: number;
     conditionalPeriod: string;
 };
 
 interface TestSpecimenValue {
     idSpecimen: number;
+    targetTemperature: number;
+    targetPressure: number;
     operator: string;
     enviroment: string;
     beginTime: string;

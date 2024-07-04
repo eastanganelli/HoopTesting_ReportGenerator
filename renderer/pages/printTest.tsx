@@ -83,7 +83,7 @@ const PrinterPage: FunctionComponent = () => {
 				<Page size='A4' style={styles.PDFStyle.page}>
 					{/* Parte superior del informe */}
 					<View style={styles.PDFStyle.section}>
-						<Text style={{ margin: '0 auto 0 auto', fontSize: '30px' }}>STEL S.A.</Text>
+						<Text style={{ margin: '0 auto 0 auto', fontSize: '30px' }}>{pdfConfig['companyName']}</Text>
 						<Text style={{ margin: '0 auto 0 auto', fontSize: '24px', paddingTop: '10px', paddingBottom: '40px' }}>Reporte de la Prueba</Text>
 						<View style={styles.Content.table}>
 							<View style={styles.Content.row}>
@@ -139,7 +139,7 @@ const PrinterPage: FunctionComponent = () => {
 								<Text style={[styles.Content.cell, cellPropiertes.length.small, cellPropiertes.fullBorder]}>{`Tiempo de\nPrueba`}</Text>
 								<Text style={[styles.Content.cell, cellPropiertes.length.medium, cellPropiertes.fullBorder]}>{myTest?.mySpecimen?.duration}</Text>
 								<Text style={[styles.Content.cell, cellPropiertes.length.small, cellPropiertes.fullBorder]}>{`Temperatura [C]`}</Text>
-								<Text style={[styles.Content.cell, cellPropiertes.length.medium, cellPropiertes.fullBorder]}>{myTest?.mySample?.targetTemperature}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.medium, cellPropiertes.fullBorder]}>{myTest?.mySpecimen?.targetTemperature}</Text>
 							</View>
 							<View style={styles.Content.row}>
 								<Text style={[styles.Content.cell, cellPropiertes.length.small, cellPropiertes.fullBorder]}>{`Grosor Pared [mm]`}</Text>
@@ -151,7 +151,7 @@ const PrinterPage: FunctionComponent = () => {
 								<Text style={[styles.Content.cell, cellPropiertes.length.small, cellPropiertes.fullBorder]}>{`Hoop Stress [Bar]`}</Text>
 								<Text style={[styles.Content.cell, cellPropiertes.length.medium, cellPropiertes.fullBorder]}>{``}</Text>
 								<Text style={[styles.Content.cell, cellPropiertes.length.small, cellPropiertes.fullBorder]}>{`Presión [Bar]`}</Text>
-								<Text style={[styles.Content.cell, cellPropiertes.length.medium, cellPropiertes.fullBorder]}>{myTest?.mySample?.targetPressure}</Text>
+								<Text style={[styles.Content.cell, cellPropiertes.length.medium, cellPropiertes.fullBorder]}>{myTest?.mySpecimen?.targetPressure}</Text>
 							</View>
 							<View style={styles.Content.row}>
 								<Text style={[styles.Content.cell, cellPropiertes.length.small, cellPropiertes.fullBorder]}>{`Fecha de\nInicio`}</Text>
@@ -218,11 +218,7 @@ const PrinterPage: FunctionComponent = () => {
 			<Layout>
 				<Content style={{ padding: '12px' }}>
 					<div style={{ margin: "auto", background: "white", padding: 24, borderRadius: 25 }} >
-						<PDFViewer
-							style={{ width: "100%", height: '90.5vh', borderRadius: 25 }}
-						>
-							{MyDocument()}
-						</PDFViewer>
+						<PDFViewer style={{ width: "100%", height: '90.5vh', borderRadius: 25 }}>{MyDocument()}</PDFViewer>
 					</div>
 				</Content>
 			</Layout>

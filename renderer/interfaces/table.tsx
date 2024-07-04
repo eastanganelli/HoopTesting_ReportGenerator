@@ -3,8 +3,11 @@ import { FunctionComponent, Key } from "react";
 interface SampleType {
     key: Key;
     idSample: number;
-    standard: string;
     material: string;
+    specification: string;
+    diameter: number;
+    wallThickness: number;
+    length: number;
     count: number;
     description: FunctionComponent<{ specimens: SpecimenType[] }> | any;
 };
@@ -14,6 +17,8 @@ interface SpecimenType {
     idSpecimen: number;
     begin: string;
     end: string;
+    pressure: number;
+    temperature: number;
     testNumber: number;
     duration: string;
     operator: string;
