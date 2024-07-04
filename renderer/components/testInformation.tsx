@@ -31,8 +31,8 @@ const testInformation: FunctionComponent<Props> = (Props: Props) => {
                     <Col span={8}><Form.Item label="Presión"     name='targetPressure'><Input type='text' addonAfter={'Bar'} disabled/></Form.Item></Col>
                     <Col span={8}><Form.Item label="Temperatura" name='targetTemperature'><Input type='text' addonAfter={'°C'} disabled/></Form.Item></Col>
                     {/* Length */}
-                    <Col span={8}><Form.Item label="Longitud Total" name='lengthTotal'><Input type='text' addonAfter={'mm'} disabled/></Form.Item></Col>
-                    <Col span={8}><Form.Item label="Longitud Libre" name='lengthFree'><Input type='text' addonAfter={'mm'} disabled/></Form.Item></Col>
+                    <Col span={8}><Form.Item label="Longitud Total"              name='lengthTotal'><Input type='text' addonAfter={'mm'} disabled/></Form.Item></Col>
+                    <Col span={8}><Form.Item label="Longitud Libre"              name='lengthFree'><Input type='text' addonAfter={'mm'} disabled/></Form.Item></Col>
                     <Col span={8}><Form.Item label="Período de Condicionamiento" name='conditionalPeriod'><Input type='text' disabled/></Form.Item></Col>
                     {/* Diameter */}
                     <Col span={8}><Form.Item label="Diámetro Nominal" name='diameterNominal'><Input type='text' addonAfter={'mm'} disabled/></Form.Item></Col>
