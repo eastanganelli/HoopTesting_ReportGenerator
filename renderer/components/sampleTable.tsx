@@ -1,14 +1,13 @@
 import dynamic from 'next/dynamic';
 import { useState, useEffect, FunctionComponent } from 'react';
-import { Table } from 'antd';
-import type { TableColumnsType } from 'antd';
+import { Table, type TableColumnsType } from 'antd';
 
 import useWindowSize from '../utils/window/windowState';
 import QueryService from '../utils/database/query';
 const SpecimenRow = dynamic(() => import('./specimenTable'));
 
 import type { SampleType } from '../interfaces/table';
-import type { QuerySampleTest } from '../interfaces/query';
+import type { QuerySampleTest, QuerySpecimenTest } from '../interfaces/query';
 
 interface Props { rowSelection: { selectedRowKeys: number[], onChange: (idTest: number) => void } };
 
@@ -16,6 +15,7 @@ const SampleTable: FunctionComponent<Props> = (Props: Props) => {
     const [queryData,  setQueryData]  = useState<QuerySampleTest[]>([]);
     const [sampleList, setSampleList] = useState<SampleType[]>([]);
     const [pageSizing, setPageSizing] = useState<number>(5);
+    const [updated,    setUpdated]    = useState<number>(0);
     const size                        = useWindowSize();
 
     const calculatePageSize = () => {
@@ -31,9 +31,9 @@ const SampleTable: FunctionComponent<Props> = (Props: Props) => {
         { title: 'ID Muestra',     dataIndex: 'idSample',      key: 'idSample' },
         { title: 'Material',       dataIndex: 'material',      key: 'material' },
         { title: 'Especificación', dataIndex: 'specification', key: 'specification' },
-        { title: 'Diámetro',       dataIndex: 'diameter',      key: 'diameter' },
-        { title: 'Espesor',        dataIndex: 'wallThickness', key: 'wallThickness' },
-        { title: 'Longitud',       dataIndex: 'length',        key: 'length' },
+        { title: 'Diámetro [mm]',  dataIndex: 'diameter',      key: 'diameter' },
+        { title: 'Espesor [mm]',   dataIndex: 'wallThickness', key: 'wallThickness' },
+        { title: 'Longitud [mm]',  dataIndex: 'length',        key: 'length' },
         { title: 'Cantidad',       dataIndex: 'count',         key: 'count' }
     ];
 
@@ -49,7 +49,16 @@ const SampleTable: FunctionComponent<Props> = (Props: Props) => {
                 wallThickness: Test["wallThickness"],
                 length: Test["length"],
                 count: Test["mySpecimens"]?.length,
-                description: <SpecimenRow specimens={Test["mySpecimens"]?.length > 0 ? Test["mySpecimens"] : []/* .reverse() */} rowSelection={Props['rowSelection']} />
+                description: <SpecimenRow
+                                specimens={Test["mySpecimens"]?.length > 0 ? Test["mySpecimens"].reverse() : []}
+                                rowSelection={Props['rowSelection']}
+                                onUpdateView={(newSpecimens: QuerySpecimenTest[]) => {
+                                    const aux = [...queryData];
+                                    const index = aux.findIndex((element) => element["idSample"] === Test["idSample"]);
+                                    aux[index]["mySpecimens"] = newSpecimens;
+                                    setQueryData(aux);
+                                    setUpdated(updated + 1);
+                                }} />
             });
         });
         setSampleList(myData);
@@ -59,7 +68,7 @@ const SampleTable: FunctionComponent<Props> = (Props: Props) => {
         if (queryData.length === 0) { callDatabase(); }
         loadDataTable();
         calculatePageSize();
-    }, [queryData, size]);
+    }, [queryData, size, updated]);
 
     return (
         <Table

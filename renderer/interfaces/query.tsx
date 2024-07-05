@@ -10,8 +10,8 @@ interface QuerySampleTest {
 
 interface QuerySpecimenTest {
     idSpecimen: number;
-    pressure: number;
-    temperature: number;
+    targetPressure: number;
+    targetTemperature: number;
     operator: string;
     testNumber: number;
     beginTime: string;

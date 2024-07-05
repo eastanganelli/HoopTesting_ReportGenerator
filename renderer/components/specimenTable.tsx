@@ -1,25 +1,24 @@
 import dynamic from 'next/dynamic';
 import { useState, useEffect, FunctionComponent } from 'react';
-import { Table, Space, Button, Modal, message, Popconfirm, Form } from 'antd';
+import { Table, Space, Button, Modal, message, Popconfirm, Form, type TableColumnsType } from 'antd';
 
 import openNewWindow from '../utils/window/newWindows';
 import QueryService from '../utils/database/query';
 
 const TestInformation = dynamic(() => import('./testInformation'), { ssr: false });
 
-import type { TableColumnsType } from 'antd';
 import type { QuerySpecimenTest } from '../interfaces/query';
 import type { SpecimenType } from '../interfaces/table';
 import type { TestData, TestDataValues } from '../interfaces/query';
 
 import { PlusOutlined, MinusOutlined, EditOutlined, FilePdfOutlined, DeleteOutlined } from '@ant-design/icons';
 
-interface Props { specimens: QuerySpecimenTest[]; rowSelection: { selectedRowKeys: number[], onChange: (idTest: number) => void }; };
+interface Props { specimens: QuerySpecimenTest[]; rowSelection: { selectedRowKeys: number[], onChange: (idTest: number) => void }; onUpdateView: (newSpecimens: QuerySpecimenTest[]) => void };
 
 const { info } = Modal;
 
 const SpecimenTable: FunctionComponent<Props> = (Props: Props) => {
-    const { specimens, rowSelection }       = Props;
+    const { specimens, rowSelection, onUpdateView } = Props;
     const [specimensData, setSpecimensData] = useState<QuerySpecimenTest[]>(specimens);
     const [specimenData, setSpecimenData]   = useState<SpecimenType[]>([]);
     const [updated, setUpdated]             = useState<number>(0);
@@ -82,23 +81,26 @@ const SpecimenTable: FunctionComponent<Props> = (Props: Props) => {
         QueryService.DELETE.Specimen([Specimen['idSpecimen']]).then((response) => {
             const index = specimensData.findIndex((specimen: QuerySpecimenTest) => specimen['idSpecimen'] === Specimen['idSpecimen']);
             specimensData.splice(index, 1);
+            onUpdateView(specimensData);
             setUpdated(updated + 1);
             message.success(response);
         }).catch((error) => { message.error(error); });
     };
 
     const columns: TableColumnsType<SpecimenType> = [
-        { title: 'ID Especimen', dataIndex: 'idSpecimen', key: 'idSpecimen' },
-        { title: 'Prueba N°',    dataIndex: 'testNumber', key: 'testNumber' },
-        { title: 'Inicio',       dataIndex: 'begin',      key: 'begin' },
-        { title: 'Fin',          dataIndex: 'end',        key: 'end' },
-        { title: 'Duración',     dataIndex: 'duration',   key: 'duration' },
-        { title: 'Operador',     dataIndex: 'operator',   key: 'operator' },
+        { title: 'ID Especimen',     dataIndex: 'idSpecimen',  key: 'idSpecimen' },
+        { title: 'Prueba N°',        dataIndex: 'testNumber',  key: 'testNumber' },
+        { title: 'Presión [Bar]',    dataIndex: 'pressure',    key: 'pressure' },
+        { title: 'Temperatura [°C]', dataIndex: 'temperature', key: 'temperature' },
+        { title: 'Inicio',           dataIndex: 'begin',       key: 'begin' },
+        { title: 'Fin',              dataIndex: 'end',         key: 'end' },
+        { title: 'Duración',         dataIndex: 'duration',    key: 'duration' },
+        { title: 'Operador',         dataIndex: 'operator',    key: 'operator' },
         {
             title: 'Accion',
             dataIndex: 'actions',
             key: 'actions',
-            render: (_, record, index) => (
+            render: (_, record) => (
                 <Space size="middle">
                     <Button
                         icon={rowSelection.selectedRowKeys.includes(record['idSpecimen']) ? <MinusOutlined /> : <PlusOutlined />}
@@ -128,15 +130,15 @@ const SpecimenTable: FunctionComponent<Props> = (Props: Props) => {
             let myData: SpecimenType[] = [];
             specimensData.forEach((specimen: QuerySpecimenTest) => {
                 myData.push({
-                    key:        specimen['idSpecimen'],
-                    idSpecimen: specimen['idSpecimen'],
-                    pressure:   specimen['pressure'],
-                    temperature: specimen['temperature'],
-                    begin:      specimen['beginTime'],
-                    end:        specimen['endTime'],
-                    duration:   specimen['duration'],
-                    testNumber: specimen['testNumber'],
-                    operator:   specimen['operator']
+                    key:         specimen['idSpecimen'],
+                    idSpecimen:  specimen['idSpecimen'],
+                    pressure:    specimen['targetPressure'],
+                    temperature: specimen['targetTemperature'],
+                    begin:       specimen['beginTime'],
+                    end:         specimen['endTime'],
+                    duration:    specimen['duration'],
+                    testNumber:  specimen['testNumber'],
+                    operator:    specimen['operator']
                 });
             });
             setSpecimenData(myData);
