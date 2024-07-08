@@ -40,26 +40,28 @@ const SampleTable: FunctionComponent<Props> = (Props: Props) => {
     const loadDataTable = () => {
         let myData: SampleType[] = [];
         queryData.forEach((Test: QuerySampleTest) => {
-            myData.push({
-                key: Number(Test["idSample"]),
-                idSample: Number(Test["idSample"]),
-                material: Test["material"],
-                specification: Test["specification"],
-                diameter: Test["diameter"],
-                wallThickness: Test["wallThickness"],
-                length: Test["length"],
-                count: Test["mySpecimens"]?.length,
-                description: <SpecimenRow
-                                specimens={Test["mySpecimens"]?.length > 0 ? Test["mySpecimens"].reverse() : []}
-                                rowSelection={Props['rowSelection']}
-                                onUpdateView={(newSpecimens: QuerySpecimenTest[]) => {
-                                    const aux = [...queryData];
-                                    const index = aux.findIndex((element) => element["idSample"] === Test["idSample"]);
-                                    aux[index]["mySpecimens"] = newSpecimens;
-                                    setQueryData(aux);
-                                    setUpdated(updated + 1);
-                                }} />
-            });
+            if(Test["mySpecimens"]?.length > 0) {
+                myData.push({
+                    key: Number(Test["idSample"]),
+                    idSample: Number(Test["idSample"]),
+                    material: Test["material"],
+                    specification: Test["specification"],
+                    diameter: Test["diameter"],
+                    wallThickness: Test["wallThickness"],
+                    length: Test["length"],
+                    count: Test["mySpecimens"]?.length,
+                    description: <SpecimenRow
+                                    specimens={Test["mySpecimens"]?.length > 0 ? Test["mySpecimens"].reverse() : []}
+                                    rowSelection={Props['rowSelection']}
+                                    onUpdateView={(newSpecimens: QuerySpecimenTest[]) => {
+                                        const aux = [...queryData];
+                                        const index = aux.findIndex((element) => element["idSample"] === Test["idSample"]);
+                                        aux[index]["mySpecimens"] = newSpecimens;
+                                        setQueryData(aux);
+                                        setUpdated(updated + 1);
+                                    }} />
+                });
+            }
         });
         setSampleList(myData);
     };

@@ -6,14 +6,17 @@ import type { TestDataValues } from '../interfaces/query';
 interface Props { DataPlot: TestDataValues[]; };
 
 const plotTestResult: FunctionComponent<Props> = ({ DataPlot }: Props) => {
-    const [axisColors, setAxisColors] = useState<{ pressureColor: string; temperatureColor: string; }>({ pressureColor: '00ff00', temperatureColor: 'ff0000' });
+    const [axisColors, setAxisColors] = useState<{ pressureColor: string; temperatureColor: string; }>({ pressureColor: '#ff0000', temperatureColor: '#00ff00' });
     const hoursInSeconds = [];
     for (let i = Math.min(...DataPlot.map(d => d.key)); i <= Math.max(...DataPlot.map(d => d.key)); i += 3600) { hoursInSeconds.push(i); }
 
     useEffect(() => {
-        const storedConfig = JSON.parse(localStorage.getItem('chartConfig') || '{}');
+        const storedConfig = JSON.parse(localStorage.getItem('chartConfig'));
         if (storedConfig) {
-            setAxisColors({ pressureColor: storedConfig.pressureColor, temperatureColor: storedConfig.temperatureColor });
+            setAxisColors({
+                pressureColor:    storedConfig['pressureColor'],
+                temperatureColor: storedConfig['temperatureColor']
+            });
         }
     }, []);
 

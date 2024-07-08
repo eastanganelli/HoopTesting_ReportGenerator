@@ -54,20 +54,24 @@ const chartLine = {
 
 const PrinterPage: FunctionComponent = () => {
 	const { query, isReady } = useRouter();
-    const [axisColors, setAxisColors] 		  = useState<{ pressureColor: string; temperatureColor: string; }>({ pressureColor: '00ff00', temperatureColor: 'ff0000' });
+    const [axisColors, setAxisColors] 		  = useState<{ pressureColor: string; temperatureColor: string; }>({ pressureColor: '#FF0000', temperatureColor: '#00FF00' });
     const [pdfConfig, setPDFConfig]			  = useState<{ companyName: string; }>({ companyName: 'None' });
 	const [myTest, setMyTest] 				  = useState<TestData>(null);
 	const [myData, setMyData] 				  = useState<TestDataValues[]>(null);
 	const [hoursInSeconds, setHoursInSeconds] = useState<number[]>(null);
 	
     useEffect(() => {
-        const storedConfig    = JSON.parse(localStorage.getItem('chartConfig') || '{}');
-		const storedPDFConfig = JSON.parse(localStorage.getItem('pdfConfig') || '{}');
+        const storedConfig:    { pressureColor: string; temperatureColor: string; } = JSON.parse(localStorage.getItem('chartConfig'));
+		const storedPDFConfig: { companyName: string; } = JSON.parse(localStorage.getItem('pdfConfig'));
+		console.log(storedPDFConfig);
         if (storedConfig) {
-            setAxisColors({ pressureColor: storedConfig.pressureColor, temperatureColor: storedConfig.temperatureColor });
+            setAxisColors({
+				pressureColor: storedConfig.pressureColor,
+				temperatureColor: storedConfig.temperatureColor
+			});
         }
 		if (storedPDFConfig) {
-			setPDFConfig({ companyName: storedPDFConfig.companyName });
+			setPDFConfig({ companyName: storedPDFConfig['companyName'] });
 		}
     }, []);
 

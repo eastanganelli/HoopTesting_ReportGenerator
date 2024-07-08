@@ -20,10 +20,10 @@ const onFinishFailed: FormProps<FieldType>["onFinishFailed"] = (errorInfo) => {
 };
 
 const ChartConfiguration: FunctionComponent = () => {
-    const [chartConfig, setChartConfig] = useState<{ pressureColor: string; temperatureColor: string; }>({ pressureColor: '00ff00', temperatureColor: 'ff0000' });
+    const [chartConfig, setChartConfig] = useState<{ pressureColor: string; temperatureColor: string; }>({ pressureColor: '#ff0000', temperatureColor: '#00ff00' });
 
     useEffect(() => {
-        const storedConfig = JSON.parse(localStorage.getItem('chartConfig') || '{}');
+        const storedConfig = JSON.parse(localStorage.getItem('chartConfig'));
         if (storedConfig) {
             setChartConfig({ pressureColor: storedConfig.pressureColor, temperatureColor: storedConfig.temperatureColor });
         }

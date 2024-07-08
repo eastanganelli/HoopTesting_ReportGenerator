@@ -4,12 +4,11 @@ import { SaveOutlined } from '@ant-design/icons';
 
 type FieldType = {
     companyName?: string;
-    temperatureColor?: any;
 };
 
 const onFinish: FormProps<FieldType>["onFinish"] = (values) => {
     try {
-        let auxData = { pressureColor: values.companyName };
+        let auxData = { companyName: values.companyName };
         localStorage.setItem('pdfConfig', JSON.stringify(auxData));
         message.success('Configuración guardada');
     } catch (error) { message.error('Error al guardar la configuración'); }
@@ -23,7 +22,7 @@ const PDFConfiguration: FunctionComponent = () => {
     const [pdfConfig, setPDFConfig] = useState<{ companyName: string; }>({ companyName: '' });
 
     useEffect(() => {
-        const storedConfig = JSON.parse(localStorage.getItem('pdfConfig') || '{}');
+        const storedConfig = JSON.parse(localStorage.getItem('pdfConfig'));
         if (storedConfig) {
             setPDFConfig({ companyName: storedConfig.companyName });
         }
