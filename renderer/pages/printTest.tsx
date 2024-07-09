@@ -58,7 +58,7 @@ const PrinterPage: FunctionComponent = () => {
     const [pdfConfig, setPDFConfig]			  = useState<{ companyName: string; }>({ companyName: 'None' });
 	const [myTest, setMyTest] 				  = useState<TestData>(null);
 	const [myData, setMyData] 				  = useState<TestDataValues[]>(null);
-	const [hoursInSeconds, setHoursInSeconds] = useState<number[]>(null);
+	// const [hoursInSeconds, setHoursInSeconds] = useState<number[]>(null);
 	
     useEffect(() => {
         const storedConfig:    { pressureColor: string; temperatureColor: string; } = JSON.parse(localStorage.getItem('chartConfig'));
@@ -88,7 +88,7 @@ const PrinterPage: FunctionComponent = () => {
 					{/* Parte superior del informe */}
 					<View style={styles.PDFStyle.section}>
 						<Text style={{ margin: '0 auto 0 auto', fontSize: '30px' }}>{pdfConfig['companyName']}</Text>
-						<Text style={{ margin: '0 auto 0 auto', fontSize: '24px', paddingTop: '10px', paddingBottom: '40px' }}>Reporte de la Prueba</Text>
+						<Text style={{ margin: '0 auto 0 auto', fontSize: '24px', paddingTop: '10px', paddingBottom: '40px' }}>{`Reporte de la Prueba`}</Text>
 						<View style={styles.Content.table}>
 							<View style={styles.Content.row}>
 								<Text style={[styles.Content.cell, cellPropiertes.length.small]}>{`ID Prueba`}</Text>
@@ -179,7 +179,7 @@ const PrinterPage: FunctionComponent = () => {
 						<Text style={{ margin: '0 auto 0 auto', fontSize: '13px' }}>{`Presión [Bar]`}</Text>
 						<ReactPDFChart>
 							<LineChart data={myData} height={chartLine['height']} width={chartLine['width']} margin={chartLine['margin']}>
-								<XAxis dataKey="key" ticks={hoursInSeconds} tickFormatter={(tick) => `${tick / 3600}`}><Label dy={chartLine['xAxis']['yPosition']} value="Tiempo [Hora]" /></XAxis>
+								<XAxis dataKey="key" /* ticks={hoursInSeconds} tickFormatter={(tick) => `${tick / 3600}`} */><Label dy={chartLine['xAxis']['yPosition']} value="Tiempo [Hora]" /></XAxis>
 								<YAxis yAxisId="left" dataKey="pressure" domain={chartLine['yAxisDomain']} />
 								<Line  yAxisId="left" type="monotone" dataKey="pressure" name="Presión" stroke={axisColors['pressureColor']} scale='identity' dot={false} isAnimationActive={false} />
 							</LineChart>
@@ -187,7 +187,7 @@ const PrinterPage: FunctionComponent = () => {
 						<Text style={{ margin: '10px auto 0 auto', fontSize: '13px' }}>{`Temperatura [°C]`}</Text>
 						<ReactPDFChart>
 							<LineChart data={myData} height={chartLine['height']} width={chartLine['width']} margin={chartLine['margin']}>
-								<XAxis dataKey="key" ticks={hoursInSeconds} tickFormatter={(tick) => `${tick / 3600}`}><Label dy={chartLine['xAxis']['yPosition']} value="Tiempo [Hora]" /></XAxis>
+								<XAxis dataKey="key" /* ticks={hoursInSeconds} tickFormatter={(tick) => `${tick / 3600}`} */><Label dy={chartLine['xAxis']['yPosition']} value="Tiempo [Hora]" /></XAxis>
 								<YAxis yAxisId="left" dataKey="temperature" domain={chartLine['yAxisDomain']} />
 								<Line  yAxisId="left" type="monotone" dataKey="temperature" name="Temperatura" scale='identity' stroke={axisColors['temperatureColor']} dot={false} isAnimationActive={false} />
 							</LineChart>
@@ -201,17 +201,17 @@ const PrinterPage: FunctionComponent = () => {
 	useEffect(() => {
 		const id_specimen: number = Number(query['idSpecimen']) as number;
 		if (isReady && id_specimen > 0) {
-			let hoursInSecondsAux: number[] = [];
+			// let hoursInSecondsAux: number[] = [];
 
 			QueryService.SELECT.TEST.Test([id_specimen]).then((data: TestData) => {
 				setMyTest(data[0]);
 			}).then(() => {
 				QueryService.SELECT.TEST.Data([id_specimen]).then((myTestValues: TestDataValues[]) => {
 					setMyData(myTestValues);
-					for (let i = Math.min(...myTestValues.map(d => d.key)); i <= Math.max(...myTestValues.map(d => d.key)); i += 3600) {
-						hoursInSecondsAux.push(i);
-					}
-					setHoursInSeconds(hoursInSecondsAux);
+					// for (let i = Math.min(...myTestValues.map(d => d.key)); i <= Math.max(...myTestValues.map(d => d.key)); i += 3600) {
+					// 	hoursInSecondsAux.push(i);
+					// }
+					// setHoursInSeconds(hoursInSecondsAux);
 				});
 			});
 		}
