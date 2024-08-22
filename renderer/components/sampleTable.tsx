@@ -3,7 +3,7 @@ import { useState, useEffect, FunctionComponent } from 'react';
 import { Table, type TableColumnsType } from 'antd';
 
 import useWindowSize from '../utils/window/windowState';
-import QueryService from '../utils/database/query';
+import QueryDataService from '../utils/database/query/data';
 const SpecimenRow = dynamic(() => import('./specimenTable'));
 
 import type { SampleType }  from '../interfaces/table';
@@ -37,7 +37,7 @@ const SampleTable: FunctionComponent<Props> = (Props: Props) => {
 
     useEffect(() => {
         const loadDataTable = async () => {
-            QueryService.SELECT.Samples().then((mySamples: QuerySample[]) => {
+            QueryDataService.SELECT.Samples().then((mySamples: QuerySample[]) => {
                 let myData: SampleType[] = [];
                 setQueryData(mySamples);
                 mySamples.forEach((Test: QuerySample) => {

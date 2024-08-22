@@ -3,7 +3,7 @@ import { FunctionComponent, useEffect, useState } from 'react';
 import { Form, FormInstance, Row, Col, Input, InputNumber, Checkbox, Button, Radio } from 'antd';
 const PlotTestResult = dynamic(() => import('./testPlot'), { ssr: false });
 
-import QueryService  from '../utils/database/query';
+import QueryDataService  from '../utils/database/query/data';
 
 import type { TestData, TestDataValues } from '../interfaces/query/data';
 
@@ -18,7 +18,7 @@ const testInformation: FunctionComponent<Props> = (Props: Props) => {
 
     useEffect(() => {
         let formData: specimenForm | null = null;
-        QueryService.SELECT.TEST.Test([idSpecimen]).then((myTest: TestData) => {
+        QueryDataService.SELECT.TEST.Test([idSpecimen]).then((myTest: TestData) => {
             const auxTestData: TestData = { ...myTest[0] };
             const formData = {
                 "operator":          auxTestData['mySpecimen']['operator'],

@@ -2,7 +2,7 @@ import { useState, useEffect, FunctionComponent } from 'react';
 import { useRouter } from 'next/router';
 import { Layout, Table, Checkbox, Typography, Divider, type CheckboxOptionType, type TableColumnsType } from 'antd';
 
-import QueryService from '../utils/database/query';
+import QueryDataService from '../utils/database/query/data';
 
 const TestPlot = dynamic(() => import('../components/testPlot'), { ssr: true });
 
@@ -44,7 +44,7 @@ const testSample: FunctionComponent = () => {
     const [checkedList, setCheckedList] = useState(defaultCheckedList);
 
     const loadCompareTable = async (idsSpecimens: string) => {
-        const resultQueryy: TestCompare[]   = await QueryService.SELECT.TEST.TestCompare([idsSpecimens]);
+        const resultQueryy: TestCompare[]   = await QueryDataService.SELECT.TEST.TestCompare([idsSpecimens]);
         let tableData: CompareType[]        = [];
         let plotDataAux: TestDataValues[][] = [];
 

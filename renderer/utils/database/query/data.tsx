@@ -1,4 +1,4 @@
-import type { QuerySpecimen, QuerySample, TestData, TestDataValues, TestCompare } from '../../interfaces/query/data';
+import type { QuerySpecimen, QuerySample, TestData, TestDataValues, TestCompare } from '../../../interfaces/query/data';
 
 const Query = <T extends unknown>(query: string, values: any[] = []): Promise<T> => {
     return new Promise<T>((resolve, reject) => {
@@ -15,7 +15,7 @@ const Query = <T extends unknown>(query: string, values: any[] = []): Promise<T>
     });
 }
 
-const QueryService = {
+const QueryDataService = {
     SELECT: {
         Samples: (): Promise<QuerySample[]> => {
             const SampleQuery: string = `SELECT
@@ -156,4 +156,4 @@ const QueryService = {
     }
 }
 
-export default QueryService;
+export default QueryDataService;

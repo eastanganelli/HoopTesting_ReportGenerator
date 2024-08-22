@@ -3,7 +3,7 @@ import { useState, useEffect, FunctionComponent } from 'react';
 import { Table, Space, Button, Modal, message, Popconfirm, Form, type TableColumnsType } from 'antd';
 
 import openNewWindow from '../utils/window/newWindows';
-import QueryService  from '../utils/database/query';
+import QueryDataService  from '../utils/database/query/data';
 
 const TestInformation = dynamic(() => import('./testInformation'), { ssr: false });
 
@@ -52,7 +52,7 @@ const SpecimenTable: FunctionComponent<Props> = (Props: Props) => {
             closable: true,
             okText: "Guardar",
             onOk: () => {
-                QueryService.UPDATE.Specimen([Specimen['idSpecimen'], mySpecimenForm.getFieldValue('testName'), mySpecimenForm.getFieldValue('operator'), mySpecimenForm.getFieldValue('fail'), mySpecimenForm.getFieldValue('remark')]).then((response) => {
+                QueryDataService.UPDATE.Specimen([Specimen['idSpecimen'], mySpecimenForm.getFieldValue('testName'), mySpecimenForm.getFieldValue('operator'), mySpecimenForm.getFieldValue('fail'), mySpecimenForm.getFieldValue('remark')]).then((response) => {
                     const arrAux: QuerySpecimen[] = [...queryData];
                     const index = arrAux.findIndex((specimen: QuerySpecimen) => specimen['idSpecimen'] === Specimen['idSpecimen']);
                     arrAux[index]['operator'] = mySpecimenForm.getFieldValue('operator');
@@ -67,7 +67,7 @@ const SpecimenTable: FunctionComponent<Props> = (Props: Props) => {
     const printTest  = (e: any, Specimen: SpecimenType) => { openNewWindow(`test_${Specimen['idSpecimen']}`, `Generación de Informe > Prueba Nro [${Specimen['idSpecimen']}] - Fecha: ${Specimen['begin']}`, `/printTest?idSpecimen=${Specimen['idSpecimen']}`); };
 
     const deleteTest = (e: any, Specimen: SpecimenType) => {
-        QueryService.DELETE.Specimen(Specimen['idSpecimen']).then((response) => {
+        QueryDataService.DELETE.Specimen(Specimen['idSpecimen']).then((response) => {
             const index = queryData.findIndex((specimen: QuerySpecimen) => specimen['idSpecimen'] === Specimen['idSpecimen']);
             queryData.splice(index, 1);
             onUpdateView();
@@ -116,7 +116,7 @@ const SpecimenTable: FunctionComponent<Props> = (Props: Props) => {
 
     useEffect(() => {
         const loadDataTable = async () => {
-            QueryService.SELECT.Specimens(idSample).then((mySpecimens: QuerySpecimen[]) => {
+            QueryDataService.SELECT.Specimens(idSample).then((mySpecimens: QuerySpecimen[]) => {
                 let myData: SpecimenType[] = [];
                 setQueryData(mySpecimens);
                 mySpecimens.forEach((specimen: QuerySpecimen) => {

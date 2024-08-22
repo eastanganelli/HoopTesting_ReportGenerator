@@ -1,7 +1,7 @@
 import { FunctionComponent, useEffect, useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, Label, Legend, ResponsiveContainer } from 'recharts';
 
-import QueryService  from '../utils/database/query';
+import QueryDataService  from '../utils/database/query/data';
 
 import type { TestDataValues } from '../interfaces/query/data';
 
@@ -21,7 +21,7 @@ const plotTestResult: FunctionComponent<Props> = (Props: Props) => {
                 temperatureColor: storedConfig['temperatureColor']
             });
         }
-        QueryService.SELECT.TEST.Data([idSpecimen]).then((TestResults: TestDataValues[]) => { setPlotData(TestResults); });
+        QueryDataService.SELECT.TEST.Data([idSpecimen]).then((TestResults: TestDataValues[]) => { setPlotData(TestResults); });
     }, []);
 
     return (
