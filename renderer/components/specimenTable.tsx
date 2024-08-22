@@ -7,7 +7,7 @@ import QueryService  from '../utils/database/query';
 
 const TestInformation = dynamic(() => import('./testInformation'), { ssr: false });
 
-import type { QuerySpecimen } from '../interfaces/query';
+import type { QuerySpecimen } from '../interfaces/query/data';
 import type { SpecimenType }  from '../interfaces/table';
 
 import { PlusOutlined, MinusOutlined, EditOutlined, FilePdfOutlined, DeleteOutlined } from '@ant-design/icons';
@@ -67,7 +67,7 @@ const SpecimenTable: FunctionComponent<Props> = (Props: Props) => {
     const printTest  = (e: any, Specimen: SpecimenType) => { openNewWindow(`test_${Specimen['idSpecimen']}`, `Generación de Informe > Prueba Nro [${Specimen['idSpecimen']}] - Fecha: ${Specimen['begin']}`, `/printTest?idSpecimen=${Specimen['idSpecimen']}`); };
 
     const deleteTest = (e: any, Specimen: SpecimenType) => {
-        QueryService.DELETE.Specimen([Specimen['idSpecimen']]).then((response) => {
+        QueryService.DELETE.Specimen(Specimen['idSpecimen']).then((response) => {
             const index = queryData.findIndex((specimen: QuerySpecimen) => specimen['idSpecimen'] === Specimen['idSpecimen']);
             queryData.splice(index, 1);
             onUpdateView();

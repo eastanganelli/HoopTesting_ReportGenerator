@@ -1,4 +1,4 @@
-import type { QuerySpecimen, QuerySample, TestData, TestDataValues, TestCompare } from '../../interfaces/query';
+import type { QuerySpecimen, QuerySample, TestData, TestDataValues, TestCompare } from '../../interfaces/query/data';
 
 const Query = <T extends unknown>(query: string, values: any[] = []): Promise<T> => {
     return new Promise<T>((resolve, reject) => {
@@ -116,14 +116,29 @@ const QueryService = {
                 });
             },
             Data: (queryData: any[] | string[] | number[]): Promise<TestDataValues[]> => {
+                // Delete Procedure
                 const TestDataQuery: string = 'CALL selectTestData(?)';
                 return Query<TestDataValues[]>(TestDataQuery, queryData);
             }
         }
     },
     UPDATE: {
+        
+        Sample: (queryData: any[] | string[] | number[]): Promise<string> => {
+            // const SampleQuery: string = "CALL updateSample(?,?,?,?,?,?,?)"; Delete Procedure
+            const SampleQuery: string = `UPDATE sample
+                                        SET standard = ?, material = ?, specification = ?, diamreal = ?, diamnom = ?, wallthick = ?, lenfree = ?, lentotal = ?, condperiod = ?
+                                        WHERE id = ?;`;
+            return new Promise<string>((resolve, reject) => {
+                Query(SampleQuery, queryData).catch(() => { reject("Base de Datos: Error al actualizar!"); })
+                .then(() => { resolve("Base de Datos: Actualización Exitosa!"); });
+            });
+        },
         Specimen: (queryData: any[] | string[] | number[]): Promise<string> => {
-            const SpecimenQuery: string = "CALL updateSpecimen(?,?,?,?,?)";
+            // const SpecimenQuery: string = "CALL updateSpecimen(?,?,?,?,?)"; Delete Procedure
+            const SpecimenQuery: string = `UPDATE specimen
+                                        SET sample = ?, targetPressure = ?, targetTemperature = ?, operator = ?, enviroment = ?, testName = ?, endCap = ?, failText = ?, remark = ?
+                                        WHERE id = ?`;
             return new Promise<string>((resolve, reject) => {
                 Query(SpecimenQuery, queryData).catch(() => { reject("Base de Datos: Error al actualizar!"); })
                 .then(() => { resolve("Base de Datos: Actualización Exitosa!"); });
@@ -131,10 +146,10 @@ const QueryService = {
         }
     },
     DELETE: {
-        Specimen: (queryData: any[] | string[] | number[]): Promise<string> => {
-            const SpecimenQuery: string = "CALL deleteTest(?)";
+        Specimen: (idSpecimen: number): Promise<string> => {
+            const SpecimenQuery: string = "DELETE FROM specimen WHERE id = ?";
             return new Promise<string>((resolve, reject) => {
-                Query(SpecimenQuery, queryData).catch(() => { reject("Base de Datos: Error al eliminar Prueba!"); })
+                Query(SpecimenQuery, [idSpecimen]).catch(() => { reject("Base de Datos: Error al eliminar Prueba!"); })
                 .then(() => { resolve("Base de Datos: Eliminación Exitosa!"); });
             });
         }

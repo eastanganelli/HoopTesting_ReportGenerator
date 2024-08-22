@@ -6,7 +6,7 @@ import QueryService from '../utils/database/query';
 
 const TestPlot = dynamic(() => import('../components/testPlot'), { ssr: true });
 
-import type { TestCompare, TestDataValues } from '../interfaces/query';
+import type { TestCompare, TestDataValues } from '../interfaces/query/data';
 import type { CompareType } from '../interfaces/table';
 import dynamic from 'next/dynamic';
 

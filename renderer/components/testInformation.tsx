@@ -5,7 +5,7 @@ const PlotTestResult = dynamic(() => import('./testPlot'), { ssr: false });
 
 import QueryService  from '../utils/database/query';
 
-import type { TestData, TestDataValues } from '../interfaces/query';
+import type { TestData, TestDataValues } from '../interfaces/query/data';
 
 interface specimenForm { operator: string; testName: string; standard: string; material: string; specification: string; endCap: string; enviroment: string; specimensCount: number; targetPressure: number; targetTemperature: number; lengthTotal: number; lengthFree: number; conditionalPeriod: string; diameterNominal: number; diameterReal: number; wallThickness: number; beginTime: string; endTime: string; duration: string; fail: string; remark: string; };
 
@@ -17,6 +17,7 @@ const testInformation: FunctionComponent<Props> = (Props: Props) => {
     const [myData,      setMyData]   = useState<TestDataValues[]>([]);
 
     useEffect(() => {
+        let formData: specimenForm | null = null;
         QueryService.SELECT.TEST.Test([idSpecimen]).then((myTest: TestData) => {
             const auxTestData: TestData = { ...myTest[0] };
             const formData = {
@@ -42,8 +43,8 @@ const testInformation: FunctionComponent<Props> = (Props: Props) => {
                 "fail":              auxTestData['mySpecimen']['fail'],
                 "remark":            auxTestData['mySpecimen']['remark']
             };
-            myTestForm.setFieldsValue(formData);
         });
+        myTestForm.setFieldsValue(formData);
     }, []);
 
     return (

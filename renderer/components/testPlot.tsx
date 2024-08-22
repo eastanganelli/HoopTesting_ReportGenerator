@@ -3,7 +3,7 @@ import { LineChart, Line, XAxis, YAxis, Label, Legend, ResponsiveContainer } fro
 
 import QueryService  from '../utils/database/query';
 
-import type { TestDataValues } from '../interfaces/query';
+import type { TestDataValues } from '../interfaces/query/data';
 
 interface Props { idSpecimen: number; };
 

@@ -7,7 +7,7 @@ import QueryService from '../utils/database/query';
 const SpecimenRow = dynamic(() => import('./specimenTable'));
 
 import type { SampleType }  from '../interfaces/table';
-import type { QuerySample } from '../interfaces/query';
+import type { QuerySample } from '../interfaces/query/data';
 
 interface Props { rowSelection: { selectedRowKeys: number[], onChange: (idTest: number) => void } };
 

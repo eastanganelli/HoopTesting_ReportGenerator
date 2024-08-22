@@ -9,7 +9,7 @@ const PDFViewer = dynamic(() => import('@react-pdf/renderer').then((mod) => mod.
 
 import QueryService from '../utils/database/query';
 
-import type { TestData, TestDataValues } from '../interfaces/query';
+import type { TestData, TestDataValues } from '../interfaces/data';
 
 const { Content } = Layout;
 
