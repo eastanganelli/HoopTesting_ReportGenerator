@@ -6,16 +6,16 @@ import useWindowSize from '../utils/window/windowState';
 import QueryService from '../utils/database/query';
 const SpecimenRow = dynamic(() => import('./specimenTable'));
 
-import type { SampleType } from '../interfaces/table';
-import type { QuerySampleTest, QuerySpecimenTest } from '../interfaces/query';
+import type { SampleType }  from '../interfaces/table';
+import type { QuerySample } from '../interfaces/query';
 
 interface Props { rowSelection: { selectedRowKeys: number[], onChange: (idTest: number) => void } };
 
 const SampleTable: FunctionComponent<Props> = (Props: Props) => {
-    const [queryData,  setQueryData]  = useState<QuerySampleTest[]>([]);
+    const [queryData,  setQueryData]  = useState<QuerySample[]>([]);
     const [sampleList, setSampleList] = useState<SampleType[]>([]);
     const [pageSizing, setPageSizing] = useState<number>(5);
-    const [updated,    setUpdated]    = useState<number>(0);
+    const [lastUpdate, setlastUpdate] = useState<number>(Date.now());
     const size                        = useWindowSize();
 
     const calculatePageSize = () => {
@@ -24,8 +24,6 @@ const SampleTable: FunctionComponent<Props> = (Props: Props) => {
         else if (size.height > 600) { setPageSizing(6); }
         else { setPageSizing(5); }
     };
-
-    const callDatabase = async () => { setQueryData(await QueryService.SELECT.TEST.Tests()); };
 
     const columns: TableColumnsType<SampleType> = [
         { title: 'ID Muestra',     dataIndex: 'idSample',      key: 'idSample' },
@@ -37,45 +35,43 @@ const SampleTable: FunctionComponent<Props> = (Props: Props) => {
         { title: 'Cantidad',       dataIndex: 'count',         key: 'count' }
     ];
 
-    const loadDataTable = () => {
-        let myData: SampleType[] = [];
-        queryData.forEach((Test: QuerySampleTest) => {
-            if(Test["mySpecimens"]?.length > 0) {
-                myData.push({
-                    key: Number(Test["idSample"]),
-                    idSample: Number(Test["idSample"]),
-                    material: Test["material"],
-                    specification: Test["specification"],
-                    diameter: Test["diameter"],
-                    wallThickness: Test["wallThickness"],
-                    length: Test["length"],
-                    count: Test["mySpecimens"]?.length,
-                    description: <SpecimenRow
-                                    specimens={Test["mySpecimens"]?.length > 0 ? Test["mySpecimens"].reverse() : []}
-                                    rowSelection={Props['rowSelection']}
-                                    onUpdateView={(newSpecimens: QuerySpecimenTest[]) => {
-                                        const aux = [...queryData];
-                                        const index = aux.findIndex((element) => element["idSample"] === Test["idSample"]);
-                                        aux[index]["mySpecimens"] = newSpecimens;
-                                        setQueryData(aux);
-                                        setUpdated(updated + 1);
-                                    }} />
-                });
-            }
-        });
-        setSampleList(myData);
-    };
-
     useEffect(() => {
-        if (queryData.length === 0) { callDatabase(); }
-        loadDataTable();
+        const loadDataTable = async () => {
+            QueryService.SELECT.Samples().then((mySamples: QuerySample[]) => {
+                let myData: SampleType[] = [];
+                setQueryData(mySamples);
+                mySamples.forEach((Test: QuerySample) => {
+                    myData.push({
+                        key:      Number(Test["idSample"]),
+                        idSample: Number(Test["idSample"]),
+                        material: Test["material"],
+                        specification: Test["specification"],
+                        diameter: Test["diameter"],
+                        wallThickness: Test["wallThickness"],
+                        length:   Test["length"],
+                        count:    Number(Test["count"])
+                    });
+                });
+                setSampleList(myData);
+                setlastUpdate(Date.now());
+            }).catch((error) => { console.error(error); });
+        }
+        if (queryData.length === 0) { loadDataTable(); }
         calculatePageSize();
-    }, [queryData, size, updated]);
+        const intervalId = setInterval(loadDataTable, 60000);
+        return () => clearInterval(intervalId);
+    }, [queryData, size, lastUpdate]);
 
     return (
         <Table
             columns={columns}
-            expandable={{ expandedRowRender: record => (<div>{record.description}</div>) }}
+            expandable={{ expandedRowRender: record => (
+                <SpecimenRow
+                    idSample={Number(record["idSample"])}
+                    rowSelection={Props['rowSelection']}
+                    onUpdateView={() => setlastUpdate(Date.now())}
+                    />
+            ) }}
             dataSource={sampleList}
             pagination={{ simple: true, disabled: false, size: "small", pageSize: pageSizing, position: ["bottomCenter"] }}
         />

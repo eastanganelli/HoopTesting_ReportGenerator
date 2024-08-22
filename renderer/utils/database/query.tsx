@@ -1,11 +1,11 @@
-import type { QuerySampleTest, TestData, TestDataValues, TestCompare } from '../../interfaces/query';
+import type { QuerySpecimen, QuerySample, TestData, TestDataValues, TestCompare } from '../../interfaces/query';
 
 const Query = <T extends unknown>(query: string, values: any[] = []): Promise<T> => {
     return new Promise<T>((resolve, reject) => {
         if (global && global.ipcRenderer) {
             global.ipcRenderer.send('database-request', { query: query, values: values });
             global.ipcRenderer.on('database-response', (_, response: T) => {
-                resolve(response[0]);
+                resolve(response);
             });
             global.ipcRenderer.on('database-error', (_, error) => {
                 console.error("Database error:", error)
@@ -17,13 +17,61 @@ const Query = <T extends unknown>(query: string, values: any[] = []): Promise<T>
 
 const QueryService = {
     SELECT: {
+        Samples: (): Promise<QuerySample[]> => {
+            const SampleQuery: string = `SELECT
+                                            s.id AS idSample,
+                                            s.material AS material,
+                                            s.specification AS specification,
+                                            s.diamreal AS diameter,
+                                            s.wallthick AS wallThickness,
+                                            s.lenfree AS length,
+                                            (SELECT count(*) FROM specimen spe WHERE spe.sample = s.id) AS count
+                                        FROM sample s;`;
+            return Query<QuerySample[]>(SampleQuery, []);
+        },
+        Specimens: (idSample: number | null): Promise<QuerySpecimen[]> => {
+            let SpecimenQuery: string;
+            if(idSample === null) {
+                SpecimenQuery = `SELECT
+                                    s.id AS idSpecimen,
+                                    1 AS testNumber,
+                                    (IF(s.id IS NULL, NULL, s.sample)) AS idSample,
+                                    (IF(s.targetPressure IS NULL, NULL, s.targetPressure)) AS targetPressure,
+                                    (IF(s.targetTemperature IS NULL, NULL, s.targetTemperature)) AS targetTemperature,
+                                    s.operator AS operator,
+                                    s.enviroment AS enviroment,
+                                    s.testName AS testName,
+                                    s.endCap AS endCap,
+                                    s.failText AS failText,
+                                    s.remark AS remark,
+                                    DATE_FORMAT((SELECT MIN(d.createdAt) FROM data d WHERE d.specimen = s.id), '%d/%m/%Y %H:%i:%s') AS beginTime,
+                                    DATE_FORMAT((SELECT MAX(d.createdAt) FROM data d WHERE d.specimen = s.id), '%d/%m/%Y %H:%i:%s') AS endTime,
+                                    DATE_FORMAT(TIMEDIFF((SELECT MAX(d.createdAt) FROM data d WHERE d.specimen = s.id), (SELECT MIN(d.createdAt) FROM data d WHERE d.specimen = s.id)), '%H:%i:%s') AS duration
+                                FROM specimen s WHERE s.sample is NULL AND s.targetPressure is NULL AND s.targetTemperature is NULL;`;
+            }
+            else {
+                SpecimenQuery = `SELECT
+                                    s.id AS idSpecimen,
+                                    ROW_NUMBER() OVER (ORDER BY s.id) AS testNumber,
+                                    (IF(s.id IS NULL, NULL, s.sample)) AS idSample,
+                                    (IF(s.targetPressure IS NULL, NULL, s.targetPressure)) AS targetPressure,
+                                    (IF(s.targetTemperature IS NULL, NULL, s.targetTemperature)) AS targetTemperature,
+                                    s.operator AS operator,
+                                    s.enviroment AS enviroment,
+                                    s.testName AS testName,
+                                    s.endCap AS endCap,
+                                    s.failText AS failText,
+                                    s.remark AS remark,
+                                    DATE_FORMAT((SELECT MIN(d.createdAt) FROM data d WHERE d.specimen = s.id), '%d/%m/%Y %H:%i:%s') AS beginTime,
+                                    DATE_FORMAT((SELECT MAX(d.createdAt) FROM data d WHERE d.specimen = s.id), '%d/%m/%Y %H:%i:%s') AS endTime,
+                                    DATE_FORMAT(TIMEDIFF((SELECT MAX(d.createdAt) FROM data d WHERE d.specimen = s.id), (SELECT MIN(d.createdAt) FROM data d WHERE d.specimen = s.id)), '%H:%i:%s') AS duration
+                                FROM specimen s WHERE s.sample = ?;`;
+            }
+            return Query<QuerySpecimen[]>(SpecimenQuery, idSample !== null ? [idSample] : []);
+        },
         TEST: {
-            Tests: (): Promise<QuerySampleTest[]> => {
-                const SampleWithSpecimensQuery: string = "CALL selectTests()";
-                return Query<QuerySampleTest[]>(SampleWithSpecimensQuery, []);
-            },
             Test: async (queryData: any[] | string[] | number[]): Promise<TestData> => {
-                const TestDataQuery: string = 'CALL selectTest(?)';
+                const TestDataQuery: string = `SELECT selectTestSample(se.sample) AS mySample, selectTestSpecimen(se.id) AS mySpecimen FROM specimen se WHERE se.id = ?;`;
                 return Query<TestData>(TestDataQuery, queryData);
             },
             TestCompare: (queryData: any[] | string[] | number[]): Promise<TestCompare[]> => {
@@ -55,7 +103,7 @@ const QueryService = {
                             beginTime: test['mySpecimen']['beginTime'],
                             endTime: test['mySpecimen']['endTime'],
                             duration: test['mySpecimen']['duration'],
-                            counts: test['mySpecimen']['counts'],
+                            // counts: test['mySpecimen']['counts'],
                             testName: test['mySpecimen']['testName'],
                             testNumber: test['mySpecimen']['testNumber'],
                             endCap: test['mySpecimen']['endCap'],

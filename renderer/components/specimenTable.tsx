@@ -3,75 +3,64 @@ import { useState, useEffect, FunctionComponent } from 'react';
 import { Table, Space, Button, Modal, message, Popconfirm, Form, type TableColumnsType } from 'antd';
 
 import openNewWindow from '../utils/window/newWindows';
-import QueryService from '../utils/database/query';
+import QueryService  from '../utils/database/query';
 
 const TestInformation = dynamic(() => import('./testInformation'), { ssr: false });
 
-import type { QuerySpecimenTest } from '../interfaces/query';
-import type { SpecimenType } from '../interfaces/table';
-import type { TestData, TestDataValues } from '../interfaces/query';
+import type { QuerySpecimen } from '../interfaces/query';
+import type { SpecimenType }  from '../interfaces/table';
 
 import { PlusOutlined, MinusOutlined, EditOutlined, FilePdfOutlined, DeleteOutlined } from '@ant-design/icons';
 
-interface Props { specimens: QuerySpecimenTest[]; rowSelection: { selectedRowKeys: number[], onChange: (idTest: number) => void }; onUpdateView: (newSpecimens: QuerySpecimenTest[]) => void };
+interface Props { idSample: number; rowSelection: { selectedRowKeys: number[], onChange: (idTest: number) => void }; onUpdateView: () => void };
 
 const { info } = Modal;
 
 const SpecimenTable: FunctionComponent<Props> = (Props: Props) => {
-    const { specimens, rowSelection, onUpdateView } = Props;
-    const [specimensData, setSpecimensData] = useState<QuerySpecimenTest[]>(specimens);
-    const [specimenData, setSpecimenData]   = useState<SpecimenType[]>([]);
-    const [updated, setUpdated]             = useState<number>(0);
-    const [messageApi, contextHolder]       = message.useMessage();
-    const [mySpecimenForm]                  = Form.useForm();
+    const { idSample, rowSelection, onUpdateView } = Props;
+    const [queryData,       setQueryData] = useState<QuerySpecimen[]>([]);
+    const [specimenData, setSpecimenData] = useState<SpecimenType[]>([]);
+    const [lastUpdate,    setLastUpdated] = useState<number>(Date.now());
+    const [messageApi,     contextHolder] = message.useMessage();
+    const [mySpecimenForm]                = Form.useForm();
+
+    // const loadSpecimens = () => {
+    //     QueryService.SELECT.Specimens(idSample).then((response) => { setSpecimensData(response); });
+    //     let myData: SpecimenType[] = [];
+    //     specimensData.forEach((specimen: QuerySpecimen) => {
+    //         myData.push({
+    //             key:         specimen['idSpecimen'],
+    //             idSpecimen:  specimen['idSpecimen'],
+    //             pressure:    specimen['targetPressure'],
+    //             temperature: specimen['targetTemperature'],
+    //             begin:       specimen['beginTime'],
+    //             end:         specimen['endTime'],
+    //             duration:    specimen['duration'],
+    //             testNumber:  specimen['testNumber'],
+    //             operator:    specimen['operator']
+    //         });
+    //     });
+    //     setSpecimenData(myData);
+    // };
 
     const viewTest = (e: any, Specimen: SpecimenType) => {
         if(mySpecimenForm.isFieldsTouched()) { mySpecimenForm.resetFields(); }
-        QueryService.SELECT.TEST.Test([Specimen['idSpecimen']]).then((myTest: TestData) => {
-            const auxTestData: TestData = { ...myTest[0] };
-            const formData = {
-                "operator":          auxTestData['mySpecimen']['operator'],
-                "testName":          auxTestData['mySpecimen']['testName'],
-                "standard":          auxTestData['mySample']['standard'],
-                "material":          auxTestData['mySample']['material'],
-                "specification":     auxTestData['mySample']['specification'],
-                "endCap":            auxTestData['mySpecimen']['endCap'],
-                "enviroment":        auxTestData['mySpecimen']['enviroment'],
-                "specimensCount":    auxTestData['mySpecimen']['counts'],
-                "targetPressure":    auxTestData['mySpecimen']['targetPressure'],
-                "targetTemperature": auxTestData['mySpecimen']['targetTemperature'],
-                "lengthTotal":       auxTestData['mySample']['lengthTotal'],
-                "lengthFree":        auxTestData['mySample']['lengthFree'],
-                "conditionalPeriod": auxTestData['mySample']['conditionalPeriod'],
-                "diameterNominal":   auxTestData['mySample']['diameterNominal'],
-                "diameterReal":      auxTestData['mySample']['diameterReal'],
-                "wallThickness":     auxTestData['mySample']['wallThickness'],
-                "beginTime":         auxTestData['mySpecimen']['beginTime'],
-                "endTime":           auxTestData['mySpecimen']['endTime'],
-                "duration":          auxTestData['mySpecimen']['duration'],
-                "fail":              auxTestData['mySpecimen']['fail'],
-                "remark":            auxTestData['mySpecimen']['remark']
-            };
-            mySpecimenForm.setFieldsValue(formData);
-            QueryService.SELECT.TEST.Data([Specimen['idSpecimen']]).then((TestResults: TestDataValues[]) => {
-                info({
-                    title: `Prueba Nro.: ${Specimen['testNumber']} [ID: ${Specimen['idSpecimen']}]`,
-                    content: (<TestInformation myTestForm={mySpecimenForm} myData={TestResults} />),
-                    width: "80vw",
-                    closable: true,
-                    okText: "Guardar",
-                    onOk: () => {
-                        QueryService.UPDATE.Specimen([Specimen['idSpecimen'], mySpecimenForm.getFieldValue('testName'), mySpecimenForm.getFieldValue('operator'), mySpecimenForm.getFieldValue('fail'), mySpecimenForm.getFieldValue('remark')]).then((response) => {
-                            const arrAux: QuerySpecimenTest[] = [...specimensData];
-                            const index = arrAux.findIndex((specimen: QuerySpecimenTest) => specimen['idSpecimen'] === Specimen['idSpecimen']);
-                            arrAux[index]['operator'] = mySpecimenForm.getFieldValue('operator');
-                            setSpecimensData(arrAux);
-                            setUpdated(updated + 1);
-                            message.success(response);
-                        }).catch((error) => { message.error(error); });
-                    }
-                });
-            });
+        info({
+            title: `Prueba Nro.: ${Specimen['testNumber']} [ID: ${Specimen['idSpecimen']}]`,
+            content: (<TestInformation myTestForm={mySpecimenForm} idSpecimen={1} />),
+            width: "80vw",
+            closable: true,
+            okText: "Guardar",
+            onOk: () => {
+                QueryService.UPDATE.Specimen([Specimen['idSpecimen'], mySpecimenForm.getFieldValue('testName'), mySpecimenForm.getFieldValue('operator'), mySpecimenForm.getFieldValue('fail'), mySpecimenForm.getFieldValue('remark')]).then((response) => {
+                    const arrAux: QuerySpecimen[] = [...queryData];
+                    const index = arrAux.findIndex((specimen: QuerySpecimen) => specimen['idSpecimen'] === Specimen['idSpecimen']);
+                    arrAux[index]['operator'] = mySpecimenForm.getFieldValue('operator');
+                    setQueryData(arrAux);
+                    setLastUpdated(Date.now());
+                    message.success(response);
+                }).catch((error) => { message.error(error); });
+            }
         });
     };
 
@@ -79,10 +68,10 @@ const SpecimenTable: FunctionComponent<Props> = (Props: Props) => {
 
     const deleteTest = (e: any, Specimen: SpecimenType) => {
         QueryService.DELETE.Specimen([Specimen['idSpecimen']]).then((response) => {
-            const index = specimensData.findIndex((specimen: QuerySpecimenTest) => specimen['idSpecimen'] === Specimen['idSpecimen']);
-            specimensData.splice(index, 1);
-            onUpdateView(specimensData);
-            setUpdated(updated + 1);
+            const index = queryData.findIndex((specimen: QuerySpecimen) => specimen['idSpecimen'] === Specimen['idSpecimen']);
+            queryData.splice(index, 1);
+            onUpdateView();
+            setLastUpdated(Date.now());
             message.success(response);
         }).catch((error) => { message.error(error); });
     };
@@ -107,7 +96,7 @@ const SpecimenTable: FunctionComponent<Props> = (Props: Props) => {
                         onClick={
                             () => {
                                 rowSelection.onChange(record['idSpecimen']);
-                                setUpdated(updated + 1);
+                                setLastUpdated(Date.now());
                                 messageApi.info({ content: `${rowSelection.selectedRowKeys.length} de 5 seleccionados`, duration: 5 });
                             }
                         }
@@ -126,25 +115,30 @@ const SpecimenTable: FunctionComponent<Props> = (Props: Props) => {
     ];
 
     useEffect(() => {
-        const loadSpecimens = () => {
-            let myData: SpecimenType[] = [];
-            specimensData.forEach((specimen: QuerySpecimenTest) => {
-                myData.push({
-                    key:         specimen['idSpecimen'],
-                    idSpecimen:  specimen['idSpecimen'],
-                    pressure:    specimen['targetPressure'],
-                    temperature: specimen['targetTemperature'],
-                    begin:       specimen['beginTime'],
-                    end:         specimen['endTime'],
-                    duration:    specimen['duration'],
-                    testNumber:  specimen['testNumber'],
-                    operator:    specimen['operator']
+        const loadDataTable = async () => {
+            QueryService.SELECT.Specimens(idSample).then((mySpecimens: QuerySpecimen[]) => {
+                let myData: SpecimenType[] = [];
+                setQueryData(mySpecimens);
+                mySpecimens.forEach((specimen: QuerySpecimen) => {
+                    myData.push({
+                        key:         specimen['idSpecimen'],
+                        testNumber:  specimen['testNumber'],
+                        idSpecimen:  specimen['idSpecimen'],
+                        pressure:    specimen['targetPressure'],
+                        temperature: specimen['targetTemperature'],
+                        begin:       specimen['beginTime'],
+                        end:         specimen['endTime'],
+                        duration:    specimen['duration'],
+                        operator:    specimen['operator']
+                    });
                 });
-            });
-            setSpecimenData(myData);
-        };
-        loadSpecimens();
-    }, [updated]);
+                setSpecimenData(myData);
+            }).catch((error) => { console.error(error); });
+        }
+        if (queryData.length === 0) { loadDataTable(); }
+        const intervalId = setInterval(loadDataTable, 60000);
+        return () => clearInterval(intervalId);
+    }, [queryData, lastUpdate]);
 
     return (
         <>

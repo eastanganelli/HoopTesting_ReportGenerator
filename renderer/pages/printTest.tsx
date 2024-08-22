@@ -98,7 +98,7 @@ const PrinterPage: FunctionComponent = () => {
 							</View>
 							<View style={styles.Content.row}>
 								<Text style={[styles.Content.cell, cellPropiertes.length.small]}>{`Cantidad de\nEspecimenes`}</Text>
-								<Text style={[styles.Content.cell, cellPropiertes.length.medium, cellPropiertes.child]}>{myTest?.mySpecimen?.counts < 2 ? 'Muestra' : 'Muestras'} {myTest?.mySpecimen?.counts}</Text>
+								{/* <Text style={[styles.Content.cell, cellPropiertes.length.medium, cellPropiertes.child]}>{myTest?.mySpecimen?.counts < 2 ? 'Muestra' : 'Muestras'} {myTest?.mySpecimen?.counts}</Text> */}
 								<Text style={[styles.Content.cell, cellPropiertes.length.small]}>{`Estándar`}</Text>
 								<Text style={[styles.Content.cell, cellPropiertes.length.medium, cellPropiertes.child]}>{myTest?.mySample?.standard}</Text>
 							</View>
@@ -119,7 +119,7 @@ const PrinterPage: FunctionComponent = () => {
 						{/* Parte superior del informe */}
 						<View style={[styles.Content.table, { paddingTop: '40px' }]}>
 							<View style={styles.Content.row}>
-								<Text style={[styles.Content.cell, cellPropiertes.length.full, cellPropiertes.fullBorder]}>{`Prueba Nro: ${myTest?.mySpecimen?.counts}`}</Text>
+								{/* <Text style={[styles.Content.cell, cellPropiertes.length.full, cellPropiertes.fullBorder]}>{`Prueba Nro: ${myTest?.mySpecimen?.counts}`}</Text> */}
 							</View>
 							<View style={styles.Content.row}>
 								<Text style={[styles.Content.cell, cellPropiertes.length.small, cellPropiertes.fullBorder]}>{`Material`}</Text>

@@ -1,22 +1,38 @@
-interface QuerySampleTest {
-    idSample: number;
-    material: string;
+interface QuerySample {
+    idSample:      number;
+    material:      string;
     specification: string;
-    diameter: number;
+    diameter:      number;
     wallThickness: number;
-    length: number;
-    mySpecimens: QuerySpecimenTest[];
+    length:        number;
+    count:         number;
+};
+
+interface QuerySpecimen {
+    idSpecimen:        number;
+    idSample:          number | null;
+    targetPressure:    number | null;
+    targetTemperature: number | null;
+    operator:          string | null;
+    enviroment:        string | null;
+    testName:          string | null;
+    endCap:            string | null;
+    failText:          string | null;
+    remark:            string | null;
+    beginTime:         string;
+    endTime:           string;
+    duration:          string;
 };
 
 interface QuerySpecimenTest {
-    idSpecimen: number;
-    targetPressure: number;
+    idSpecimen:        number;
+    targetPressure:    number;
     targetTemperature: number;
-    operator: string;
-    testNumber: number;
-    beginTime: string;
-    endTime: string;
-    duration: string;
+    operator:          string;
+    testNumber:        number;
+    beginTime:         string;
+    endTime:           string;
+    duration:          string;
 };
 
 interface TestData {
@@ -47,7 +63,6 @@ interface TestSpecimenValue {
     beginTime: string;
     endTime: string;
     duration: string;
-    counts: number;
     testName: string;
     testNumber: number;
     endCap: string;
@@ -81,7 +96,7 @@ interface TestCompare{
     beginTime: string;
     endTime: string;
     duration: string;
-    counts: number;
+    // counts: number;
     testName: string;
     testNumber: number;
     endCap: string;
@@ -90,4 +105,4 @@ interface TestCompare{
     myData: TestDataValues[];
 };
 
-export type { QuerySampleTest, QuerySpecimenTest, TestData, TestSampleValue, TestSpecimenValue, TestDataValues, TestCompare };
+export type { QuerySpecimen, QuerySample, QuerySpecimenTest, TestData, TestSampleValue, TestSpecimenValue, TestDataValues, TestCompare };

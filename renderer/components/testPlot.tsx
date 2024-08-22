@@ -1,14 +1,17 @@
 import { FunctionComponent, useEffect, useState } from 'react';
 import { LineChart, Line, XAxis, YAxis, Label, Legend, ResponsiveContainer } from 'recharts';
 
+import QueryService  from '../utils/database/query';
+
 import type { TestDataValues } from '../interfaces/query';
 
-interface Props { DataPlot: TestDataValues[]; };
+interface Props { idSpecimen: number; };
 
-const plotTestResult: FunctionComponent<Props> = ({ DataPlot }: Props) => {
-    const [axisColors, setAxisColors] = useState<{ pressureColor: string; temperatureColor: string; }>({ pressureColor: '#ff0000', temperatureColor: '#00ff00' });
-    const hoursInSeconds = [];
-    // for (let i = Math.min(...DataPlot.map(d => d.key)); i <= Math.max(...DataPlot.map(d => d.key)); i += 3600) { hoursInSeconds.push(i); }
+const plotTestResult: FunctionComponent<Props> = (Props: Props) => {
+    const {idSpecimen} = Props;
+    const [axisColors,        setAxisColors]        = useState<{ pressureColor: string; temperatureColor: string; }>({ pressureColor: '#ff0000', temperatureColor: '#00ff00' });
+    const [plotData,          setPlotData]          = useState<TestDataValues[]>([]);
+    const [plotConfiguration, setPlotConfiguration] = useState<{ interval: number; timeType: string; }>({ interval: 30, timeType: 'min' });
 
     useEffect(() => {
         const storedConfig = JSON.parse(localStorage.getItem('chartConfig'));
@@ -18,32 +21,26 @@ const plotTestResult: FunctionComponent<Props> = ({ DataPlot }: Props) => {
                 temperatureColor: storedConfig['temperatureColor']
             });
         }
+        QueryService.SELECT.TEST.Data([idSpecimen]).then((TestResults: TestDataValues[]) => { setPlotData(TestResults); });
     }, []);
 
     return (
         <>
             <ResponsiveContainer height={(globalThis.innerHeight * 0.8) - 48}>
-                <LineChart data={DataPlot}>
-                    <XAxis dataKey="key" /* ticks={hoursInSeconds} tickFormatter={(tick) => `${tick / 3600}`} */>
-                        <Label value="Tiempo [Hora]" offset={0} position="insideBottom" />
+                <LineChart data={plotData}>
+                    <XAxis dataKey="key">
+                        <Label value={`Tiempo [${plotConfiguration?.timeType}]`} offset={0} position="insideBottom" />
                     </XAxis>
                     <YAxis yAxisId="left" domain={['auto', 'auto']}>
                         {/* <Label value="Presión [Bar]" angle={-90} position="insideLeft" /> */}
                     </YAxis>
                     <Legend verticalAlign="top" />
                     <Line yAxisId="left"  type="monotone" dataKey="pressure" name="Presión" scale='identity' stroke={axisColors['pressureColor']} dot={false} isAnimationActive={false}/>
-                </LineChart>
-            </ResponsiveContainer>
-            <ResponsiveContainer height={(globalThis.innerHeight * 0.8) - 48}>
-                <LineChart data={DataPlot}>
-                    <XAxis dataKey="key" /* ticks={hoursInSeconds} tickFormatter={(tick) => `${tick / 3600}`} */>
-                        <Label value="Tiempo [Hora]" offset={0} position="insideBottom" />
-                    </XAxis>
-                    <YAxis yAxisId="left" domain={['auto', 'auto']}>
+                    <YAxis yAxisId="right" domain={['auto', 'auto']}>
                         {/* <Label value="Temperatura [°C]" angle={-90} position="insideLeft" /> */}
                     </YAxis>
                     <Legend verticalAlign="top" />
-                    <Line yAxisId="left" type="monotone" dataKey="temperature" name="Temperatura" scale='identity' stroke={axisColors['temperatureColor']} dot={false} isAnimationActive={false}/>
+                    <Line yAxisId="right" type="monotone" dataKey="temperature" name="Temperatura" scale='identity' stroke={axisColors['temperatureColor']} dot={false} isAnimationActive={false}/>
                 </LineChart>
             </ResponsiveContainer>
         </>

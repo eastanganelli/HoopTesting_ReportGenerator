@@ -1,27 +1,26 @@
 import { FunctionComponent, Key } from "react";
 
 interface SampleType {
-    key: Key;
-    idSample: number;
-    material: string;
+    key:           Key;
+    idSample:      number;
+    material:      string;
     specification: string;
-    diameter: number;
+    diameter:      number;
     wallThickness: number;
-    length: number;
-    count: number;
-    description: FunctionComponent<{ specimens: SpecimenType[] }> | any;
+    length:        number;
+    count:         number;
 };
 
 interface SpecimenType {
-    key: Key;
-    idSpecimen: number;
-    begin: string;
-    end: string;
-    pressure: number;
+    key:         Key;
+    idSpecimen:  number;
+    begin:       string;
+    end:         string;
+    pressure:    number;
     temperature: number;
-    testNumber: number;
-    duration: string;
-    operator: string;
+    testNumber:  number;
+    duration:    string;
+    operator:    string;
 };
 
 interface CompareType {
