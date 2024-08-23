@@ -1,16 +1,11 @@
-import type { QuerySpecimen, QuerySample, TestData, TestDataValues, TestCompare, QueryData } from '../../../interfaces/query/data';
+import type { QuerySpecimen, QuerySample, TestCompare, QueryData, QueryTest } from '../../../interfaces/query/data';
 
 const Query = <T extends unknown>(query: string, values: any[] = []): Promise<T> => {
     return new Promise<T>((resolve, reject) => {
         if (global && global.ipcRenderer) {
             global.ipcRenderer.send('database-request', { query: query, values: values });
-            global.ipcRenderer.on('database-response', (_, response: T) => {
-                resolve(response);
-            });
-            global.ipcRenderer.on('database-error', (_, error) => {
-                console.error("Database error:", error)
-                reject(error);
-            });
+            global.ipcRenderer.on('database-response',  (_, response: T) => { resolve(response); });
+            global.ipcRenderer.on('database-error',     (_, error) => { reject(error); });
         }
     });
 }
@@ -20,6 +15,7 @@ const QueryDataService = {
         Samples: (): Promise<QuerySample[]> => {
             const SampleQuery: string = `SELECT
                                             s.id AS idSample,
+                                            s.standard AS standard,
                                             s.material AS material,
                                             s.specification AS specification,
                                             s.diamreal AS diameter,
@@ -39,11 +35,6 @@ const QueryDataService = {
                                     (IF(s.targetPressure IS NULL, NULL, s.targetPressure)) AS targetPressure,
                                     (IF(s.targetTemperature IS NULL, NULL, s.targetTemperature)) AS targetTemperature,
                                     s.operator AS operator,
-                                    s.enviroment AS enviroment,
-                                    s.testName AS testName,
-                                    s.endCap AS endCap,
-                                    s.failText AS failText,
-                                    s.remark AS remark,
                                     DATE_FORMAT((SELECT MIN(d.createdAt) FROM data d WHERE d.specimen = s.id), '%d/%m/%Y %H:%i:%s') AS beginTime,
                                     DATE_FORMAT((SELECT MAX(d.createdAt) FROM data d WHERE d.specimen = s.id), '%d/%m/%Y %H:%i:%s') AS endTime,
                                     DATE_FORMAT(TIMEDIFF((SELECT MAX(d.createdAt) FROM data d WHERE d.specimen = s.id), (SELECT MIN(d.createdAt) FROM data d WHERE d.specimen = s.id)), '%H:%i:%s') AS duration
@@ -57,11 +48,6 @@ const QueryDataService = {
                                     (IF(s.targetPressure IS NULL, NULL, s.targetPressure)) AS targetPressure,
                                     (IF(s.targetTemperature IS NULL, NULL, s.targetTemperature)) AS targetTemperature,
                                     s.operator AS operator,
-                                    s.enviroment AS enviroment,
-                                    s.testName AS testName,
-                                    s.endCap AS endCap,
-                                    s.failText AS failText,
-                                    s.remark AS remark,
                                     DATE_FORMAT((SELECT MIN(d.createdAt) FROM data d WHERE d.specimen = s.id), '%d/%m/%Y %H:%i:%s') AS beginTime,
                                     DATE_FORMAT((SELECT MAX(d.createdAt) FROM data d WHERE d.specimen = s.id), '%d/%m/%Y %H:%i:%s') AS endTime,
                                     DATE_FORMAT(TIMEDIFF((SELECT MAX(d.createdAt) FROM data d WHERE d.specimen = s.id), (SELECT MIN(d.createdAt) FROM data d WHERE d.specimen = s.id)), '%H:%i:%s') AS duration
@@ -75,49 +61,76 @@ const QueryDataService = {
             return Query<QueryData[][]>(DataQuery, [idSpecimen, interval, timeType]);
         },
         TEST: {
-            Test: async (queryData: any[] | string[] | number[]): Promise<TestData> => {
-                const TestDataQuery: string = `SELECT selectTestSample(se.sample) AS mySample, selectTestSpecimen(se.id) AS mySpecimen FROM specimen se WHERE se.id = ?;`;
-                return Query<TestData>(TestDataQuery, queryData);
+            Test: (idSpecimen: number): Promise<QueryTest> => {
+                const TestQuery: string = `SELECT
+                                                s.id AS idSpecimen,
+                                                s.sample AS idSample,
+                                                s1.standard AS standard,
+                                                s1.material AS material,
+                                                s1.specification AS specification,
+                                                s1.diamreal AS diameterReal,
+                                                s1.diamnom AS diameterNominal,
+                                                s1.wallthick AS wallThickness,
+                                                s1.lenfree AS lengthFree,
+                                                s1.lentotal AS lengthTotal,
+                                                s1.condPeriod AS conditionalPeriod,
+                                                (SELECT COUNT(*) FROM specimen spe WHERE spe.id = s.id GROUP BY spe.sample) AS specimensCount,
+                                                (IF(s.targetPressure IS NULL, NULL, s.targetPressure)) AS targetPressure,
+                                                (IF(s.targetTemperature IS NULL, NULL, s.targetTemperature)) AS targetTemperature,
+                                                s.operator AS operator,
+                                                s.enviroment AS enviroment,
+                                                s.testName AS testName,
+                                                s.endCap AS endCap,
+                                                s.failText AS failText,
+                                                s.remark AS remark,
+                                                DATE_FORMAT((SELECT MIN(d.createdAt) FROM data d WHERE d.specimen = s.id), '%d/%m/%Y %H:%i:%s') AS beginTime,
+                                                DATE_FORMAT((SELECT MAX(d.createdAt) FROM data d WHERE d.specimen = s.id), '%d/%m/%Y %H:%i:%s') AS endTime,
+                                                DATE_FORMAT(TIMEDIFF((SELECT MAX(d.createdAt) FROM data d WHERE d.specimen = s.id), (SELECT MIN(d.createdAt) FROM data d WHERE d.specimen = s.id)), '%H:%i:%s') AS duration
+                                            FROM specimen s
+                                                INNER JOIN sample s1
+                                                ON s.sample = s1.id
+                                            WHERE s.id = ${idSpecimen};`;
+                return Query<QueryTest>(TestQuery, []);
             },
             TestCompare: (queryData: any[] | string[] | number[]): Promise<TestCompare[]> => {
                 return new Promise<TestCompare[]>(async (resolve, reject) => {
-                    const TestDataQuery: string = 'CALL selectCompareTests(?)';
-                    const queryResult: TestData[] = await Query<TestData[]>(TestDataQuery, queryData);
-                    if (queryResult.length === 0) reject("No data found");
+                    // const TestDataQuery: string = 'CALL selectCompareTests(?)';
+                    // const queryResult: TestData[] = await Query<TestData[]>(TestDataQuery, queryData);
+                    // if (queryResult.length === 0) reject("No data found");
 
-                    let parseData: TestCompare[] = [];
+                    // let parseData: TestCompare[] = [];
 
-                    queryResult.forEach((test: TestData) => {
-                        parseData.push({
-                            idSample: test['mySample']['idSample'],
-                            standard: test['mySample']['standard'],
-                            material: test['mySample']['material'],
-                            specification: test['mySample']['specification'],
-                            diameterReal: test['mySample']['diameterReal'],
-                            diameterNominal: test['mySample']['diameterNominal'],
-                            wallThickness: test['mySample']['wallThickness'],
-                            lengthTotal: test['mySample']['lengthTotal'],
-                            lengthFree: test['mySample']['lengthFree'],
-                            targetTemperature: test['mySpecimen']['targetTemperature'],
-                            targetPressure: test['mySpecimen']['targetPressure'],
-                            hoopStress: test['mySample']['hoopStress'],
-                            conditionalPeriod: test['mySample']['conditionalPeriod'],
-                            idSpecimen: test['mySpecimen']['idSpecimen'],
-                            operator: test['mySpecimen']['operator'],
-                            enviroment: test['mySpecimen']['enviroment'],
-                            beginTime: test['mySpecimen']['beginTime'],
-                            endTime: test['mySpecimen']['endTime'],
-                            duration: test['mySpecimen']['duration'],
-                            // counts: test['mySpecimen']['counts'],
-                            testName: test['mySpecimen']['testName'],
-                            testNumber: test['mySpecimen']['testNumber'],
-                            endCap: test['mySpecimen']['endCap'],
-                            fail: test['mySpecimen']['fail'],
-                            remark: test['mySpecimen']['remark'],
-                            myData: test['myData']
-                        });
-                    });
-                    resolve(parseData);
+                    // queryResult.forEach((test: TestData) => {
+                    //     parseData.push({
+                    //         idSample: test['mySample']['idSample'],
+                    //         standard: test['mySample']['standard'],
+                    //         material: test['mySample']['material'],
+                    //         specification: test['mySample']['specification'],
+                    //         diameterReal: test['mySample']['diameterReal'],
+                    //         diameterNominal: test['mySample']['diameterNominal'],
+                    //         wallThickness: test['mySample']['wallThickness'],
+                    //         lengthTotal: test['mySample']['lengthTotal'],
+                    //         lengthFree: test['mySample']['lengthFree'],
+                    //         targetTemperature: test['mySpecimen']['targetTemperature'],
+                    //         targetPressure: test['mySpecimen']['targetPressure'],
+                    //         hoopStress: test['mySample']['hoopStress'],
+                    //         conditionalPeriod: test['mySample']['conditionalPeriod'],
+                    //         idSpecimen: test['mySpecimen']['idSpecimen'],
+                    //         operator: test['mySpecimen']['operator'],
+                    //         enviroment: test['mySpecimen']['enviroment'],
+                    //         beginTime: test['mySpecimen']['beginTime'],
+                    //         endTime: test['mySpecimen']['endTime'],
+                    //         duration: test['mySpecimen']['duration'],
+                    //         // counts: test['mySpecimen']['counts'],
+                    //         testName: test['mySpecimen']['testName'],
+                    //         testNumber: test['mySpecimen']['testNumber'],
+                    //         endCap: test['mySpecimen']['endCap'],
+                    //         fail: test['mySpecimen']['fail'],
+                    //         remark: test['mySpecimen']['remark'],
+                    //         myData: test['myData']
+                    //     });
+                    // });
+                    // resolve(parseData);
                 });
             },
             

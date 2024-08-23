@@ -9,7 +9,7 @@ const PDFViewer = dynamic(() => import('@react-pdf/renderer').then((mod) => mod.
 
 import QueryService from '../utils/database/query/data';
 
-import type { TestData, TestDataValues } from '../interfaces/query/data';
+import type { TestDataValues } from '../interfaces/query/data';
 
 const { Content } = Layout;
 
@@ -56,7 +56,7 @@ const PrinterPage: FunctionComponent = () => {
 	const { query, isReady } = useRouter();
     const [axisColors, setAxisColors] 		  = useState<{ pressureColor: string; temperatureColor: string; }>({ pressureColor: '#FF0000', temperatureColor: '#00FF00' });
     const [pdfConfig, setPDFConfig]			  = useState<{ companyName: string; }>({ companyName: 'None' });
-	const [myTest, setMyTest] 				  = useState<TestData>(null);
+	const [myTest, setMyTest] 				  = useState<any>(null);
 	const [myData, setMyData] 				  = useState<TestDataValues[]>(null);
 	// const [hoursInSeconds, setHoursInSeconds] = useState<number[]>(null);
 	
@@ -203,9 +203,9 @@ const PrinterPage: FunctionComponent = () => {
 		if (isReady && id_specimen > 0) {
 			// let hoursInSecondsAux: number[] = [];
 
-			QueryService.SELECT.TEST.Test([id_specimen]).then((data: TestData) => {
-				setMyTest(data[0]);
-			}).then(() => {
+			// QueryService.SELECT.TEST.Test([id_specimen]).then((data: TestData) => {
+			// 	setMyTest(data[0]);
+			// }).then(() => {
 				// QueryService.SELECT.TEST.Data([id_specimen]).then((myTestValues: TestDataValues[]) => {
 				// 	setMyData(myTestValues);
 				// 	// for (let i = Math.min(...myTestValues.map(d => d.key)); i <= Math.max(...myTestValues.map(d => d.key)); i += 3600) {
@@ -213,7 +213,7 @@ const PrinterPage: FunctionComponent = () => {
 				// 	// }
 				// 	// setHoursInSeconds(hoursInSecondsAux);
 				// });
-			});
+			// });
 		}
 	}, [isReady]);
 

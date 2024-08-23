@@ -40,7 +40,7 @@ const SampleTable: FunctionComponent<Props> = (Props: Props) => {
             QueryDataService.SELECT.Samples().then((mySamples: QuerySample[]) => {
                 let myData: SampleType[] = [];
                 setQueryData(mySamples);
-                mySamples.forEach((Test: QuerySample) => {
+                mySamples?.forEach((Test: QuerySample) => {
                     myData.push({
                         key:      Number(Test["idSample"]),
                         idSample: Number(Test["idSample"]),

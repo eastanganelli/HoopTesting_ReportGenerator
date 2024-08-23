@@ -7,7 +7,7 @@ import QueryDataService  from '../utils/database/query/data';
 
 const TestInformation = dynamic(() => import('./testInformation'), { ssr: false });
 
-import type { QuerySpecimen } from '../interfaces/query/data';
+import type { QuerySpecimen, QueryTest } from '../interfaces/query/data';
 import type { SpecimenType }  from '../interfaces/table';
 
 import { PlusOutlined, MinusOutlined, EditOutlined, FilePdfOutlined, DeleteOutlined } from '@ant-design/icons';
@@ -114,11 +114,12 @@ const SpecimenTable: FunctionComponent<Props> = (Props: Props) => {
                     });
                 });
                 setSpecimenData(myData);
+                setLastUpdated(Date.now());
             }).catch((error) => { console.error(error); });
         }
         if (queryData.length === 0) { loadDataTable(); }
-        const intervalId = setInterval(loadDataTable, 60000);
-        return () => clearInterval(intervalId);
+        // const intervalId = setInterval(loadDataTable, 60000);
+        // return () => clearInterval(intervalId);
     }, [queryData, lastUpdate]);
 
     return (

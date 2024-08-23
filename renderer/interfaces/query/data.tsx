@@ -1,11 +1,12 @@
 interface QuerySample {
-    idSample:      number;
-    material:      string;
-    specification: string;
-    diameter:      number;
-    wallThickness: number;
-    length:        number;
-    count:         number;
+    idSample:          number;
+    standard:          string;
+    material:          string;
+    specification:     string;
+    diameter:          number;
+    wallThickness:     number;
+    length:            number;
+    count:             number;
 };
 
 interface QuerySpecimen {
@@ -14,11 +15,6 @@ interface QuerySpecimen {
     targetPressure:    number | null;
     targetTemperature: number | null;
     operator:          string | null;
-    enviroment:        string | null;
-    testName:          string | null;
-    endCap:            string | null;
-    failText:          string | null;
-    remark:            string | null;
     beginTime:         string;
     endTime:           string;
     duration:          string;
@@ -42,9 +38,30 @@ interface QueryData {
     ambient:     number;
 }
 
-interface TestData {
-    mySample: TestSampleValue;
-    mySpecimen: TestSpecimenValue;
+interface QueryTest {
+    idSample:          number;
+    standard:          string;
+    material:          string;
+    specification:     string;
+    diameterReal:      number;
+    diameterNominal:   number;
+    wallThickness:     number;
+    lengthFree:        number;
+    lengthTotal:       number;
+    conditionalPeriod: string;
+    specimensCount:    number;
+    idSpecimen:        number;
+    targetPressure:    number;
+    targetTemperature: number;
+    operator:          string;
+    enviroment:        string;
+    testName:          string;
+    endCap:            string;
+    failText:          string;
+    remark:            string;
+    beginTime:         string;
+    endTime:           string;
+    duration:          string;
 };
 
 interface TestSampleValue {
@@ -112,4 +129,4 @@ interface TestCompare{
     myData: TestDataValues[];
 };
 
-export type { QuerySpecimen, QuerySample, QuerySpecimenTest, QueryData, TestData, TestSampleValue, TestSpecimenValue, TestDataValues, TestCompare };
+export type { QuerySpecimen, QuerySample, QuerySpecimenTest, QueryData, QueryTest, TestSampleValue, TestSpecimenValue, TestDataValues, TestCompare };

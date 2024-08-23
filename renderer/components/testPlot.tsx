@@ -44,8 +44,8 @@ const plotTestResult: FunctionComponent<Props> = (Props: Props) => {
 
     return (
         <Form form={plotForm} layout='horizontal' onFinish={(values) => setPlotParams(values)} initialValues={plotParams}>
-            <Row gutter={[8, 8]}>
-                <Col span={2}><Form.Item name="interval"><InputNumber min={minValue} defaultValue={1} step={stepValue} placeholder='Intervalo' /></Form.Item></Col>
+            <Row gutter={[16, 16]}>
+                <Col span={4}><Form.Item label='Intervalo' name="interval"><InputNumber min={minValue} defaultValue={1} step={stepValue} placeholder='Intervalo' /></Form.Item></Col>
                 <Col span={4}>
                     <Form.Item name="timeType">
                         <Select defaultValue={`Horas`} onChange={(value: string) => {
@@ -62,7 +62,7 @@ const plotTestResult: FunctionComponent<Props> = (Props: Props) => {
                         </Select>
                     </Form.Item>
                 </Col>
-                <Col span={8}><Form.Item><Button type="primary" htmlType='submit'>
+                <Col span={16}><Form.Item><Button type="primary" htmlType='submit'>
                     {`Actualizar Gráfico`}
                 </Button></Form.Item></Col>
             </Row>

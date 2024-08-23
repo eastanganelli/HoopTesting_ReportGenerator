@@ -2,11 +2,11 @@ import { useState, useEffect, FunctionComponent } from 'react';
 import { useRouter } from 'next/router';
 import { Layout, Table, Checkbox, Typography, Divider, type CheckboxOptionType, type TableColumnsType } from 'antd';
 
-import QueryDataService from '../utils/database/query/data';
+// import QueryDataService from '../utils/database/query/data';
 
-const TestPlot = dynamic(() => import('../components/testPlot'), { ssr: true });
+// const TestPlot = dynamic(() => import('../components/testPlot'), { ssr: true });
 
-import type { TestCompare, TestDataValues } from '../interfaces/query/data';
+// import type { TestCompare, TestDataValues } from '../interfaces/query/data';
 import type { CompareType } from '../interfaces/table';
 import dynamic from 'next/dynamic';
 
@@ -39,47 +39,47 @@ const defaultCheckedList = columns.map((column) => { if (column.key !== 'operato
 
 const testSample: FunctionComponent = () => {
     const { query, isReady }            = useRouter();
-    const [myTest, setMyTest]           = useState<CompareType[]>([]);
-    const [plotData, setPlotData]       = useState<TestDataValues[][]>([]);
+    // const [myTest, setMyTest]           = useState<CompareType[]>([]);
+    // const [plotData, setPlotData]       = useState<TestDataValues[][]>([]);
     const [checkedList, setCheckedList] = useState(defaultCheckedList);
 
     const loadCompareTable = async (idsSpecimens: string) => {
-        const resultQueryy: TestCompare[]   = await QueryDataService.SELECT.TEST.TestCompare([idsSpecimens]);
-        let tableData: CompareType[]        = [];
-        let plotDataAux: TestDataValues[][] = [];
+        // const resultQueryy: TestCompare[]   = await QueryDataService.SELECT.TEST.TestCompare([idsSpecimens]);
+        // let tableData: CompareType[]        = [];
+        // let plotDataAux: TestDataValues[][] = [];
 
-        resultQueryy.forEach((Test: TestCompare) => {
-            plotDataAux.push(Test["myData"] as TestDataValues[]);
-            tableData.push({
-                key: Number(Test["idSpecimen"]),
-                idSample: Number(Test["idSample"]),
-                standard: Test["standard"],
-                material: Test["material"],
-                specification: Test["specification"],
-                diameterReal: Test["diameterReal"],
-                diameterNominal: Test["diameterNominal"],
-                wallThickness: Test["wallThickness"],
-                lengthTotal: Test["lengthTotal"],
-                lengthFree: Test["lengthFree"],
-                targetTemperature: Test["targetTemperature"],
-                targetPressure: Test["targetPressure"],
-                conditionalPeriod: Test["conditionalPeriod"],
-                idSpecimen: Number(Test["idSpecimen"]),
-                operator: Test["operator"],
-                enviroment: Test["enviroment"],
-                beginTime: Test["beginTime"],
-                endTime: Test["endTime"],
-                duration: Test["duration"],
-                counts: Test["counts"],
-                testName: Test["testName"],
-                testNumber: Test["testNumber"],
-                endCap: Test["endCap"],
-                fail: Test["fail"],
-                remark: Test["remark"]
-            });
-        });
-        await setMyTest(tableData);
-        await setPlotData(plotDataAux);
+        // resultQueryy.forEach((Test: TestCompare) => {
+        //     plotDataAux.push(Test["myData"] as TestDataValues[]);
+        //     tableData.push({
+        //         key: Number(Test["idSpecimen"]),
+        //         idSample: Number(Test["idSample"]),
+        //         standard: Test["standard"],
+        //         material: Test["material"],
+        //         specification: Test["specification"],
+        //         diameterReal: Test["diameterReal"],
+        //         diameterNominal: Test["diameterNominal"],
+        //         wallThickness: Test["wallThickness"],
+        //         lengthTotal: Test["lengthTotal"],
+        //         lengthFree: Test["lengthFree"],
+        //         targetTemperature: Test["targetTemperature"],
+        //         targetPressure: Test["targetPressure"],
+        //         conditionalPeriod: Test["conditionalPeriod"],
+        //         idSpecimen: Number(Test["idSpecimen"]),
+        //         operator: Test["operator"],
+        //         enviroment: Test["enviroment"],
+        //         beginTime: Test["beginTime"],
+        //         endTime: Test["endTime"],
+        //         duration: Test["duration"],
+        //         counts: Test["counts"],
+        //         testName: Test["testName"],
+        //         testNumber: Test["testNumber"],
+        //         endCap: Test["endCap"],
+        //         fail: Test["fail"],
+        //         remark: Test["remark"]
+        //     });
+        // });
+        // await setMyTest(tableData);
+        // await setPlotData(plotDataAux);
     };
 
     const options = columns.map(({ key, title }) => ({
@@ -94,14 +94,14 @@ const testSample: FunctionComponent = () => {
     }));
 
     useEffect(() => {
-        const idsSpecimens: string = String(query['idSpecimens']) as string;
-        if (isReady && idsSpecimens !== undefined) { loadCompareTable(idsSpecimens); }
+        // const idsSpecimens: string = String(query['idSpecimens']) as string;
+        // if (isReady && idsSpecimens !== undefined) { loadCompareTable(idsSpecimens); }
     }, [isReady]);
 
     return (
         <Layout style={{ background: "lightgrey", minHeight: "98vh", overflow: "auto" }}>
             <Layout style={{ padding: '12px' }}>
-                <Content style={{ padding: 24, background: 'white', borderRadius: 25, alignItems: 'center', justifyContent: 'center', fontSize: "1vw" }}>
+                {/* <Content style={{ padding: 24, background: 'white', borderRadius: 25, alignItems: 'center', justifyContent: 'center', fontSize: "1vw" }}>
                     <><Checkbox.Group value={checkedList} options={options as CheckboxOptionType[]} onChange={(value) => { setCheckedList(value as string[]) }} /></>
                     <><Table style={{ paddingTop: 20, paddingBottom: 20 }} columns={newColumns} dataSource={myTest} scroll={{ x: 1000 }} pagination={{ position: [] }} /></>
                     <>
@@ -109,13 +109,13 @@ const testSample: FunctionComponent = () => {
                             Array.apply(null, { length: plotData.length }).map((_, index) => (
                                 <>
                                     <Typography.Title level={3}> ID Prueba: {myTest[index].idSpecimen}</Typography.Title>
-                                    {/* <TestPlot key={index} idSpecimen={myTest[index].idSpecimen} /> */}
+                                        <TestPlot key={index} idSpecimen={myTest[index].idSpecimen} />
                                     <Divider />
                                 </>
                             ))
                         }
                     </>
-                </Content>
+                </Content> */}
             </Layout>
         </Layout>
     );
