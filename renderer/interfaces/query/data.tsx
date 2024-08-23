@@ -35,6 +35,13 @@ interface QuerySpecimenTest {
     duration:          string;
 };
 
+interface QueryData {
+    key:         number;
+    pressure:    number;
+    temperature: number;
+    ambient:     number;
+}
+
 interface TestData {
     mySample: TestSampleValue;
     mySpecimen: TestSpecimenValue;
@@ -105,4 +112,4 @@ interface TestCompare{
     myData: TestDataValues[];
 };
 
-export type { QuerySpecimen, QuerySample, QuerySpecimenTest, TestData, TestSampleValue, TestSpecimenValue, TestDataValues, TestCompare };
+export type { QuerySpecimen, QuerySample, QuerySpecimenTest, QueryData, TestData, TestSampleValue, TestSpecimenValue, TestDataValues, TestCompare };

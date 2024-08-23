@@ -1,4 +1,4 @@
-import type { QuerySpecimen, QuerySample, TestData, TestDataValues, TestCompare } from '../../../interfaces/query/data';
+import type { QuerySpecimen, QuerySample, TestData, TestDataValues, TestCompare, QueryData } from '../../../interfaces/query/data';
 
 const Query = <T extends unknown>(query: string, values: any[] = []): Promise<T> => {
     return new Promise<T>((resolve, reject) => {
@@ -69,6 +69,11 @@ const QueryDataService = {
             }
             return Query<QuerySpecimen[]>(SpecimenQuery, idSample !== null ? [idSample] : []);
         },
+        Data: (idSpecimen: number, interval: number, timeType: string): Promise<QueryData[][]> => {
+            // Delete Procedure
+            const DataQuery: string = `CALL selectData(?,?,?);`;
+            return Query<QueryData[][]>(DataQuery, [idSpecimen, interval, timeType]);
+        },
         TEST: {
             Test: async (queryData: any[] | string[] | number[]): Promise<TestData> => {
                 const TestDataQuery: string = `SELECT selectTestSample(se.sample) AS mySample, selectTestSpecimen(se.id) AS mySpecimen FROM specimen se WHERE se.id = ?;`;
@@ -115,11 +120,7 @@ const QueryDataService = {
                     resolve(parseData);
                 });
             },
-            Data: (queryData: any[] | string[] | number[]): Promise<TestDataValues[]> => {
-                // Delete Procedure
-                const TestDataQuery: string = 'CALL selectTestData(?)';
-                return Query<TestDataValues[]>(TestDataQuery, queryData);
-            }
+            
         }
     },
     UPDATE: {

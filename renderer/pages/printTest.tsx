@@ -9,7 +9,7 @@ const PDFViewer = dynamic(() => import('@react-pdf/renderer').then((mod) => mod.
 
 import QueryService from '../utils/database/query/data';
 
-import type { TestData, TestDataValues } from '../interfaces/data';
+import type { TestData, TestDataValues } from '../interfaces/query/data';
 
 const { Content } = Layout;
 
@@ -206,13 +206,13 @@ const PrinterPage: FunctionComponent = () => {
 			QueryService.SELECT.TEST.Test([id_specimen]).then((data: TestData) => {
 				setMyTest(data[0]);
 			}).then(() => {
-				QueryService.SELECT.TEST.Data([id_specimen]).then((myTestValues: TestDataValues[]) => {
-					setMyData(myTestValues);
-					// for (let i = Math.min(...myTestValues.map(d => d.key)); i <= Math.max(...myTestValues.map(d => d.key)); i += 3600) {
-					// 	hoursInSecondsAux.push(i);
-					// }
-					// setHoursInSeconds(hoursInSecondsAux);
-				});
+				// QueryService.SELECT.TEST.Data([id_specimen]).then((myTestValues: TestDataValues[]) => {
+				// 	setMyData(myTestValues);
+				// 	// for (let i = Math.min(...myTestValues.map(d => d.key)); i <= Math.max(...myTestValues.map(d => d.key)); i += 3600) {
+				// 	// 	hoursInSecondsAux.push(i);
+				// 	// }
+				// 	// setHoursInSeconds(hoursInSecondsAux);
+				// });
 			});
 		}
 	}, [isReady]);

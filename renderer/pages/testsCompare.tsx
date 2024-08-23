@@ -109,7 +109,7 @@ const testSample: FunctionComponent = () => {
                             Array.apply(null, { length: plotData.length }).map((_, index) => (
                                 <>
                                     <Typography.Title level={3}> ID Prueba: {myTest[index].idSpecimen}</Typography.Title>
-                                    <TestPlot key={index} idSpecimen={myTest[index].idSpecimen} />
+                                    {/* <TestPlot key={index} idSpecimen={myTest[index].idSpecimen} /> */}
                                     <Divider />
                                 </>
                             ))

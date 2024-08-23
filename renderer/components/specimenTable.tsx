@@ -24,42 +24,23 @@ const SpecimenTable: FunctionComponent<Props> = (Props: Props) => {
     const [messageApi,     contextHolder] = message.useMessage();
     const [mySpecimenForm]                = Form.useForm();
 
-    // const loadSpecimens = () => {
-    //     QueryService.SELECT.Specimens(idSample).then((response) => { setSpecimensData(response); });
-    //     let myData: SpecimenType[] = [];
-    //     specimensData.forEach((specimen: QuerySpecimen) => {
-    //         myData.push({
-    //             key:         specimen['idSpecimen'],
-    //             idSpecimen:  specimen['idSpecimen'],
-    //             pressure:    specimen['targetPressure'],
-    //             temperature: specimen['targetTemperature'],
-    //             begin:       specimen['beginTime'],
-    //             end:         specimen['endTime'],
-    //             duration:    specimen['duration'],
-    //             testNumber:  specimen['testNumber'],
-    //             operator:    specimen['operator']
-    //         });
-    //     });
-    //     setSpecimenData(myData);
-    // };
-
     const viewTest = (e: any, Specimen: SpecimenType) => {
         if(mySpecimenForm.isFieldsTouched()) { mySpecimenForm.resetFields(); }
         info({
             title: `Prueba Nro.: ${Specimen['testNumber']} [ID: ${Specimen['idSpecimen']}]`,
-            content: (<TestInformation myTestForm={mySpecimenForm} idSpecimen={1} />),
+            content: (<TestInformation myTestForm={mySpecimenForm} idSpecimen={Specimen['idSpecimen']} />),
             width: "80vw",
             closable: true,
             okText: "Guardar",
             onOk: () => {
-                QueryDataService.UPDATE.Specimen([Specimen['idSpecimen'], mySpecimenForm.getFieldValue('testName'), mySpecimenForm.getFieldValue('operator'), mySpecimenForm.getFieldValue('fail'), mySpecimenForm.getFieldValue('remark')]).then((response) => {
-                    const arrAux: QuerySpecimen[] = [...queryData];
-                    const index = arrAux.findIndex((specimen: QuerySpecimen) => specimen['idSpecimen'] === Specimen['idSpecimen']);
-                    arrAux[index]['operator'] = mySpecimenForm.getFieldValue('operator');
-                    setQueryData(arrAux);
-                    setLastUpdated(Date.now());
-                    message.success(response);
-                }).catch((error) => { message.error(error); });
+                // QueryDataService.UPDATE.Specimen([Specimen['idSpecimen'], mySpecimenForm.getFieldValue('testName'), mySpecimenForm.getFieldValue('operator'), mySpecimenForm.getFieldValue('fail'), mySpecimenForm.getFieldValue('remark')]).then((response) => {
+                //     const arrAux: QuerySpecimen[] = [...queryData];
+                //     const index = arrAux.findIndex((specimen: QuerySpecimen) => specimen['idSpecimen'] === Specimen['idSpecimen']);
+                //     arrAux[index]['operator'] = mySpecimenForm.getFieldValue('operator');
+                //     setQueryData(arrAux);
+                //     setLastUpdated(Date.now());
+                //     message.success(response);
+                // }).catch((error) => { message.error(error); });
             }
         });
     };
