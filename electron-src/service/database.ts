@@ -15,30 +15,36 @@ export interface DatabaseRequest {
 	values: any[];
 }
 
-let globalPool: Pool | undefined = undefined;
+let globalPool: Map<string, Pool | undefined> = new Map<string, Pool | undefined>();
+
+// let globalPool: Pool | undefined = undefined;
 
 const myDB = {
-	connect: (): Promise<Pool> => {
-		return new Promise<Pool>((resolve, reject) => {
+	connect: (): Promise<Map<string, Pool | undefined>> => {
+		return new Promise<Map<string, Pool | undefined>>((resolve, reject) => {
 			settings.get('dbConfig.data').then((response: any) => {
 				if(response === undefined) { reject(new Error('No Data to Logging')); }
 
 				const DBCONFIG: DatabaseConfig = JSON.parse(response);
 				try {
-					globalPool = createPool(`mysql://${DBCONFIG.USER}:${DBCONFIG.PASSWORD}@${DBCONFIG.HOST}:${DBCONFIG.PORT}/${DBCONFIG.DATABASE}`);
+					globalPool.set('DataPool',   createPool(`mysql://${DBCONFIG.USER}:${DBCONFIG.PASSWORD}@${DBCONFIG.HOST}:${DBCONFIG.PORT}/${'data_db'}`));
+					globalPool.set('StaticPool', createPool(`mysql://${DBCONFIG.USER}:${DBCONFIG.PASSWORD}@${DBCONFIG.HOST}:${DBCONFIG.PORT}/${'static_db'}`));
 					resolve(globalPool);
 				} catch (error: any) {
-					globalPool = undefined;
+					globalPool.set('DataPool',   undefined);
+					globalPool.set('StaticPool', undefined);
 					reject(error);
 				}
 			}).catch((error) => { reject(error); });
 		});
 	},
 	disconnect: () => {
-		globalPool?.end();
+		globalPool.forEach((pool: Pool | undefined) => {
+			pool?.end();
+		});
 	},
-	get: (): Pool|undefined => {
-		return globalPool;
+	get: (keyPool: string): Pool|undefined => {
+		return globalPool.get(keyPool);
 	}
 }
 
@@ -56,8 +62,8 @@ ipcMain.on('database-connect', async (event, requestData: { clicked: boolean }) 
 
 ipcMain.on('database-isconnected', async (event) => {
 	try {
-		globalPool = await myDB.get();
-		globalPool?.execute('SELECT 1').then(() => {
+		let localPool = await myDB.get('DataPool');
+		localPool?.execute('SELECT 1').then(() => {
 			event.reply('database-connected', 'Base de Datos: Conexión Exitosa!');
 		}).catch(() => {
 			event.reply('database-error', 'Base de Datos: Conexión No Exitosa!');
@@ -87,9 +93,9 @@ ipcMain.on('database-read', async (event) => {
 	});
 });
 
-ipcMain.on('database-request', async (event, requestData: DatabaseRequest) => {
+ipcMain.on('database-request', async (event, keySchema, requestData: DatabaseRequest) => {
 	try {
-		const myConnection = myDB.get();
+		const myConnection = myDB.get(keySchema);
 		myConnection?.execute(requestData.query, requestData.values).then(([rows]) => {
 			event.reply('database-response', rows);
 		});

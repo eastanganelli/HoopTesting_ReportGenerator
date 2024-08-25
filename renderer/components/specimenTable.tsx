@@ -10,7 +10,7 @@ const TestInformation = dynamic(() => import('./testInformation'), { ssr: false 
 import type { QuerySpecimen, QueryTest } from '../interfaces/query/data';
 import type { SpecimenType }  from '../interfaces/table';
 
-import { PlusOutlined, MinusOutlined, EditOutlined, FilePdfOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlusOutlined, MinusOutlined, EditOutlined, FilePdfOutlined, DeleteOutlined, SaveOutlined } from '@ant-design/icons';
 
 interface Props { idSample: number; rowSelection: { selectedRowKeys: number[], onChange: (idTest: number) => void }; onUpdateView: () => void };
 
@@ -28,20 +28,26 @@ const SpecimenTable: FunctionComponent<Props> = (Props: Props) => {
         if(mySpecimenForm.isFieldsTouched()) { mySpecimenForm.resetFields(); }
         info({
             title: `Prueba Nro.: ${Specimen['testNumber']} [ID: ${Specimen['idSpecimen']}]`,
-            content: (<TestInformation myTestForm={mySpecimenForm} idSpecimen={Specimen['idSpecimen']} />),
+            content: <TestInformation myTestForm={mySpecimenForm} idSpecimen={Specimen['idSpecimen']} />,
             width: "80vw",
             closable: true,
-            okText: "Guardar",
-            onOk: () => {
-                // QueryDataService.UPDATE.Specimen([Specimen['idSpecimen'], mySpecimenForm.getFieldValue('testName'), mySpecimenForm.getFieldValue('operator'), mySpecimenForm.getFieldValue('fail'), mySpecimenForm.getFieldValue('remark')]).then((response) => {
-                //     const arrAux: QuerySpecimen[] = [...queryData];
-                //     const index = arrAux.findIndex((specimen: QuerySpecimen) => specimen['idSpecimen'] === Specimen['idSpecimen']);
-                //     arrAux[index]['operator'] = mySpecimenForm.getFieldValue('operator');
-                //     setQueryData(arrAux);
-                //     setLastUpdated(Date.now());
-                //     message.success(response);
-                // }).catch((error) => { message.error(error); });
-            }
+            footer: <>
+                        <Button type="primary" onClick={() => {
+                            console.log(mySpecimenForm.getFieldsValue());
+                        }} icon={<FilePdfOutlined />}>{`Imprimir PDF`}</Button>
+                        <Button style={{ marginLeft: 5 }} type="primary" onClick={() => {
+                            console.log(mySpecimenForm.getFieldsValue());
+                            // QueryDataService.UPDATE.Specimen([Specimen['idSpecimen'], mySpecimenForm.getFieldValue('testName'), mySpecimenForm.getFieldValue('operator'), mySpecimenForm.getFieldValue('fail'), mySpecimenForm.getFieldValue('remark')]).then((response) => {
+                            //     const arrAux: QuerySpecimen[] = [...queryData];
+                            //     const index = arrAux.findIndex((specimen: QuerySpecimen) => specimen['idSpecimen'] === Specimen['idSpecimen']);
+                            //     arrAux[index]['operator'] = mySpecimenForm.getFieldValue('operator');
+                            //     setQueryData(arrAux);
+                            //     setLastUpdated(Date.now());
+                            //     message.success(response);
+                            // }).catch((error) => { message.error(error); });
+
+                        }} icon={<SaveOutlined />}>{`Guardar`}</Button>
+                    </>
         });
     };
 

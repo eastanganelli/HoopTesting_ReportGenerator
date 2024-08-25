@@ -3,9 +3,9 @@ import type { QuerySpecimen, QuerySample, TestCompare, QueryData, QueryTest } fr
 const Query = <T extends unknown>(query: string, values: any[] = []): Promise<T> => {
     return new Promise<T>((resolve, reject) => {
         if (global && global.ipcRenderer) {
-            global.ipcRenderer.send('database-request', { query: query, values: values });
-            global.ipcRenderer.on('database-response',  (_, response: T) => { resolve(response); });
-            global.ipcRenderer.on('database-error',     (_, error) => { reject(error); });
+            global.ipcRenderer.send('database-request', 'DataPool', { query: query, values: values });
+            global.ipcRenderer.on('database-response', (_, response: T) => { resolve(response); });
+            global.ipcRenderer.on('database-error',    (_, error) => { reject(error); });
         }
     });
 }
