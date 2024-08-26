@@ -1,11 +1,13 @@
 import dynamic from 'next/dynamic';
 import { useState, useEffect, FunctionComponent } from 'react';
 import { Table, Space, Button, Modal, message, Popconfirm, Form, type TableColumnsType } from 'antd';
+import ReactPDF from '@react-pdf/renderer';
 
-import openNewWindow from '../utils/window/newWindows';
+import openNewWindow    from '../utils/window/newWindows';
 import QueryDataService  from '../utils/database/query/data';
 
 const TestInformation = dynamic(() => import('./testInformation'), { ssr: false });
+const PrintTest       = dynamic(() => import('./printTest'));
 
 import type { QuerySpecimen, QueryTest } from '../interfaces/query/data';
 import type { SpecimenType }  from '../interfaces/table';
@@ -31,23 +33,25 @@ const SpecimenTable: FunctionComponent<Props> = (Props: Props) => {
             content: <TestInformation myTestForm={mySpecimenForm} idSpecimen={Specimen['idSpecimen']} />,
             width: "80vw",
             closable: true,
-            onCancel: () => {
-                console.log(mySpecimenForm.getFieldsValue());
-                QueryDataService.UPDATE.Specimen(mySpecimenForm.getFieldsValue()).then((response) => {
-                    message.success(response);
-                }).catch((error) => { message.error(error); });
-                QueryDataService.UPDATE.Sample(mySpecimenForm.getFieldsValue()).then((response) => {
-                    message.success(response);
-                }).catch((error) => { message.error(error); });
-            },
-            onOk: () => { console.log('Printing PDF'); },
             okButtonProps: { icon: <FilePdfOutlined />, type: 'primary' },
-            okText: 'Imprimir',
-            destroyOnClose: true
+            destroyOnClose: true,
+            footer: <>
+                <Button icon={<SaveOutlined />} type="primary" onClick={() => {
+                    const myTestData: QueryTest = mySpecimenForm.getFieldsValue();
+                    console.log('Form Test Data', myTestData);
+                    QueryDataService.UPDATE.Specimen(Specimen['idSpecimen'], idSample, myTestData).then((response) => {
+                        message.success(response);
+                    }).catch((error) => { message.error(error); });
+                    QueryDataService.UPDATE.Sample(idSample, myTestData).then((response) => {
+                        message.success(response);
+                    }).catch((error) => { message.error(error); });
+                }}>{`Guardar`}</Button>
+                <Button icon={<FilePdfOutlined />} type="primary" onClick={() => {
+                    ReactPDF.render(<PrintTest/>, `${__dirname}/example.pdf`);
+                }}>{`Imprimir PDF`}</Button>
+            </>
         });
     };
-
-    const printTest  = (e: any, Specimen: SpecimenType) => { openNewWindow(`test_${Specimen['idSpecimen']}`, `Generación de Informe > Prueba Nro [${Specimen['idSpecimen']}] - Fecha: ${Specimen['begin']}`, `/printTest?idSpecimen=${Specimen['idSpecimen']}`); };
 
     const deleteTest = (e: any, Specimen: SpecimenType) => {
         QueryDataService.DELETE.Specimen(Specimen['idSpecimen']).then((response) => {
@@ -88,7 +92,6 @@ const SpecimenTable: FunctionComponent<Props> = (Props: Props) => {
                         ghost
                     />
                     <Button onClick={(event) => viewTest(event,  record)} icon={<EditOutlined />}    type="primary" ghost></Button>
-                    {/* <Button onClick={(event) => printTest(event, record)} icon={<FilePdfOutlined />} type="primary" ghost></Button> */}
                     <Popconfirm title="Eliminar Prueba?" description="Está seguro que desea eliminar la Prueba?" onConfirm={() => { deleteTest(event, record); }} okText="Si" cancelText="No">
                         <Button icon={<DeleteOutlined />} danger></Button>
                     </Popconfirm>

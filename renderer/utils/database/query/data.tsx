@@ -137,21 +137,22 @@ const QueryDataService = {
         }
     },
     UPDATE: {
-        Sample: (sampleData: QueryTest): Promise<string> => {
+        Sample: (idSample: number, sampleData: QueryTest): Promise<string> => {
             // const SampleQuery: string = "CALL updateSample(?,?,?,?,?,?,?)"; Delete Procedure
             const SampleQuery: string = `UPDATE sample
-                                        SET standard = ${sampleData['standard']}, material = ${sampleData['material']}, specification = ${sampleData['specification']}, diamreal = ${sampleData['diameterReal']}, diamnom = ${sampleData['diameterNominal']}, wallthick = ${sampleData['wallThickness']}, lenfree = ${sampleData['lengthFree']}, lentotal = ${sampleData['lengthTotal']}, condperiod = ${sampleData['conditionalPeriod']}
-                                        WHERE id = ${sampleData['idSample']};`;
+                                        SET standard = '${sampleData['standard']}', material = '${sampleData['material']}', specification = '${sampleData['specification']}', diamreal = ${sampleData['diameterReal']}, diamnom = ${sampleData['diameterNominal']}, wallthick = ${sampleData['wallThickness']}, lenfree = ${sampleData['lengthFree']}, lentotal = ${sampleData['lengthTotal']}, condperiod = '${sampleData['conditionalPeriod']}'
+                                        WHERE id = ${idSample};`;
             return new Promise<string>((resolve, reject) => {
                 Query(SampleQuery).catch(() => { reject("Base de Datos: Error al actualizar!"); })
                 .then(() => { resolve("Base de Datos: Actualización Exitosa!"); });
             });
         },
-        Specimen: (specimenData: QueryTest): Promise<string> => {
+        Specimen: (idSpecimen: number, idSample: number, specimenData: QueryTest): Promise<string> => {
             // const SpecimenQuery: string = "CALL updateSpecimen(?,?,?,?,?)"; Delete Procedure
             const SpecimenQuery: string = `UPDATE specimen
-                                        SET sample = ${specimenData['idSample']}, targetPressure = ${specimenData['targetPressure']}, targetTemperature = ${specimenData['targetTemperature']}, operator = ${specimenData['operator']}, enviroment = ${specimenData['enviroment']}, testName = ${specimenData['testName']}, endCap = ${specimenData['endCap']}, failText = ${specimenData['failText']}, remark = ${specimenData['remark']}
-                                        WHERE id = ${specimenData['idSpecimen']};`;
+                                        SET sample = ${idSample}, targetPressure = ${specimenData['targetPressure']}, targetTemperature = ${specimenData['targetTemperature']}, operator = '${specimenData['operator']}', enviroment = '${specimenData['enviroment']}', testName = '${specimenData['testName']}', endCap = '${specimenData['endCap']}', failText = '${specimenData['failText']}', remark = '${specimenData['remark']}'
+                                        WHERE id = ${idSpecimen};`;
+                                        console.log(SpecimenQuery);
             return new Promise<string>((resolve, reject) => {
                 Query(SpecimenQuery).catch(() => { reject("Base de Datos: Error al actualizar!"); })
                 .then(() => { resolve("Base de Datos: Actualización Exitosa!"); });
