@@ -1,14 +1,15 @@
 import dynamic from 'next/dynamic';
 import { useState, useEffect, FunctionComponent } from 'react';
 import { Table, Space, Button, Modal, message, Popconfirm, Form, type TableColumnsType } from 'antd';
-import ReactPDF, { renderToFile } from '@react-pdf/renderer';
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { saveAs } from 'file-saver';
+import { pdf } from '@react-pdf/renderer';
 
+import PrinterPage       from './printTest';
 import openNewWindow    from '../utils/window/newWindows';
 import QueryDataService  from '../utils/database/query/data';
 
 const TestInformation = dynamic(() => import('./testInformation'), { ssr: false });
-const PrinterPage     = dynamic(() => import('../pages/printTest'));
+// const PrinterPage     = dynamic(() => import('../pages/printTest'));
 
 import type { QuerySpecimen, QueryTest } from '../interfaces/query/data';
 import type { SpecimenType }  from '../interfaces/table';
@@ -48,14 +49,8 @@ const SpecimenTable: FunctionComponent<Props> = (Props: Props) => {
                     }).catch((error) => { message.error(error); });
                 }}>{`Guardar`}</Button>
                 <Button icon={<FilePdfOutlined />} type="primary" onClick={async () => {
-                    const MyDocument = () => (
-                        <Document>
-                          <Page>
-                            <Text>React-pdf</Text>
-                          </Page>
-                        </Document>
-                      );
-                    await renderToFile(<MyDocument />, `D:/ezequ/Documents/my-doc.pdf`);
+                    const blobPdf = await pdf(<PrinterPage idSpecimen={Specimen['idSpecimen']} plotParams={{ interval: 1, timeType: 'm' }}/>).toBlob();
+                    saveAs(blobPdf, `Prueba_${Specimen['testNumber']}.pdf`);
                 }}>{`Imprimir PDF`}</Button>
             </>
         });

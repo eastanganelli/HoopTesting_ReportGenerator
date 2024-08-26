@@ -1,17 +1,11 @@
-import dynamic from 'next/dynamic';
 import ReactPDFChart from 'react-pdf-charts';
-import { useRouter } from 'next/router';
 import { FunctionComponent, useEffect, useState } from 'react';
-import { Document, Page, Text, View, StyleSheet, renderToFile } from '@react-pdf/renderer';
-import { LineChart, Line, XAxis, YAxis, Label } from 'recharts';
-import { Layout } from 'antd';
-const PDFViewer = dynamic(() => import('@react-pdf/renderer').then((mod) => mod.PDFViewer), { ssr: false });
+import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { LineChart, Line, XAxis, YAxis, Label, Legend } from 'recharts';
 
 import QueryService from '../utils/database/query/data';
 
 import type { TestDataValues } from '../interfaces/query/data';
-
-const { Content } = Layout;
 
 const styles = {
 	PDFStyle: StyleSheet.create({
@@ -52,18 +46,31 @@ const chartLine = {
 	xAxis: { yPosition: 10 }
 }
 
-const PrinterPage: FunctionComponent = () => {
-	const { query, isReady } = useRouter();
+interface Props { idSpecimen: number; plotParams: { interval: number; timeType: string; }; }
+
+const PrinterPage: FunctionComponent<Props> = (Props: Props) => {
+	const { idSpecimen, plotParams } = Props;
     const [axisColors, setAxisColors] 		  = useState<{ pressureColor: string; temperatureColor: string; }>({ pressureColor: '#FF0000', temperatureColor: '#00FF00' });
     const [pdfConfig, setPDFConfig]			  = useState<{ companyName: string; }>({ companyName: 'None' });
 	const [myTest, setMyTest] 				  = useState<any>(null);
 	const [myData, setMyData] 				  = useState<TestDataValues[]>(null);
-	// const [hoursInSeconds, setHoursInSeconds] = useState<number[]>(null);
+
+	const selectTimeType = (): string => {
+        switch (plotParams['timeType']) {
+            case 's': return 'Segundos';
+            case 'm': return 'Minutos';
+            case 'h': return 'Horas';
+        }
+    }
 	
+	const loadData = async () => {
+		await QueryService.SELECT.TEST.Test(idSpecimen).then((responseTest) => { console.log(responseTest[0]); setMyTest(responseTest[0]); });
+		await QueryService.SELECT.Data(idSpecimen, plotParams['interval'], plotParams['timeType']).then((responseData) => { console.log(responseData); /* setMyData(responseData); */ });
+	};
+
     useEffect(() => {
         const storedConfig:    { pressureColor: string; temperatureColor: string; } = JSON.parse(localStorage.getItem('chartConfig'));
 		const storedPDFConfig: { companyName: string; } = JSON.parse(localStorage.getItem('pdfConfig'));
-		console.log(storedPDFConfig);
         if (storedConfig) {
             setAxisColors({
 				pressureColor: storedConfig.pressureColor,
@@ -73,9 +80,10 @@ const PrinterPage: FunctionComponent = () => {
 		if (storedPDFConfig) {
 			setPDFConfig({ companyName: storedPDFConfig['companyName'] });
 		}
+		loadData();
     }, []);
 
-	const MyDocument = () => {
+	return (
 		<Document
 			title    = {pdfConfig['companyName'] + ` - Reporte de la Prueba ${myTest?.mySpecimen?.idSpecimen} - ${(new Date()).toDateString()}`}
 			subject  = {pdfConfig['companyName'] + ` - Reporte de la Prueba ${myTest?.mySpecimen?.idSpecimen} - ${(new Date()).toDateString()}`}
@@ -176,55 +184,26 @@ const PrinterPage: FunctionComponent = () => {
 			<Page size='A4' style={styles.PDFStyle.page}>
 				<View style={styles.PDFStyle.section}>
 					<Text style={{ margin: '0 auto 0 auto', fontSize: '13px' }}>{`Presión [Bar]`}</Text>
-					<ReactPDFChart>
-						<LineChart data={myData} height={chartLine['height']} width={chartLine['width']} margin={chartLine['margin']}>
-							<XAxis dataKey="key" /* ticks={hoursInSeconds} tickFormatter={(tick) => `${tick / 3600}`} */><Label dy={chartLine['xAxis']['yPosition']} value="Tiempo [Hora]" /></XAxis>
-							<YAxis yAxisId="left" dataKey="pressure" domain={chartLine['yAxisDomain']} />
-							<Line  yAxisId="left" type="monotone" dataKey="pressure" name="Presión" stroke={axisColors['pressureColor']} scale='identity' dot={false} isAnimationActive={false} />
+					{/* <ReactPDFChart>
+						<LineChart data={myData}>
+							<XAxis dataKey="key">
+								<Label value={`Tiempo [${selectTimeType()}]`} offset={0} position="insideBottom" />
+							</XAxis>
+							<YAxis yAxisId="left" domain={['auto', 'auto']}>
+								<Label value="Presión [Bar]" angle={-90} position="insideLeft" />
+							</YAxis>
+							<Legend verticalAlign="top" />
+							<Line yAxisId="left" type="monotone" dataKey="pressure" name="Presión" scale='identity' stroke={axisColors['pressureColor']} dot={false} isAnimationActive={true} />
+							<YAxis yAxisId="right" orientation='right' domain={['auto', 'auto']}>
+								<Label value="Temperatura [°C]" angle={-90} position="insideRight" />
+							</YAxis>
+							<Legend verticalAlign="top" />
+							<Line yAxisId="right" type="monotone" dataKey="temperature" name="Temperatura" scale='identity' stroke={axisColors['temperatureColor']} dot={false} isAnimationActive={true} />
 						</LineChart>
-					</ReactPDFChart>
-					<Text style={{ margin: '10px auto 0 auto', fontSize: '13px' }}>{`Temperatura [°C]`}</Text>
-					<ReactPDFChart>
-						<LineChart data={myData} height={chartLine['height']} width={chartLine['width']} margin={chartLine['margin']}>
-							<XAxis dataKey="key" /* ticks={hoursInSeconds} tickFormatter={(tick) => `${tick / 3600}`} */><Label dy={chartLine['xAxis']['yPosition']} value="Tiempo [Hora]" /></XAxis>
-							<YAxis yAxisId="left" dataKey="temperature" domain={chartLine['yAxisDomain']} />
-							<Line  yAxisId="left" type="monotone" dataKey="temperature" name="Temperatura" scale='identity' stroke={axisColors['temperatureColor']} dot={false} isAnimationActive={false} />
-						</LineChart>
-					</ReactPDFChart>
+					</ReactPDFChart> */}
 				</View>
 			</Page>
 		</Document>
-	}
-
-	useEffect(() => {
-		const id_specimen: number = Number(query['idSpecimen']) as number;
-		if (isReady && id_specimen > 0) {
-			// let hoursInSecondsAux: number[] = [];
-
-			// QueryService.SELECT.TEST.Test([id_specimen]).then((data: TestData) => {
-			// 	setMyTest(data[0]);
-			// }).then(() => {
-				// QueryService.SELECT.TEST.Data([id_specimen]).then((myTestValues: TestDataValues[]) => {
-				// 	setMyData(myTestValues);
-				// 	// for (let i = Math.min(...myTestValues.map(d => d.key)); i <= Math.max(...myTestValues.map(d => d.key)); i += 3600) {
-				// 	// 	hoursInSecondsAux.push(i);
-				// 	// }
-				// 	// setHoursInSeconds(hoursInSecondsAux);
-				// });
-			// });
-		}
-	}, [isReady]);
-
-	return (
-		<Layout style={{ background: "lightgray", overflow: "auto" }}>
-			<Layout>
-				<Content style={{ padding: '12px' }}>
-					<div style={{ margin: "auto", background: "white", padding: 24, borderRadius: 25 }} >
-						{/* <PDFViewer style={{ width: "100%", height: '90.5vh', borderRadius: 25 }}>{MyDocument()}</PDFViewer> */}
-					</div>
-				</Content>
-			</Layout>
-		</Layout >
 	);
 }
 
