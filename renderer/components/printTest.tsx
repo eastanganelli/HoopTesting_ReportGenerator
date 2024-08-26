@@ -3,7 +3,7 @@ import { FunctionComponent, useEffect, useState } from 'react';
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 import { LineChart, Line, XAxis, YAxis, Label, Legend } from 'recharts';
 
-import type { QueryData, QueryTest, TestDataValues } from '../interfaces/query/data';
+import type { QueryData, QueryTest } from '../interfaces/query/data';
 import QueryDataService from '../utils/database/query/data';
 
 const styles = {
@@ -45,10 +45,10 @@ const chartLine = {
 	xAxis: { yPosition: 10 }
 }
 
-interface Props { idSpecimen: number; plotParams: { interval: number; timeType: string; }; }
+interface Props { idSpecimen: number; testNumber: number; plotParams: { interval: number; timeType: string; }; }
 
 const PrinterPage: FunctionComponent<Props> = (Props: Props) => {
-	const { idSpecimen, plotParams } = Props;
+	const { idSpecimen, testNumber, plotParams } = Props;
     const [axisColors, setAxisColors] 		  = useState<{ pressureColor: string; temperatureColor: string; }>({ pressureColor: '#FF0000', temperatureColor: '#00FF00' });
     const [pdfConfig, setPDFConfig]			  = useState<{ companyName: string; }>({ companyName: 'None' });
 	const [myTest, setMyTest] 				  = useState<QueryTest>();
@@ -75,9 +75,7 @@ const PrinterPage: FunctionComponent<Props> = (Props: Props) => {
 	};
 
 	useEffect(() => {
-		console.log('Data Length', myData.length);
 		if(myData.length === undefined || myData.length === 0) { loadData(); }
-		console.log('Data Loaded');
 	}, [myData]);
 
 	useEffect(() => {
@@ -139,7 +137,7 @@ const PrinterPage: FunctionComponent<Props> = (Props: Props) => {
 					{/* Parte superior del informe */}
 					<View style={[styles.Content.table, { paddingTop: '40px' }]}>
 						<View style={styles.Content.row}>
-							<Text style={[styles.Content.cell, cellPropiertes.length.full, cellPropiertes.fullBorder]}>{`Prueba Nro: ${myTest?.specimensCount}`}</Text>
+							<Text style={[styles.Content.cell, cellPropiertes.length.full, cellPropiertes.fullBorder]}>{`Prueba Nro: ${testNumber}`}</Text>
 						</View>
 						<View style={styles.Content.row}>
 							<Text style={[styles.Content.cell, cellPropiertes.length.small, cellPropiertes.fullBorder]}>{`Material`}</Text>
@@ -196,7 +194,6 @@ const PrinterPage: FunctionComponent<Props> = (Props: Props) => {
 			</Page>
 			<Page size='A4' style={styles.PDFStyle.page}>
 				<View style={styles.PDFStyle.section}>
-					{/* <Text style={{ margin: '0 auto 0 auto', fontSize: '13px' }}>{`Presión [Bar]`}</Text> */}
 					<ReactPDFChart style={{marginLeft: -12.5, marginTop: 50}}>
 						<LineChart data={myData} height={300} width={500}>
 							<Legend verticalAlign="bottom"/>

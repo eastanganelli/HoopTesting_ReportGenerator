@@ -92,7 +92,10 @@ const QueryDataService = {
                                                 INNER JOIN sample s1
                                                 ON s.sample = s1.id
                                             WHERE s.id = ${idSpecimen};`;
-                return Query<QueryTest>(TestQuery, []);
+                return new Promise<QueryTest>((resolve, reject) => {
+                    Query<any>(TestQuery, []).catch(() => { reject("No data found"); })
+                    .then((DataResults: any) => { resolve(DataResults[0]) });
+                });
             },
             TestCompare: (queryData: any[] | string[] | number[]): Promise<TestCompare[]> => {
                 return new Promise<TestCompare[]>(async (resolve, reject) => {

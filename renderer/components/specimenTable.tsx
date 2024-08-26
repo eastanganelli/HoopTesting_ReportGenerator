@@ -49,7 +49,7 @@ const SpecimenTable: FunctionComponent<Props> = (Props: Props) => {
                     }).catch((error) => { message.error(error); });
                 }}>{`Guardar`}</Button>
                 <Button icon={<FilePdfOutlined />} type="primary" onClick={async () => {
-                    const blobPdf = await pdf(<PrinterPage idSpecimen={Specimen['idSpecimen']} plotParams={{ interval: 6, timeType: 'm' }}/>).toBlob();
+                    const blobPdf = await pdf(<PrinterPage idSpecimen={Specimen['idSpecimen']} testNumber={Specimen['testNumber']} plotParams={{ interval: 6, timeType: 'm' }}/>).toBlob();
                     saveAs(blobPdf, `Prueba_${Specimen['testNumber']}.pdf`);
                 }}>{`Imprimir PDF`}</Button>
             </>

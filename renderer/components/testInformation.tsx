@@ -106,23 +106,23 @@ const testInformation: FunctionComponent<Props> = (Props: Props) => {
     };
 
     const loadModalData = async () => {
-        await QueryStaticService.SELECT.Standards().then(async (responseStandards) => {
-            setMyStandards(await responseStandards[0]['standards']);
+        await QueryStaticService.SELECT.Standards().then((responseStandards: QueryStandard[]) => {
+            setMyStandards(responseStandards);
             let auxStandards: { value: string }[] = [];
-            for(let standard of await responseStandards[0]['standards']) {
+            for(let standard of responseStandards) {
                 auxStandards.push({ value: standard['standard'] });
             }
             setStandardsOptions([...auxStandards]);
         }).catch((error) => { console.error('Error', error); });
-        await QueryStaticService.SELECT.Operators().then(async(responseOperators) => {
+        await QueryStaticService.SELECT.Operators().then((responseOperators: QueryOperator[]) => {
             let auxOperators: { value: string }[] = [];
-            for(let operator of await responseOperators) {
+            for(let operator of responseOperators) {
                 auxOperators.push({ value: operator['operator'] });
             }
             setOperatorsOptions([...auxOperators]);
         }).catch((error) => { console.error('Error', error); });
-        await QueryDataService.SELECT.TEST.Test(idSpecimen).then(async(responseTest) => {
-            myTestForm.setFieldsValue(await {...responseTest[0]});
+        await QueryDataService.SELECT.TEST.Test(idSpecimen).then((responseTest: QueryTest) => {
+            myTestForm.setFieldsValue({...responseTest});
         });
     };
 
