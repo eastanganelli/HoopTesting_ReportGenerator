@@ -89,11 +89,22 @@ const testInformation: FunctionComponent<Props> = (Props: Props) => {
                     }
                 }
             } else { setReRender(reRender + 1); }
+        },
+        conditionalPeriod: (myDiameter: any) => {
+            console.log('Diameter:', myDiameter);
+            if(selectedStandard !== undefined) {
+                for(let conditionalPeriod of selectedStandard?.conditionalperiods) {
+                    if(conditionalPeriod['minwall'] <= myDiameter && myDiameter < conditionalPeriod['maxwall']) {
+                        myTestForm.setFieldsValue({conditionalPeriod: conditionalPeriod['condPeriod']});
+                    }
+                }
+                setReRender(reRender + 1);
+            } else { setReRender(reRender + 1); }
         }
     };
 
     const selectFromStatic = () => {
-        if(myStandards.length === 0 || myStandards === undefined) { setEditable(!false); setReRender(reRender + 1); }
+        if(myStandards.length === 0 || myStandards === undefined) { setReRender(reRender + 1); }
         else { optionHandler.standard(); }
     };
 
@@ -149,8 +160,8 @@ const testInformation: FunctionComponent<Props> = (Props: Props) => {
                     <Col span={8}><Form.Item label="Período de Condicionamiento" name='conditionalPeriod'><Input type='text' disabled/></Form.Item></Col>
                     {/* Diameter */}
                     <Col span={8}><Form.Item label="Diámetro Nominal" name='diameterNominal'><InputNumber addonAfter={'mm'}/></Form.Item></Col>
-                    <Col span={8}><Form.Item label="Diámetro Real"    name='diameterReal'><InputNumber addonAfter={'mm'}/></Form.Item></Col>
-                    <Col span={8}><Form.Item label="Grosor Pared"     name='wallThickness'><InputNumber addonAfter={'mm'}/></Form.Item></Col>
+                    <Col span={8}><Form.Item label="Diámetro Real"    name='diameterReal'><InputNumber    addonAfter={'mm'} onChange={optionHandler.conditionalPeriod}/></Form.Item></Col>
+                    <Col span={8}><Form.Item label="Grosor Pared"     name='wallThickness'><InputNumber   addonAfter={'mm'}/></Form.Item></Col>
                     {/* Time */}
                     <Col span={8}><Form.Item label="Fecha de Inicio"       name='beginTime'><Input type='text' disabled/></Form.Item></Col>
                     <Col span={8}><Form.Item label="Fecha de Finalización" name='endTime'><Input   type='text' disabled/></Form.Item></Col>

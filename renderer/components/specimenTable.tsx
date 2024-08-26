@@ -31,23 +31,19 @@ const SpecimenTable: FunctionComponent<Props> = (Props: Props) => {
             content: <TestInformation myTestForm={mySpecimenForm} idSpecimen={Specimen['idSpecimen']} />,
             width: "80vw",
             closable: true,
-            footer: <>
-                        <Button type="primary" onClick={() => {
-                            console.log(mySpecimenForm.getFieldsValue());
-                        }} icon={<FilePdfOutlined />}>{`Imprimir PDF`}</Button>
-                        <Button style={{ marginLeft: 5 }} type="primary" onClick={() => {
-                            console.log(mySpecimenForm.getFieldsValue());
-                            // QueryDataService.UPDATE.Specimen([Specimen['idSpecimen'], mySpecimenForm.getFieldValue('testName'), mySpecimenForm.getFieldValue('operator'), mySpecimenForm.getFieldValue('fail'), mySpecimenForm.getFieldValue('remark')]).then((response) => {
-                            //     const arrAux: QuerySpecimen[] = [...queryData];
-                            //     const index = arrAux.findIndex((specimen: QuerySpecimen) => specimen['idSpecimen'] === Specimen['idSpecimen']);
-                            //     arrAux[index]['operator'] = mySpecimenForm.getFieldValue('operator');
-                            //     setQueryData(arrAux);
-                            //     setLastUpdated(Date.now());
-                            //     message.success(response);
-                            // }).catch((error) => { message.error(error); });
-
-                        }} icon={<SaveOutlined />}>{`Guardar`}</Button>
-                    </>
+            onCancel: () => {
+                console.log(mySpecimenForm.getFieldsValue());
+                QueryDataService.UPDATE.Specimen(mySpecimenForm.getFieldsValue()).then((response) => {
+                    message.success(response);
+                }).catch((error) => { message.error(error); });
+                QueryDataService.UPDATE.Sample(mySpecimenForm.getFieldsValue()).then((response) => {
+                    message.success(response);
+                }).catch((error) => { message.error(error); });
+            },
+            onOk: () => { console.log('Printing PDF'); },
+            okButtonProps: { icon: <FilePdfOutlined />, type: 'primary' },
+            okText: 'Imprimir',
+            destroyOnClose: true
         });
     };
 
@@ -92,7 +88,7 @@ const SpecimenTable: FunctionComponent<Props> = (Props: Props) => {
                         ghost
                     />
                     <Button onClick={(event) => viewTest(event,  record)} icon={<EditOutlined />}    type="primary" ghost></Button>
-                    <Button onClick={(event) => printTest(event, record)} icon={<FilePdfOutlined />} type="primary" ghost></Button>
+                    {/* <Button onClick={(event) => printTest(event, record)} icon={<FilePdfOutlined />} type="primary" ghost></Button> */}
                     <Popconfirm title="Eliminar Prueba?" description="Está seguro que desea eliminar la Prueba?" onConfirm={() => { deleteTest(event, record); }} okText="Si" cancelText="No">
                         <Button icon={<DeleteOutlined />} danger></Button>
                     </Popconfirm>
