@@ -1,13 +1,14 @@
 import dynamic from 'next/dynamic';
 import { useState, useEffect, FunctionComponent } from 'react';
 import { Table, Space, Button, Modal, message, Popconfirm, Form, type TableColumnsType } from 'antd';
-import ReactPDF from '@react-pdf/renderer';
+import ReactPDF, { renderToFile } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 
 import openNewWindow    from '../utils/window/newWindows';
 import QueryDataService  from '../utils/database/query/data';
 
 const TestInformation = dynamic(() => import('./testInformation'), { ssr: false });
-const PrintTest       = dynamic(() => import('./printTest'));
+const PrinterPage     = dynamic(() => import('../pages/printTest'));
 
 import type { QuerySpecimen, QueryTest } from '../interfaces/query/data';
 import type { SpecimenType }  from '../interfaces/table';
@@ -46,8 +47,15 @@ const SpecimenTable: FunctionComponent<Props> = (Props: Props) => {
                         message.success(response);
                     }).catch((error) => { message.error(error); });
                 }}>{`Guardar`}</Button>
-                <Button icon={<FilePdfOutlined />} type="primary" onClick={() => {
-                    ReactPDF.render(<PrintTest/>, `${__dirname}/example.pdf`);
+                <Button icon={<FilePdfOutlined />} type="primary" onClick={async () => {
+                    const MyDocument = () => (
+                        <Document>
+                          <Page>
+                            <Text>React-pdf</Text>
+                          </Page>
+                        </Document>
+                      );
+                    await renderToFile(<MyDocument />, `D:/ezequ/Documents/my-doc.pdf`);
                 }}>{`Imprimir PDF`}</Button>
             </>
         });

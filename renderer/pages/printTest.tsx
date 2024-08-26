@@ -1,12 +1,17 @@
+import dynamic from 'next/dynamic';
 import ReactPDFChart from 'react-pdf-charts';
 import { useRouter } from 'next/router';
 import { FunctionComponent, useEffect, useState } from 'react';
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, renderToFile } from '@react-pdf/renderer';
 import { LineChart, Line, XAxis, YAxis, Label } from 'recharts';
+import { Layout } from 'antd';
+const PDFViewer = dynamic(() => import('@react-pdf/renderer').then((mod) => mod.PDFViewer), { ssr: false });
 
 import QueryService from '../utils/database/query/data';
 
 import type { TestDataValues } from '../interfaces/query/data';
+
+const { Content } = Layout;
 
 const styles = {
 	PDFStyle: StyleSheet.create({
@@ -70,26 +75,7 @@ const PrinterPage: FunctionComponent = () => {
 		}
     }, []);
 
-	useEffect(() => {
-		const id_specimen: number = Number(query['idSpecimen']) as number;
-		if (isReady && id_specimen > 0) {
-			// let hoursInSecondsAux: number[] = [];
-
-			// QueryService.SELECT.TEST.Test([id_specimen]).then((data: TestData) => {
-			// 	setMyTest(data[0]);
-			// }).then(() => {
-				// QueryService.SELECT.TEST.Data([id_specimen]).then((myTestValues: TestDataValues[]) => {
-				// 	setMyData(myTestValues);
-				// 	// for (let i = Math.min(...myTestValues.map(d => d.key)); i <= Math.max(...myTestValues.map(d => d.key)); i += 3600) {
-				// 	// 	hoursInSecondsAux.push(i);
-				// 	// }
-				// 	// setHoursInSeconds(hoursInSecondsAux);
-				// });
-			// });
-		}
-	}, [isReady]);
-
-	return (
+	const MyDocument = () => {
 		<Document
 			title    = {pdfConfig['companyName'] + ` - Reporte de la Prueba ${myTest?.mySpecimen?.idSpecimen} - ${(new Date()).toDateString()}`}
 			subject  = {pdfConfig['companyName'] + ` - Reporte de la Prueba ${myTest?.mySpecimen?.idSpecimen} - ${(new Date()).toDateString()}`}
@@ -208,6 +194,37 @@ const PrinterPage: FunctionComponent = () => {
 				</View>
 			</Page>
 		</Document>
+	}
+
+	useEffect(() => {
+		const id_specimen: number = Number(query['idSpecimen']) as number;
+		if (isReady && id_specimen > 0) {
+			// let hoursInSecondsAux: number[] = [];
+
+			// QueryService.SELECT.TEST.Test([id_specimen]).then((data: TestData) => {
+			// 	setMyTest(data[0]);
+			// }).then(() => {
+				// QueryService.SELECT.TEST.Data([id_specimen]).then((myTestValues: TestDataValues[]) => {
+				// 	setMyData(myTestValues);
+				// 	// for (let i = Math.min(...myTestValues.map(d => d.key)); i <= Math.max(...myTestValues.map(d => d.key)); i += 3600) {
+				// 	// 	hoursInSecondsAux.push(i);
+				// 	// }
+				// 	// setHoursInSeconds(hoursInSecondsAux);
+				// });
+			// });
+		}
+	}, [isReady]);
+
+	return (
+		<Layout style={{ background: "lightgray", overflow: "auto" }}>
+			<Layout>
+				<Content style={{ padding: '12px' }}>
+					<div style={{ margin: "auto", background: "white", padding: 24, borderRadius: 25 }} >
+						{/* <PDFViewer style={{ width: "100%", height: '90.5vh', borderRadius: 25 }}>{MyDocument()}</PDFViewer> */}
+					</div>
+				</Content>
+			</Layout>
+		</Layout >
 	);
 }
 
