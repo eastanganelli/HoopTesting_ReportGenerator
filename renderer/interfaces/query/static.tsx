@@ -13,8 +13,7 @@ interface QueryStandard {
 interface QueryOperator {
     key:        number;
     dni:        number;
-    name:       string;
-    familyName: string;
+    operator:       string;
 };
 
 interface QueryStatic {

@@ -16,10 +16,10 @@ const QueryStaticService = {
     SELECT: {
         Standards: (): Promise<any> => {
             const standardsData: string = `SELECT selectStandard_Into_JSON() AS standards;`;
-            return Query<any>(standardsData, []);
+            return Query<any>(standardsData);
         },
         Operators: (): Promise<any> => {
-            return Query<any>('SELECT * FROM operator');
+            return Query<any>(`SELECT o.id AS 'key', o.dni AS dni, CONCAT(o.familyname,', ',o.name) AS operator FROM operator o`);
         }
     }
 }
