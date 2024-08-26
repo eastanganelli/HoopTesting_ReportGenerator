@@ -11,11 +11,12 @@ interface Props { idSpecimen: number; plotForm: FormInstance<{ interval: number;
 
 const plotTestResult: FunctionComponent<Props> = (Props: Props) => {
     const { idSpecimen, plotForm } = Props;
-    const [plotParams, setPlotParams] = useState<{ interval: number; timeType: string; }>({ interval: 1, timeType: 'm' });
-    const [minValue, setMinValue] = useState<number>(1);
-    const [stepValue, setStepValue] = useState<number>(1);
-    const [axisColors, setAxisColors] = useState<{ pressureColor: string; temperatureColor: string; }>({ pressureColor: '#ff0000', temperatureColor: '#00ff00' });
-    const [plotData, setPlotData] = useState<QueryData[]>([]);
+    const [plotVisible, setPlotVisible] = useState<boolean>(false);
+    const [plotParams,   setPlotParams] = useState<{ interval: number; timeType: string; }>({ interval: 1, timeType: 'm' });
+    const [minValue,       setMinValue] = useState<number>(1);
+    const [stepValue,     setStepValue] = useState<number>(1);
+    const [axisColors,   setAxisColors] = useState<{ pressureColor: string; temperatureColor: string; }>({ pressureColor: '#ff0000', temperatureColor: '#00ff00' });
+    const [plotData,       setPlotData] = useState<QueryData[]>([]);
 
     const selectTimeType = (): string => {
         switch (plotParams['timeType']) {
@@ -23,6 +24,10 @@ const plotTestResult: FunctionComponent<Props> = (Props: Props) => {
             case 'm': return 'Minutos';
             case 'h': return 'Horas';
         }
+    }
+
+    const myPlotDataLoad = async (intervalue: number) => {
+        await QueryDataService.SELECT.Data(idSpecimen, intervalue, plotParams['timeType']).then(async(DataResults: QueryData[]) => { setPlotData(await DataResults); });
     }
 
     useEffect(() => {
@@ -33,14 +38,17 @@ const plotTestResult: FunctionComponent<Props> = (Props: Props) => {
                 temperatureColor: storedConfig['temperatureColor']
             });
         }
+    }, []);
+
+    useEffect(() => {
         let intervalue: number = 0;
         switch (plotParams['timeType']) {
             case 's': intervalue = plotParams['interval'] / 10; break;
             case 'm': intervalue = plotParams['interval'] * 6; break;
             case 'h': intervalue = plotParams['interval'] * 360; break;
         }
-        QueryDataService.SELECT.Data(idSpecimen, intervalue, plotParams['timeType']).then((DataResults: QueryData[][]) => { setPlotData(DataResults[0]); });
-    }, [plotParams]);
+        myPlotDataLoad(intervalue);
+    }, [plotParams, plotData.length === 0]);
 
     return (
         <Form form={plotForm} layout='horizontal' onFinish={(values) => setPlotParams(values)} initialValues={plotParams}>
@@ -69,18 +77,12 @@ const plotTestResult: FunctionComponent<Props> = (Props: Props) => {
             <Row gutter={[16, 16]}>
                 <ResponsiveContainer height={(globalThis.innerHeight * 0.8) - 48}>
                     <LineChart data={plotData}>
-                        <XAxis dataKey="key">
-                            <Label value={`Tiempo [${selectTimeType()}]`} offset={0} position="insideBottom" />
-                        </XAxis>
-                        <YAxis yAxisId="left" domain={['auto', 'auto']}>
-                            <Label value="Presión [Bar]" angle={-90} position="insideLeft" />
-                        </YAxis>
-                        <Legend verticalAlign="top" />
-                        <Line yAxisId="left" type="monotone" dataKey="pressure" name="Presión" scale='identity' stroke={axisColors['pressureColor']} dot={false} isAnimationActive={true} />
-                        <YAxis yAxisId="right" orientation='right' domain={['auto', 'auto']}>
-                            <Label value="Temperatura [°C]" angle={-90} position="insideRight" />
-                        </YAxis>
-                        <Legend verticalAlign="top" />
+                        <Legend verticalAlign="top"/>
+                        <XAxis dataKey="key"><Label value={`Tiempo [${selectTimeType()}]`} offset={0} position="insideBottom" /></XAxis>
+                        <YAxis yAxisId="left"                      domain={['auto', 'auto']}/>
+                        <YAxis yAxisId="right" orientation='right' domain={['auto', 'auto']}/>
+                        <YAxis yAxisId="left" domain={['auto', 'auto']}/>
+                        <Line yAxisId="left"  type="monotone" dataKey="pressure"    name="Presión"     scale='identity' stroke={axisColors['pressureColor']}    dot={false} isAnimationActive={true} />
                         <Line yAxisId="right" type="monotone" dataKey="temperature" name="Temperatura" scale='identity' stroke={axisColors['temperatureColor']} dot={false} isAnimationActive={true} />
                     </LineChart>
                 </ResponsiveContainer>

@@ -55,10 +55,12 @@ const QueryDataService = {
             }
             return Query<QuerySpecimen[]>(SpecimenQuery, idSample !== null ? [idSample] : []);
         },
-        Data: (idSpecimen: number, interval: number, timeType: string): Promise<QueryData[][]> => {
-            // Delete Procedure
-            const DataQuery: string = `CALL selectData(?,?,?);`;
-            return Query<QueryData[][]>(DataQuery, [idSpecimen, interval, timeType]);
+        Data: (idSpecimen: number, interval: number, timeType: string): Promise<QueryData[]> => {
+            const DataQuery: string = `CALL selectData(${idSpecimen}, ${interval}, '${timeType}');`;
+            return new Promise<QueryData[]>((resolve, reject) => {
+                Query(DataQuery).catch(() => { reject("No data found"); })
+                .then((DataResults: any) => { resolve(DataResults[0]) });
+            });
         },
         TEST: {
             Test: (idSpecimen: number): Promise<QueryTest> => {
@@ -138,7 +140,6 @@ const QueryDataService = {
     },
     UPDATE: {
         Sample: (idSample: number, sampleData: QueryTest): Promise<string> => {
-            // const SampleQuery: string = "CALL updateSample(?,?,?,?,?,?,?)"; Delete Procedure
             const SampleQuery: string = `UPDATE sample
                                         SET standard = '${sampleData['standard']}', material = '${sampleData['material']}', specification = '${sampleData['specification']}', diamreal = ${sampleData['diameterReal']}, diamnom = ${sampleData['diameterNominal']}, wallthick = ${sampleData['wallThickness']}, lenfree = ${sampleData['lengthFree']}, lentotal = ${sampleData['lengthTotal']}, condperiod = '${sampleData['conditionalPeriod']}'
                                         WHERE id = ${idSample};`;
@@ -148,7 +149,6 @@ const QueryDataService = {
             });
         },
         Specimen: (idSpecimen: number, idSample: number, specimenData: QueryTest): Promise<string> => {
-            // const SpecimenQuery: string = "CALL updateSpecimen(?,?,?,?,?)"; Delete Procedure
             const SpecimenQuery: string = `UPDATE specimen
                                         SET sample = ${idSample}, targetPressure = ${specimenData['targetPressure']}, targetTemperature = ${specimenData['targetTemperature']}, operator = '${specimenData['operator']}', enviroment = '${specimenData['enviroment']}', testName = '${specimenData['testName']}', endCap = '${specimenData['endCap']}', failText = '${specimenData['failText']}', remark = '${specimenData['remark']}'
                                         WHERE id = ${idSpecimen};`;

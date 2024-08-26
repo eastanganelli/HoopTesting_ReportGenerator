@@ -70,7 +70,6 @@ const testInformation: FunctionComponent<Props> = (Props: Props) => {
                         }
                     }
                     setSelectedStandard({...standard});
-                    setReRender(reRender + 1);
                     break;
                 }
             };
@@ -88,18 +87,16 @@ const testInformation: FunctionComponent<Props> = (Props: Props) => {
                         break;
                     }
                 }
-            } else { setReRender(reRender + 1); }
+            }
         },
         conditionalPeriod: (myDiameter: any) => {
-            console.log('Diameter:', myDiameter);
             if(selectedStandard !== undefined) {
                 for(let conditionalPeriod of selectedStandard?.conditionalperiods) {
                     if(conditionalPeriod['minwall'] <= myDiameter && myDiameter < conditionalPeriod['maxwall']) {
                         myTestForm.setFieldsValue({conditionalPeriod: conditionalPeriod['condPeriod']});
                     }
                 }
-                setReRender(reRender + 1);
-            } else { setReRender(reRender + 1); }
+            }
         }
     };
 
@@ -109,31 +106,29 @@ const testInformation: FunctionComponent<Props> = (Props: Props) => {
     };
 
     const loadModalData = async () => {
-        await QueryStaticService.SELECT.Standards().then((responseStandards) => {
-            setMyStandards([...responseStandards[0]['standards']]);
+        await QueryStaticService.SELECT.Standards().then(async (responseStandards) => {
+            setMyStandards(await responseStandards[0]['standards']);
             let auxStandards: { value: string }[] = [];
-            for(let standard of responseStandards[0]['standards']) {
+            for(let standard of await responseStandards[0]['standards']) {
                 auxStandards.push({ value: standard['standard'] });
             }
             setStandardsOptions([...auxStandards]);
         }).catch((error) => { console.error('Error', error); });
-        await QueryStaticService.SELECT.Operators().then((responseOperators) => {
-            let operatorsData: QueryOperator[] = responseOperators;
+        await QueryStaticService.SELECT.Operators().then(async(responseOperators) => {
             let auxOperators: { value: string }[] = [];
-            for(let operator of operatorsData) {
+            for(let operator of await responseOperators) {
                 auxOperators.push({ value: operator['operator'] });
             }
             setOperatorsOptions([...auxOperators]);
         }).catch((error) => { console.error('Error', error); });
-        await QueryDataService.SELECT.TEST.Test(idSpecimen).then((responseTest) => {
-            myTestForm.setFieldsValue({...responseTest[0]});
+        await QueryDataService.SELECT.TEST.Test(idSpecimen).then(async(responseTest) => {
+            myTestForm.setFieldsValue(await {...responseTest[0]});
         });
     };
 
     useEffect(() => {
-        if (myStandards.length === 0) { loadModalData(); }
-        console.log('Re-Render times:', reRender);
-    }, [reRender, editable, selectedStandard, materialsOptions, specificationsOptions, endCapsOptions, enviromentsOptions, testTypesOptions]);
+        loadModalData();
+    }, [editable, selectedStandard, materialsOptions, specificationsOptions, endCapsOptions, enviromentsOptions, testTypesOptions]);
 
     return (
         <>  
