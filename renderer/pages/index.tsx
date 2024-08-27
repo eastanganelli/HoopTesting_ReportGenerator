@@ -1,7 +1,7 @@
 import dynamic from 'next/dynamic';
 import { useState, useEffect } from 'react';
 import { Layout, Drawer, FloatButton, Space, message }   from 'antd';
-import { DiffOutlined, SettingOutlined, ReloadOutlined } from '@ant-design/icons';
+import { DiffOutlined, SettingOutlined, ReloadOutlined, CheckCircleOutlined } from '@ant-design/icons';
 
 import openNewWindow      from '../utils/window/newWindows';
 import DatabaseService    from '../utils/database/database';
@@ -17,6 +17,7 @@ const IndexPage = () => {
 	const [open, setOpen] 						= useState<boolean>(false);
 	const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
 	const [comapreState, setCompareState]       = useState<boolean>(false);
+	const [reloadView, setReloadView]           = useState<boolean>(false);
 
 	const onSelectChange = (idTest: number) => {
 		let auxCopy = selectedRowKeys;
@@ -33,24 +34,26 @@ const IndexPage = () => {
 
 	const rowSelection = { selectedRowKeys, onChange: onSelectChange };
 
-	useEffect(() => { DatabaseService.ISCONNECTED().then((response) => { message.success(response); }).catch((error) => { message.error(error); }); }, []);
+	useEffect(() => { DatabaseService.ISCONNECTED().then((response) => { message.success(response); }).catch((error) => { message.error(error); }); }, [reloadView]);
 
 	return (
 		<Layout style={{ background: "lightgrey", minHeight: "98vh", overflow: "auto" }}>
 			<FloatButton tooltip="Abrir configuración" icon={<SettingOutlined />} onClick={() => { setOpen(true); }}/>
 			{
 				comapreState &&
-					<FloatButton icon={<DiffOutlined />} tooltip="Comparar Pruebas" style={{ right: 120 }} 
+					<FloatButton icon={<DiffOutlined />} tooltip="Comparar Pruebas" style={{ right: 120 }}
 						onClick={() => { openNewWindow("TestsCompare", `Comparación de Pruebas: [${selectedRowKeys.toString()}]`, `/testsCompare?idSpecimens=${selectedRowKeys.toString()}`); }}
+						badge={{ count: selectedRowKeys.length, color: 'green' }}
 					/> 
 			}
 			{
-				comapreState &&
-					<FloatButton icon={<DiffOutlined />} tooltip="Comparar Pruebas" style={{ left: 120 }} 
-						onClick={() => { openNewWindow("TestsCompare", `Comparación de Pruebas: [${selectedRowKeys.toString()}]`, `/testsCompare?idSpecimens=${selectedRowKeys.toString()}`); }}
+				true &&
+					<FloatButton icon={<CheckCircleOutlined />} tooltip="Pruebas sin parámetros" style={{ left: 25 }} 
+						onClick={() => {  }}
+						badge={{ count: 3, color: 'red' }}
 					/> 
 			}
-			<FloatButton icon={<ReloadOutlined />} tooltip="Refrescar Aplicación" style={{ right: 72 }} onClick={() => { DatabaseService.CONNECT(true); } }/>
+			<FloatButton icon={<ReloadOutlined />} tooltip="Refrescar Aplicación" style={{ right: 72 }} onClick={() => { /* DatabaseService.CONNECT(true); */ setReloadView(true); } }/>
 			<Layout>
 				<Content style={{ padding: '12px' }}>
 					<div style={{ background: "white", padding: 24, borderRadius: 25 }} >
