@@ -39,6 +39,7 @@ interface QueryData {
 }
 
 interface QueryTest {
+    idSpecimen:        number;
     idSample:          number;
     standard:          string;
     material:          string;
@@ -50,7 +51,6 @@ interface QueryTest {
     lengthTotal:       number;
     conditionalPeriod: string;
     specimensCount:    number;
-    idSpecimen:        number;
     targetPressure:    number;
     targetTemperature: number;
     operator:          string;

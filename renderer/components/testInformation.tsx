@@ -1,7 +1,6 @@
-import dynamic from 'next/dynamic';
 import { FunctionComponent, useEffect, useState } from 'react';
-import { Form, FormInstance, Row, Col, Input, InputNumber, Checkbox, Divider, Select, AutoComplete } from 'antd';
-const PlotTestResult = dynamic(() => import('./testPlot'), { ssr: false });
+import { Form, FormInstance, Row, Col, Input, InputNumber, Checkbox, Divider, AutoComplete } from 'antd';
+import { PlotTestResult } from './testPlot';
 
 import QueryDataService   from '../utils/database/query/data';
 import QueryStaticService from '../utils/database/query/static';
@@ -9,11 +8,9 @@ import QueryStaticService from '../utils/database/query/static';
 import type { QueryTest }                    from '../interfaces/query/data';
 import type { QueryStandard, QueryOperator } from '../interfaces/query/static';
 
-const { Option } = Select;
-
 interface Props { myTestForm: FormInstance<QueryTest>; idSpecimen: number; }
 
-const testInformation: FunctionComponent<Props> = (Props: Props) => {
+const TestInformation: FunctionComponent<Props> = (Props: Props) => {
     const { myTestForm, idSpecimen }  = Props;
     const [plotForm]                  = Form.useForm();
     const [reRender, setReRender]     = useState<number>(0);
@@ -171,4 +168,5 @@ const testInformation: FunctionComponent<Props> = (Props: Props) => {
         </>
     );
 }
-export default testInformation;
+
+export default TestInformation;

@@ -88,16 +88,13 @@ const QueryDataService = {
                                                 DATE_FORMAT((SELECT MIN(d.createdAt) FROM data d WHERE d.specimen = s.id), '%d/%m/%Y %H:%i:%s') AS beginTime,
                                                 DATE_FORMAT((SELECT MAX(d.createdAt) FROM data d WHERE d.specimen = s.id), '%d/%m/%Y %H:%i:%s') AS endTime,
                                                 DATE_FORMAT(TIMEDIFF((SELECT MAX(d.createdAt) FROM data d WHERE d.specimen = s.id), (SELECT MIN(d.createdAt) FROM data d WHERE d.specimen = s.id)), '%H:%i:%s') AS duration
-                                            FROM specimen s
-                                                INNER JOIN sample s1
-                                                ON s.sample = s1.id
-                                            WHERE s.id = ${idSpecimen};`;
+                                            FROM specimen s INNER JOIN sample s1 ON s.sample = s1.id WHERE s.id = ${idSpecimen};`;
                 return new Promise<QueryTest>((resolve, reject) => {
                     Query<any>(TestQuery, []).catch(() => { reject("No data found"); })
                     .then((DataResults: any) => { resolve(DataResults[0]) });
                 });
             },
-            TestCompare: (queryData: any[] | string[] | number[]): Promise<TestCompare[]> => {
+            TestCompare: (idSpecimens: number[]): Promise<TestCompare[]> => {
                 return new Promise<TestCompare[]>(async (resolve, reject) => {
                     // const TestDataQuery: string = 'CALL selectCompareTests(?)';
                     // const queryResult: TestData[] = await Query<TestData[]>(TestDataQuery, queryData);

@@ -1,4 +1,4 @@
-import { FunctionComponent, Key } from "react";
+import { Key } from "react";
 
 interface SampleType {
     key:           Key;
@@ -25,6 +25,7 @@ interface SpecimenType {
 
 interface CompareType {
     key: Key;
+    idSpecimen: number;
     idSample: number;
     standard: string;
     material: string;
@@ -37,18 +38,17 @@ interface CompareType {
     targetTemperature: number;
     targetPressure: number;
     conditionalPeriod: string;
-    idSpecimen: number;
-    operator: string;
     enviroment: string;
     beginTime: string;
     endTime: string;
     duration: string;
-    counts: number;
+    // counts: number;
     testName: string;
-    testNumber: number;
+    // testNumber: number;
     endCap: string;
-    fail: string;
-    remark: string;
+    // operator: string;
+    // fail: string;
+    // remark: string;
 };
 
 export type { SampleType, SpecimenType, CompareType };

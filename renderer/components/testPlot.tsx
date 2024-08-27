@@ -8,10 +8,10 @@ import type { QueryData } from '../interfaces/query/data';
 import { Option } from 'antd/es/mentions';
 
 interface Props { idSpecimen: number; plotForm: FormInstance<{ interval: number; timeType: string; }>; }
+interface PropsComparing { idSpecimen: number; plotTiming: { interval: number; timeType: string; }; }
 
-const plotTestResult: FunctionComponent<Props> = (Props: Props) => {
+const PlotTestResult: FunctionComponent<Props> = (Props: Props) => {
     const { idSpecimen, plotForm } = Props;
-    const [plotVisible, setPlotVisible] = useState<boolean>(false);
     const [plotParams,   setPlotParams] = useState<{ interval: number; timeType: string; }>({ interval: 1, timeType: 'm' });
     const [minValue,       setMinValue] = useState<number>(1);
     const [stepValue,     setStepValue] = useState<number>(1);
@@ -91,4 +91,56 @@ const plotTestResult: FunctionComponent<Props> = (Props: Props) => {
     );
 };
 
-export default plotTestResult;
+const PlotComparing: FunctionComponent<PropsComparing> = (Props: PropsComparing) => {
+    const { idSpecimen, plotTiming } = Props;
+    const [axisColors,   setAxisColors] = useState<{ pressureColor: string; temperatureColor: string; }>({ pressureColor: '#ff0000', temperatureColor: '#00ff00' });
+    const [plotData,       setPlotData] = useState<QueryData[]>([]);
+
+    const selectTimeType = (): string => {
+        switch (plotTiming['timeType']) {
+            case 's': return 'Segundos';
+            case 'm': return 'Minutos';
+            case 'h': return 'Horas';
+        }
+    }
+
+    const myPlotDataLoad = async (intervalue: number) => {
+        await QueryDataService.SELECT.Data(idSpecimen, intervalue, plotTiming['timeType']).then(async(DataResults: QueryData[]) => { setPlotData(await DataResults); });
+    }
+
+    useEffect(() => {
+        const storedConfig = JSON.parse(localStorage.getItem('chartConfig'));
+        if (storedConfig) {
+            setAxisColors({
+                pressureColor: storedConfig['pressureColor'],
+                temperatureColor: storedConfig['temperatureColor']
+            });
+        }
+    }, []);
+
+    useEffect(() => {
+        let intervalue: number = 0;
+        switch (plotTiming['timeType']) {
+            case 's': intervalue = plotTiming['interval'] / 10; break;
+            case 'm': intervalue = plotTiming['interval'] * 6; break;
+            case 'h': intervalue = plotTiming['interval'] * 360; break;
+        }
+        myPlotDataLoad(intervalue);
+    }, [plotTiming, plotData.length === 0]);
+
+    return (
+        <ResponsiveContainer height={(globalThis.innerHeight * 0.8) - 48}>
+            <LineChart data={plotData}>
+                <Legend verticalAlign="top"/>
+                <XAxis dataKey="key"><Label value={`Tiempo [${selectTimeType()}]`} offset={0} position="insideBottom" /></XAxis>
+                <YAxis yAxisId="left"                      domain={['auto', 'auto']}/>
+                <YAxis yAxisId="right" orientation='right' domain={['auto', 'auto']}/>
+                <YAxis yAxisId="left" domain={['auto', 'auto']}/>
+                <Line yAxisId="left"  type="monotone" dataKey="pressure"    name="Presión"     scale='identity' stroke={axisColors['pressureColor']}    dot={false} isAnimationActive={true} />
+                <Line yAxisId="right" type="monotone" dataKey="temperature" name="Temperatura" scale='identity' stroke={axisColors['temperatureColor']} dot={false} isAnimationActive={true} />
+            </LineChart>
+        </ResponsiveContainer>
+    );
+};
+
+export { PlotComparing, PlotTestResult };
