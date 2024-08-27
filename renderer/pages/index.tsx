@@ -1,12 +1,12 @@
 import dynamic from 'next/dynamic';
 import { useState, useEffect } from 'react';
-import { Layout, Drawer, FloatButton, Space, message } from 'antd';
+import { Layout, Drawer, FloatButton, Space, message }   from 'antd';
 import { DiffOutlined, SettingOutlined, ReloadOutlined } from '@ant-design/icons';
 
-import openNewWindow from '../utils/window/newWindows';
-import DatabaseService from '../utils/database/database';
+import openNewWindow      from '../utils/window/newWindows';
+import DatabaseService    from '../utils/database/database';
 import ChartConfiguration from '../components/chartConfig';
-import PDFConfiguration from '../components/pdfConfig';
+import PDFConfiguration   from '../components/pdfConfig';
 
 const SampleTable           = dynamic(() => import('../components/sampleTable'),    { ssr: true });
 const DatabaseConfiguration = dynamic(() => import('../components/databaseConfig'), { ssr: true });
@@ -41,6 +41,12 @@ const IndexPage = () => {
 			{
 				comapreState &&
 					<FloatButton icon={<DiffOutlined />} tooltip="Comparar Pruebas" style={{ right: 120 }} 
+						onClick={() => { openNewWindow("TestsCompare", `Comparación de Pruebas: [${selectedRowKeys.toString()}]`, `/testsCompare?idSpecimens=${selectedRowKeys.toString()}`); }}
+					/> 
+			}
+			{
+				comapreState &&
+					<FloatButton icon={<DiffOutlined />} tooltip="Comparar Pruebas" style={{ left: 120 }} 
 						onClick={() => { openNewWindow("TestsCompare", `Comparación de Pruebas: [${selectedRowKeys.toString()}]`, `/testsCompare?idSpecimens=${selectedRowKeys.toString()}`); }}
 					/> 
 			}

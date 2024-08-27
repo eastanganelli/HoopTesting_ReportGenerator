@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { Layout, Table, Checkbox, /* Typography, Divider, */ type CheckboxOptionType, type TableColumnsType, Form, Row, Col, Select, InputNumber, Button } from 'antd';
-// import { Option } from 'antd/es/mentions';
-// import { PlotComparing } from '../components/testPlot';
+import { Layout, Table, Checkbox, type CheckboxOptionType, type TableColumnsType, Form, Row, Col, Select, InputNumber, Button } from 'antd';
+import { PlotComparing } from '../components/testPlot';
+
 
 import type { CompareType } from '../interfaces/table';
 import { QueryTest } from '../interfaces/query/data';
@@ -37,12 +37,8 @@ const columns: TableColumnsType<CompareType> = [
 const defaultCheckedList = columns.map((column) => { return column.key as string; });
 
 const TestCompare = () => {
-    const { query, isReady } = useRouter();
-    const [plotForm] = Form.useForm();
-    const [myTests, setMyTests] = useState<CompareType[]>([]);
-    const [plotParams, setPlotParams] = useState<{ interval: number; timeType: string; }>({ interval: 1, timeType: 'm' });
-    const [minValue, setMinValue] = useState<number>(1);
-    const [stepValue, setStepValue] = useState<number>(1);
+    const { query, isReady }            = useRouter();
+    const [myTests,         setMyTests] = useState<CompareType[]>([]);
     const [checkedList, setCheckedList] = useState(defaultCheckedList);
 
     const options = columns.map(({ key, title }) => ({
@@ -57,7 +53,6 @@ const TestCompare = () => {
         let tableCompareData: CompareType[] = [];
         for(let idSpecimen of idSpecimens) {
             await QueryDataService.SELECT.TEST.Test(idSpecimen).then((DataResults: QueryTest) => {
-                console.log(DataResults);
                 const auxData = DataResults;
                 tableCompareData.push({
                     key: auxData['idSpecimen'],
@@ -90,11 +85,8 @@ const TestCompare = () => {
         const idsSpecimens: string = String(query['idSpecimens']) as string;
         if (isReady && idsSpecimens !== undefined) {
             let auxIdSpecimen: number[] = [];
-            idsSpecimens.split(',').forEach((idSpecimen: string) => {
-                auxIdSpecimen.push(Number(idSpecimen));
-            });
+            idsSpecimens.split(',').forEach((idSpecimen: string) => { auxIdSpecimen.push(Number(idSpecimen)); });
             loadCompareTable(auxIdSpecimen);
-            // loadCompareTable(idsSpecimens);
         }
     }, [isReady]);
 
@@ -103,44 +95,11 @@ const TestCompare = () => {
             <Layout style={{ padding: '12px' }}>
                 <Content style={{ padding: 24, background: 'white', borderRadius: 25, alignItems: 'center', justifyContent: 'center', fontSize: "1vw" }}>
                     <><Checkbox.Group value={checkedList} options={options as CheckboxOptionType[]} onChange={(value) => { setCheckedList(value as string[]) }} /></>
-                    <><Table style={{ paddingTop: 20, paddingBottom: 20 }} columns={newColumns} dataSource={myTests} scroll={{ x: 1000 }} pagination={{ position: [] }}/></>
-                    <>
-                        <Form form={plotForm} layout='horizontal' onFinish={(values) => setPlotParams(values)} initialValues={plotParams}>
-                            <Row gutter={[16, 16]}>
-                                <Col span={4}><Form.Item label='Intervalo' name="interval"><InputNumber min={minValue} defaultValue={1} step={stepValue} placeholder='Intervalo' /></Form.Item></Col>
-                                <Col span={4}>
-                                    <Form.Item name="timeType">
-                                        <Select defaultValue={`Horas`} onChange={(value: string) => {
-                                            switch (value) {
-                                                case 's': setMinValue(10); setStepValue(10); if (plotForm.getFieldValue('interval') < 10) { plotForm.setFieldValue('interval', 10); } break;
-                                                case 'm':
-                                                case 'h': setMinValue(1); setStepValue(1); break;
-                                            }
-                                            plotForm.setFieldValue('timeType', value);
-                                        }} placeholder="Medida de Tiempo">
-                                            <Option value="s">{`Segundos`}</Option>
-                                            <Option value="m">{`Minutos`}</Option>
-                                            <Option value="h">{`Horas`}</Option>
-                                        </Select>
-                                    </Form.Item>
-                                </Col>
-                                <Col span={16}><Form.Item><Button type="primary" htmlType='submit'>{`Actualizar Gráfico`}</Button></Form.Item></Col>
-                            </Row>
-                            {/* <Row gutter={[16, 16]}>
-                                <>
-                                    {
-                                        myTests.forEach((myTest: QueryTest) => {
-                                            <>
-                                                <Typography.Title level={3}>{`ID Prueba: ${myTest['idSpecimen']}`}</Typography.Title>
-                                                <PlotComparing idSpecimen={myTest['idSpecimen']} plotTiming={plotParams} />
-                                                <Divider />
-                                            </>
-                                        })
-                                    }
-                                </>
-                            </Row> */}
-                        </Form>
-                    </> 
+                    <><Table style={{ paddingTop: 20, paddingBottom: 20 }} columns={newColumns} dataSource={myTests} scroll={{ x: 1000 }} pagination={{ position: [] }}
+                        expandable={{ expandedRowRender: record => (
+                            <PlotComparing idSpecimen={record['idSpecimen']} height={globalThis.innerHeight * 0.8} width={globalThis.innerWidth * 0.8}/>
+                        ) }}
+                    /></>
                 </Content>
             </Layout>
         </Layout>

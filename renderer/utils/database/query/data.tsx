@@ -93,49 +93,7 @@ const QueryDataService = {
                     Query<any>(TestQuery, []).catch(() => { reject("No data found"); })
                     .then((DataResults: any) => { resolve(DataResults[0]) });
                 });
-            },
-            TestCompare: (idSpecimens: number[]): Promise<TestCompare[]> => {
-                return new Promise<TestCompare[]>(async (resolve, reject) => {
-                    // const TestDataQuery: string = 'CALL selectCompareTests(?)';
-                    // const queryResult: TestData[] = await Query<TestData[]>(TestDataQuery, queryData);
-                    // if (queryResult.length === 0) reject("No data found");
-
-                    // let parseData: TestCompare[] = [];
-
-                    // queryResult.forEach((test: TestData) => {
-                    //     parseData.push({
-                    //         idSample: test['mySample']['idSample'],
-                    //         standard: test['mySample']['standard'],
-                    //         material: test['mySample']['material'],
-                    //         specification: test['mySample']['specification'],
-                    //         diameterReal: test['mySample']['diameterReal'],
-                    //         diameterNominal: test['mySample']['diameterNominal'],
-                    //         wallThickness: test['mySample']['wallThickness'],
-                    //         lengthTotal: test['mySample']['lengthTotal'],
-                    //         lengthFree: test['mySample']['lengthFree'],
-                    //         targetTemperature: test['mySpecimen']['targetTemperature'],
-                    //         targetPressure: test['mySpecimen']['targetPressure'],
-                    //         hoopStress: test['mySample']['hoopStress'],
-                    //         conditionalPeriod: test['mySample']['conditionalPeriod'],
-                    //         idSpecimen: test['mySpecimen']['idSpecimen'],
-                    //         operator: test['mySpecimen']['operator'],
-                    //         enviroment: test['mySpecimen']['enviroment'],
-                    //         beginTime: test['mySpecimen']['beginTime'],
-                    //         endTime: test['mySpecimen']['endTime'],
-                    //         duration: test['mySpecimen']['duration'],
-                    //         // counts: test['mySpecimen']['counts'],
-                    //         testName: test['mySpecimen']['testName'],
-                    //         testNumber: test['mySpecimen']['testNumber'],
-                    //         endCap: test['mySpecimen']['endCap'],
-                    //         fail: test['mySpecimen']['fail'],
-                    //         remark: test['mySpecimen']['remark'],
-                    //         myData: test['myData']
-                    //     });
-                    // });
-                    // resolve(parseData);
-                });
-            },
-            
+            }
         }
     },
     UPDATE: {
